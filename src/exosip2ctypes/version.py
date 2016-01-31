@@ -7,4 +7,3 @@ __all__ = ['get_library_version']
 
 def get_library_version():
     return string_at(conf.FuncGetVersion.c_func()).decode()
-

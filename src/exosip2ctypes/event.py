@@ -8,6 +8,8 @@ from enum import IntEnum
 
 from ._c import event
 
+__all__ = ['EventType', 'Event']
+
 
 class EventType(IntEnum):
     REGISTRATION_SUCCESS = 0
