@@ -40,6 +40,7 @@ class Message:
         if not p:
             return None
         result = string_at(p)
+        del p
         return result if isinstance(result, str) else result.decode()
 
     @content_type.setter
