@@ -4,17 +4,36 @@
 eXosip2 context API
 """
 
-import platform
-import threading
 from ctypes import c_char_p, c_int
+import platform
 import socket
+import threading
 
 from ._c import DLL_NAME, conf, event, auth
-from .event import Event, EventType
 from .error import MallocError, ExitNotZeroError
+from .event import Event, EventType
 from .version import get_library_version
 
+
 __all__ = ['Context']
+
+
+class ContextLock:
+    def __init__(self, context):
+        self._context = context
+
+    def acquire(self):
+        self._context.lock()
+
+    def release(self):
+        self._context.unlock
+
+    def __enter__(self):
+        self.acquire()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.release()
 
 
 class Context:
@@ -28,6 +47,7 @@ class Context:
         self._user_agent = '{} ({} ({}/{}))'.format(DLL_NAME, get_library_version(), platform.machine(),
                                                     platform.system())
         self._set_user_agent(self._user_agent)
+        self._context_lock = ContextLock(self)
         self._started = False
         self._stop_sentinel = False
         self._loop_thread = None
@@ -42,7 +62,10 @@ class Context:
         try:
             while not self._stop_sentinel:
                 with self.event_wait(s, ms) as evt:
-                    self.process_event(evt)
+                    with self._context_lock:
+                        self.automatic_action()
+                    if evt:
+                        self.process_event(evt)
         finally:
             self._stop_cond.acquire()
             self._started = False
@@ -50,9 +73,19 @@ class Context:
             self._stop_cond.notify()
             self._stop_cond.release()
 
+    def _set_user_agent(self, user_agent):
+        conf.FuncSetUserAgent.c_func(
+            self._p,
+            c_char_p(user_agent.encode())
+        )
+
     @property
     def pointer(self):
         return self._p
+
+    @property
+    def context_lock(self):
+        return self._context_lock
 
     @property
     def started(self):
@@ -64,6 +97,15 @@ class Context:
             self.start()
         else:
             self.stop()
+
+    @property
+    def user_agent(self):
+        return self._user_agent
+
+    @user_agent.setter
+    def user_agent(self, val):
+        self._set_user_agent(val)
+        self._user_agent = val
 
     def quit(self):
         conf.FuncQuit.c_func(self._p)
@@ -93,21 +135,6 @@ class Context:
         if ret != 0:
             raise ExitNotZeroError(conf.FuncListenAddr.func_name, ret)
 
-    def _set_user_agent(self, user_agent):
-        conf.FuncSetUserAgent.c_func(
-            self._p,
-            c_char_p(user_agent.encode())
-        )
-
-    @property
-    def user_agent(self):
-        return self._user_agent
-
-    @user_agent.setter
-    def user_agent(self, val):
-        self._set_user_agent(val)
-        self._user_agent = val
-
     def event_wait(self, s, ms):
         ret = event.FuncEventWait.c_func(self._p, c_int(s), c_int(ms))
         if ret:
@@ -117,10 +144,6 @@ class Context:
 
     def automatic_action(self):
         auth.FuncAutomaticAction.c_func(self._p)
-
-    def run(self, s=0, ms=50, timeout=None):
-        self.start(s, ms)
-        self._loop_thread.join(timeout)
 
     def start(self, s=0, ms=50):
         self._loop_thread = threading.Thread(target=self._loop, args=(s, ms))
@@ -137,13 +160,11 @@ class Context:
         self._stop_cond.wait()
         self._stop_cond.release()
 
+    def run(self, s=0, ms=50, timeout=None):
+        self.start(s, ms)
+        self._loop_thread.join(timeout)
+
     def process_event(self, evt):
-        try:
-            self.lock()
-            self.automatic_action()
-        finally:
-            self.unlock()
-        # dosth...
         if evt.type == EventType.CALL_INVITE:
             self.on_call_invite(evt)
 
