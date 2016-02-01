@@ -62,49 +62,61 @@ class EventType(IntEnum):
 
 
 class Event:
-    def __init__(self, p):
-        self._p = p
-        self.type = EventType(int(self._p.contents.type))
+    def __init__(self, pointer):
+        self._pointer = pointer
+        self._type = EventType(int(pointer.contents.type))
+        self._tid = int(pointer.contents.tid)
+        self._did = int(pointer.contents.did)
+        self._rid = int(pointer.contents.rid)
+        self._cid = int(pointer.contents.cid)
+        self._sid = int(pointer.contents.sid)
+        self._nid = int(pointer.contents.nid)
+        self._ss_status = int(pointer.contents.ss_status)
+        self._ss_reason = int(pointer.contents.ss_reason)
 
     def __del__(self):
         self.dispose()
 
     def dispose(self):
-        if self._p:
-            event.FuncEventFree.c_func(self._p)
-            self._p = None
+        if self._pointer:
+            event.FuncEventFree.c_func(self._pointer)
+            self._pointer = None
+
+    @property
+    def type(self):
+        return self._type
 
     @property
     def tid(self):
-        return int(self._p.contents.tid)
+        return self._tid
 
     @property
     def did(self):
-        return int(self._p.contents.did)
+        return self._did
 
     @property
     def rid(self):
-        return int(self._p.contents.rid)
+        return self._rid
 
     @property
     def cid(self):
-        return int(self._p.contents.cid)
+        return self._cid
 
     @property
     def sid(self):
-        return int(self._p.contents.sid)
+        return self._sid
 
     @property
     def nid(self):
-        return int(self._p.contents.nid)
+        return self._nid
 
     @property
     def ss_status(self):
-        return int(self._p.contents.ss_status)
+        return self._ss_status
 
     @property
     def ss_reason(self):
-        return int(self._p.contents.ss_reason)
+        return self._ss_reason
 
     def __enter__(self):
         return self
