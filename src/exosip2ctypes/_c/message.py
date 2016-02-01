@@ -1,7 +1,14 @@
 # -*- coding: utf-8 -*-
 
 """
-eX_message.h
+eXosip request API
+
+This file provide the API needed to control requests. You can use it to:
+
+    * build any requests.
+    * send any requests.
+    * build any answers.
+    * send any answers.
 """
 
 from ctypes import c_int, c_void_p, c_char_p

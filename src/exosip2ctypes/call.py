@@ -15,5 +15,28 @@ This API can be used to build the following messages:
 
 """
 
-from ._c import call
+from ctypes import byref, c_void_p
 
+from ._c import call
+from .message import Message
+from .utils import raise_if_not_zero
+
+__all__ = ['AnswerMessage']
+
+
+class AnswerMessage(Message):
+    def __init__(self, tid, status):
+        p = c_void_p()  # struct osip_message_t *p ===> void *p
+        err_code = call.FuncCallBuildAnswer.c_func(int(tid), int(status), byref(p))
+        raise_if_not_zero(err_code)
+        self._tid = tid
+        self._status = status
+        super().__init__(p)
+
+    @property
+    def tid(self):
+        return self._tid
+
+    @property
+    def status(self):
+        return self._status

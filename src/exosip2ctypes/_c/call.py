@@ -118,7 +118,7 @@ class FuncCallBuildPrack(ExosipFunc):
     restype = c_int
 
 
-class FuncSendPrack(ExosipFunc):
+class FuncCallSendPrack(ExosipFunc):
     func_name = 'call_send_prack'
     argtypes = [c_void_p, c_int, c_void_p]
     restype = c_int

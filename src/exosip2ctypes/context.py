@@ -9,9 +9,10 @@ import socket
 import threading
 from ctypes import c_char_p, c_int
 
-from ._c import DLL_NAME, conf, event, auth
-from .error import MallocError, ExitNotZeroError
+from ._c import DLL_NAME, conf, event, auth, call
+from .error import MallocError
 from .event import Event, EventType
+from .utils import raise_if_not_zero
 from .version import get_library_version
 
 __all__ = ['Context', 'ContextLock']
@@ -37,12 +38,11 @@ class ContextLock:
 
 class Context:
     def __init__(self, using_internal_lock=False):
-        self._p = conf.FuncMalloc.c_func()
-        if self._p is None:
+        self._pointer = conf.FuncMalloc.c_func()
+        if self._pointer is None:
             raise MallocError()
-        ret = conf.FuncInit.c_func(self._p)
-        if ret != 0:
-            raise ExitNotZeroError(conf.FuncInit.func_name, ret)
+        err_code = conf.FuncInit.c_func(self._pointer)
+        raise_if_not_zero(err_code)
         self._user_agent = '{} ({} ({}/{}))'.format(DLL_NAME, get_library_version(), platform.machine(),
                                                     platform.system())
         self._set_user_agent(self._user_agent)
@@ -76,11 +76,11 @@ class Context:
             self._stop_cond.release()
 
     def _set_user_agent(self, user_agent):
-        conf.FuncSetUserAgent.c_func(self._p, c_char_p(user_agent.encode()))
+        conf.FuncSetUserAgent.c_func(self._pointer, c_char_p(user_agent.encode()))
 
     @property
-    def internal_pointer(self):
-        return self._p
+    def pointer(self):
+        return self._pointer
 
     @property
     def lock(self):
@@ -107,14 +107,14 @@ class Context:
         self._user_agent = val
 
     def internal_lock(self):
-        conf.FuncLock.c_func(self._p)
+        conf.FuncLock.c_func(self._pointer)
 
     def internal_unlock(self):
-        conf.FuncUnlock.c_func(self._p)
+        conf.FuncUnlock.c_func(self._pointer)
 
     def quit(self):
-        conf.FuncQuit.c_func(self._p)
-        self._p = None
+        conf.FuncQuit.c_func(self._pointer)
+        self._pointer = None
 
     def listen_on_address(self, address='localhost', transport=socket.IPPROTO_UDP, port=5060, family=socket.AF_INET,
                           secure=False):
@@ -122,27 +122,25 @@ class Context:
             raise RuntimeError('Unsupported socket transport type %s' % transport)
         if family not in [socket.AF_INET, socket.AF_INET6]:
             raise RuntimeError('Unsupported socket family typo %s' % family)
-        ret = conf.FuncListenAddr.c_func(
-            self._p,
+        err_code = conf.FuncListenAddr.c_func(
+            self._pointer,
             c_int(transport),
             c_char_p(address.encode()),
             c_int(port),
             c_int(family),
             c_int(secure)
         )
-        ret = int(ret)
-        if ret != 0:
-            raise ExitNotZeroError(conf.FuncListenAddr.func_name, ret)
+        raise_if_not_zero(err_code)
 
     def event_wait(self, s, ms):
-        ret = event.FuncEventWait.c_func(self._p, c_int(s), c_int(ms))
+        ret = event.FuncEventWait.c_func(self._pointer, c_int(s), c_int(ms))
         if ret:
             return Event(ret)
         else:
             return None
 
     def automatic_action(self):
-        auth.FuncAutomaticAction.c_func(self._p)
+        auth.FuncAutomaticAction.c_func(self._pointer)
 
     def start(self, s=0, ms=50):
         if self._started:
@@ -164,6 +162,19 @@ class Context:
     def run(self, s=0, ms=50, timeout=None):
         self.start(s, ms)
         self._loop_thread.join(timeout)
+
+    def send_answer_without_message(self, tid, status):
+        err_code = call.FuncCallSendAnswer.c_func(self._pointer, int(tid), int(status), None)
+        raise_if_not_zero(err_code)
+
+    def send_answer_with_message(self, answer_message):
+        err_code = call.FuncCallSendAnswer.c_func(
+            self._pointer,
+            int(answer_message.tid),
+            int(answer_message.status),
+            answer_message.pointer if answer_message else None
+        )
+        raise_if_not_zero(err_code)
 
     def process_event(self, evt):
         if evt.type == EventType.CALL_INVITE:
