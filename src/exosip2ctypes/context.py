@@ -30,11 +30,40 @@ class Context:
         self._set_user_agent(self._user_agent)
         self._started = False
         self._stop_sentinel = False
+        self._loop_thread = None
+        self._start_cond = threading.Condition()
         self._stop_cond = threading.Condition()
+
+    def _loop(self, s, ms):
+        self._start_cond.acquire
+        self._started = True
+        self._start_cond.notify()
+        self._start_cond.release
+        try:
+            while not self._stop_sentinel:
+                with self.event_wait(s, ms) as evt:
+                    self.process_event(evt)
+        finally:
+            self._stop_cond.acquire()
+            self._started = False
+            self._stop_sentinel = False
+            self._stop_cond.notify()
+            self._stop_cond.release()
 
     @property
     def pointer(self):
         return self._p
+
+    @property
+    def started(self):
+        return self._started
+
+    @started.setter
+    def started(self, val):
+        if val:
+            self.start()
+        else:
+            self.stop()
 
     def quit(self):
         conf.FuncQuit.c_func(self._p)
@@ -90,35 +119,15 @@ class Context:
         auth.FuncAutomaticAction.c_func(self._p)
 
     def run(self, s=0, ms=50, timeout=None):
-        self.start(s, ms).join(timeout)
+        self.start(s, ms)
+        self._loop_thread.join(timeout)
 
     def start(self, s=0, ms=50):
-        if self._started:
-            return
-        start_cond = threading.Condition()
-
-        def _run():
-            start_cond.acquire()
-            self._started = True
-            start_cond.notify()
-            start_cond.release()
-            try:
-                while not self._stop_sentinel:
-                    with self.event_wait(s, ms) as evt:
-                        self.process_event(evt)
-            finally:
-                self._stop_cond.acquire()
-                self._started = False
-                self._stop_sentinel = False
-                self._stop_cond.notify()
-                self._stop_cond.release()
-
-        trd = threading.Thread(target=_run)
-        start_cond.acquire()
-        trd.start()
-        start_cond.wait()
-        start_cond.release()
-        return trd
+        self._loop_thread = threading.Thread(target=self._loop, args=(s, ms))
+        self._start_cond.acquire()
+        self._loop_thread.start()
+        self._start_cond.wait()
+        self._start_cond.release()
 
     def stop(self):
         if not self._started:
@@ -127,17 +136,6 @@ class Context:
         self._stop_sentinel = True
         self._stop_cond.wait()
         self._stop_cond.release()
-
-    @property
-    def started(self):
-        return self._started
-
-    @started.setter
-    def started(self, val):
-        if val:
-            self.start()
-        else:
-            self.stop()
 
     def process_event(self, evt):
         try:
