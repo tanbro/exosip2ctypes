@@ -23,7 +23,7 @@ class ContextTestCase(unittest.TestCase):
         self.ctx.unlock()
 
     def test_listen(self):
-        self.ctx.listen_addr()
+        self.ctx.listen_on_address()
 
     def test_ua(self):
         ua = self.ctx.user_agent
