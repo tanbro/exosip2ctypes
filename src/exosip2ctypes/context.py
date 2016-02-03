@@ -38,10 +38,10 @@ class ContextLock:
 
 class Context:
     def __init__(self, using_internal_lock=False):
-        self._pointer = conf.FuncMalloc.c_func()
-        if self._pointer is None:
+        self._ptr = conf.FuncMalloc.c_func()
+        if self._ptr is None:
             raise MallocError()
-        err_code = conf.FuncInit.c_func(self._pointer)
+        err_code = conf.FuncInit.c_func(self._ptr)
         raise_if_not_zero(err_code)
         self._user_agent = '{} ({} ({}/{}))'.format(DLL_NAME, get_library_version(), platform.machine(),
                                                     platform.system())
@@ -76,11 +76,11 @@ class Context:
             self._stop_cond.release()
 
     def _set_user_agent(self, user_agent):
-        conf.FuncSetUserAgent.c_func(self._pointer, c_char_p(user_agent.encode()))
+        conf.FuncSetUserAgent.c_func(self._ptr, c_char_p(user_agent.encode()))
 
     @property
-    def pointer(self):
-        return self._pointer
+    def ptr(self):
+        return self._ptr
 
     @property
     def lock(self):
@@ -107,14 +107,14 @@ class Context:
         self._user_agent = val
 
     def internal_lock(self):
-        conf.FuncLock.c_func(self._pointer)
+        conf.FuncLock.c_func(self._ptr)
 
     def internal_unlock(self):
-        conf.FuncUnlock.c_func(self._pointer)
+        conf.FuncUnlock.c_func(self._ptr)
 
     def quit(self):
-        conf.FuncQuit.c_func(self._pointer)
-        self._pointer = None
+        conf.FuncQuit.c_func(self._ptr)
+        self._ptr = None
 
     def listen_on_address(self, address='localhost', transport=socket.IPPROTO_UDP, port=5060, family=socket.AF_INET,
                           secure=False):
@@ -123,7 +123,7 @@ class Context:
         if family not in [socket.AF_INET, socket.AF_INET6]:
             raise RuntimeError('Unsupported socket family typo %s' % family)
         err_code = conf.FuncListenAddr.c_func(
-            self._pointer,
+            self._ptr,
             c_int(transport),
             c_char_p(address.encode()),
             c_int(port),
@@ -133,14 +133,14 @@ class Context:
         raise_if_not_zero(err_code)
 
     def event_wait(self, s, ms):
-        ret = event.FuncEventWait.c_func(self._pointer, c_int(s), c_int(ms))
-        if ret:
-            return Event(ret)
+        evt_ptr = event.FuncEventWait.c_func(self._ptr, c_int(s), c_int(ms))
+        if evt_ptr:
+            return Event(evt_ptr)
         else:
             return None
 
     def automatic_action(self):
-        auth.FuncAutomaticAction.c_func(self._pointer)
+        auth.FuncAutomaticAction.c_func(self._ptr)
 
     def start(self, s=0, ms=50):
         if self._started:
@@ -164,15 +164,15 @@ class Context:
         self._loop_thread.join(timeout)
 
     def send_answer_without_message(self, tid, status):
-        err_code = call.FuncCallSendAnswer.c_func(self._pointer, int(tid), int(status), None)
+        err_code = call.FuncCallSendAnswer.c_func(self._ptr, int(tid), int(status), None)
         raise_if_not_zero(err_code)
 
     def send_answer_with_message(self, answer_message):
         err_code = call.FuncCallSendAnswer.c_func(
-            self._pointer,
+            self._ptr,
             int(answer_message.tid),
             int(answer_message.status),
-            answer_message.pointer if answer_message else None
+            answer_message.ptr if answer_message else None
         )
         raise_if_not_zero(err_code)
 

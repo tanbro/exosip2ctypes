@@ -62,25 +62,25 @@ class EventType(IntEnum):
 
 
 class Event:
-    def __init__(self, pointer):
-        self._pointer = pointer
-        self._type = EventType(int(pointer.contents.type))
-        self._tid = int(pointer.contents.tid)
-        self._did = int(pointer.contents.did)
-        self._rid = int(pointer.contents.rid)
-        self._cid = int(pointer.contents.cid)
-        self._sid = int(pointer.contents.sid)
-        self._nid = int(pointer.contents.nid)
-        self._ss_status = int(pointer.contents.ss_status)
-        self._ss_reason = int(pointer.contents.ss_reason)
+    def __init__(self, ptr):
+        self._ptr = ptr
+        self._type = EventType(int(ptr.contents.type))
+        self._tid = int(ptr.contents.tid)
+        self._did = int(ptr.contents.did)
+        self._rid = int(ptr.contents.rid)
+        self._cid = int(ptr.contents.cid)
+        self._sid = int(ptr.contents.sid)
+        self._nid = int(ptr.contents.nid)
+        self._ss_status = int(ptr.contents.ss_status)
+        self._ss_reason = int(ptr.contents.ss_reason)
 
     def __del__(self):
         self.dispose()
 
     def dispose(self):
-        if self._pointer:
-            event.FuncEventFree.c_func(self._pointer)
-            self._pointer = None
+        if self._ptr:
+            event.FuncEventFree.c_func(self._ptr)
+            self._ptr = None
 
     @property
     def type(self):

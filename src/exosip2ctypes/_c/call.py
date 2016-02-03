@@ -106,10 +106,11 @@ class FuncCallTerminate(ExosipFunc):
     restype = c_int
 
 
-class FuncCallTerminateWithReason(ExosipFunc):
-    func_name = 'call_terminate_with_reason'
-    argtypes = [c_void_p, c_int, c_int, c_char_p]
-    restype = c_int
+# Only available in 4.10 and above
+# class FuncCallTerminateWithReason(ExosipFunc):
+#     func_name = 'call_terminate_with_reason'
+#     argtypes = [c_void_p, c_int, c_int, c_char_p]
+#     restype = c_int
 
 
 class FuncCallBuildPrack(ExosipFunc):
@@ -153,9 +154,9 @@ globs.func_classes.extend([
     FuncCallBuildAnswer,
     FuncCallSendAnswer,
     FuncCallTerminate,
-    FuncCallTerminateWithReason,
+    # FuncCallTerminateWithReason, # Only available in 4.10 and above
     FuncCallBuildPrack,
-    FuncSendPrack,
+    FuncCallSendPrack,
     FuncCallGetReferto,
     FuncCallFindByReplaces
 ])

@@ -2,7 +2,7 @@ import unittest
 
 from time import time
 
-from .. import load, Context
+from exosip2ctypes import load, Context
 
 
 class ContextTestCase(unittest.TestCase):
@@ -19,8 +19,8 @@ class ContextTestCase(unittest.TestCase):
         self.ctx = None
 
     def test_lock(self):
-        self.ctx.lock()
-        self.ctx.unlock()
+        self.ctx.internal_lock()
+        self.ctx.internal_unlock()
 
     def test_listen(self):
         self.ctx.listen_on_address()
