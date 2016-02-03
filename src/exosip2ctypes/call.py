@@ -15,23 +15,36 @@ This API can be used to build the following messages:
 
 """
 
-from ctypes import byref, c_void_p
+from ctypes import byref, c_void_p, c_int
 
 from ._c import call
-from .message import Message
+from .message import ExosipMessage
 from .utils import raise_if_not_zero
 
-__all__ = ['AnswerMessage']
+__all__ = ['Answer']
 
 
-class AnswerMessage(Message):
-    def __init__(self, tid, status):
-        ptr = c_void_p()  # struct osip_message_t *p ===> void *p
-        err_code = call.FuncCallBuildAnswer.c_func(int(tid), int(status), byref(ptr))
+class Ack(ExosipMessage):
+    def __init__(self, context, did):
+        ptr = c_void_p
+        err_code = call.FuncCallBuildAck.c_func(context.ptr, int(did), byref(ptr))
         raise_if_not_zero(err_code)
+        super(Answer, self).__init__(ptr, context)
+        self._did = did
+
+        @property
+        def did(self):
+            return self._did
+
+
+class Answer(ExosipMessage):
+    def __init__(self, context, tid, status):
+        ptr = c_void_p()  # struct osip_message_t *p ===> void *p
+        err_code = call.FuncCallBuildAnswer.c_func(context.ptr, c_int(tid), c_int(status), byref(ptr))
+        raise_if_not_zero(err_code)
+        super(Answer, self).__init__(ptr, context)
         self._tid = tid
         self._status = status
-        super().__init__(ptr)
 
     @property
     def tid(self):

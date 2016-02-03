@@ -12,7 +12,7 @@ from ctypes import c_char_p, c_int
 from ._c import DLL_NAME, conf, event, auth, call
 from .error import MallocError
 from .event import Event, EventType
-from .utils import raise_if_not_zero
+from .utils import raise_if_not_zero, b2s, s2b
 from .version import get_library_version
 
 __all__ = ['Context', 'ContextLock']
@@ -63,7 +63,10 @@ class Context:
         self._start_cond.release()
         try:
             while not self._stop_sentinel:
-                with self.event_wait(s, ms) as evt:
+                evt = self.event_wait(s, ms)
+                if evt is None:
+                    continue
+                with evt:
                     with self._lock:
                         self.automatic_action()
                     if evt:
@@ -76,7 +79,7 @@ class Context:
             self._stop_cond.release()
 
     def _set_user_agent(self, user_agent):
-        conf.FuncSetUserAgent.c_func(self._ptr, c_char_p(user_agent.encode()))
+        conf.FuncSetUserAgent.c_func(self._ptr, c_char_p(s2b(user_agent)))
 
     @property
     def ptr(self):
@@ -99,7 +102,7 @@ class Context:
 
     @property
     def user_agent(self):
-        return self._user_agent
+        return b2s(self._user_agent)
 
     @user_agent.setter
     def user_agent(self, val):
@@ -163,16 +166,31 @@ class Context:
         self.start(s, ms)
         self._loop_thread.join(timeout)
 
-    def send_answer_without_message(self, tid, status):
-        err_code = call.FuncCallSendAnswer.c_func(self._ptr, int(tid), int(status), None)
+#     def send_message(self, message):
+#         if isinstance(message, call.Message):
+#             self.call_send_answer(message=message)
+#         else:
+#             raise TypeError('Unsupported libeXosip2 message type %s' % type(message))
+
+    def call_send_ack(self, did=None, message=None):
+        if message is not None:
+            did = message.did
+        err_code = call.FuncCallSendAck.c_func(
+           self._ptr,
+           c_int(did),
+           message.ptr if message else None
+        )
         raise_if_not_zero(err_code)
 
-    def send_answer_with_message(self, answer_message):
+    def call_send_answer(self, tid=None, status=None, message=None):
+        if message is not None:
+            tid = message.tid
+            status = message.status
         err_code = call.FuncCallSendAnswer.c_func(
             self._ptr,
-            int(answer_message.tid),
-            int(answer_message.status),
-            answer_message.ptr if answer_message else None
+            c_int(tid),
+            c_int(status),
+            message.ptr if message else None
         )
         raise_if_not_zero(err_code)
 
@@ -182,3 +200,4 @@ class Context:
 
     def on_call_invite(self, evt):
         pass
+

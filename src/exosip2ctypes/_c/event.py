@@ -4,7 +4,7 @@
 eXosip2 event API
 """
 
-from ctypes import Structure, c_int, c_void_p, c_char
+from ctypes import POINTER, Structure, c_int, c_void_p, c_char
 
 from . import globs
 from .utils import ExosipFunc
@@ -32,7 +32,7 @@ class StructEvent(Structure):
 class FuncEventWait(ExosipFunc):
     func_name = 'event_wait'
     argtypes = [c_void_p, c_int, c_int]
-    restype = c_void_p
+    restype = POINTER(StructEvent)
 
 
 class FuncEventFree(ExosipFunc):
