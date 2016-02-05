@@ -12,57 +12,61 @@ __all__ = ['EventType', 'Event']
 
 
 class EventType(IntEnum):
-    REGISTRATION_SUCCESS = 0
-    REGISTRATION_FAILURE = 1
-    CALL_INVITE = 2
-    CALL_REINVITE = 3
-    CALL_NOANSWER = 4
-    CALL_PROCEEDING = 5
-    CALL_RINGING = 6
-    CALL_ANSWERED = 7
-    CALL_REDIRECTED = 8
-    CALL_REQUESTFAILURE = 9
-    CALL_SERVERFAILURE = 10
-    CALL_GLOBALFAILURE = 11
-    CALL_ACK = 12
-    CALL_CANCELLED = 13
-    CALL_MESSAGE_NEW = 14
-    CALL_MESSAGE_PROCEEDING = 15
-    CALL_MESSAGE_ANSWERED = 16
-    CALL_MESSAGE_REDIRECTED = 17
-    CALL_MESSAGE_REQUESTFAILURE = 18
-    CALL_MESSAGE_SERVERFAILURE = 19
-    CALL_MESSAGE_GLOBALFAILURE = 20
-    CALL_CLOSED = 21
-    CALL_RELEASED = 22
-    MESSAGE_NEW = 23
-    MESSAGE_PROCEEDING = 24
-    MESSAGE_ANSWERED = 25
-    MESSAGE_REDIRECTED = 26
-    MESSAGE_REQUESTFAILURE = 27
-    MESSAGE_SERVERFAILURE = 28
-    MESSAGE_GLOBALFAILURE = 29
-    SUBSCRIPTION_NOANSWER = 30
-    SUBSCRIPTION_PROCEEDING = 31
-    SUBSCRIPTION_ANSWERED = 32
-    SUBSCRIPTION_REDIRECTED = 33
-    SUBSCRIPTION_REQUESTFAILURE = 34
-    SUBSCRIPTION_SERVERFAILURE = 35
-    SUBSCRIPTION_GLOBALFAILURE = 36
-    SUBSCRIPTION_NOTIFY = 37
-    IN_SUBSCRIPTION_NEW = 38
-    NOTIFICATION_NOANSWER = 39
-    NOTIFICATION_PROCEEDING = 40
-    NOTIFICATION_ANSWERED = 41
-    NOTIFICATION_REDIRECTED = 42
-    NOTIFICATION_REQUESTFAILURE = 43
-    NOTIFICATION_SERVERFAILURE = 44
-    NOTIFICATION_GLOBALFAILURE = 45
-    EVENT_COUNT = 46
+    registration_success = event.EXOSIP_REGISTRATION_SUCCESS
+    registration_failure = event.EXOSIP_REGISTRATION_FAILURE
+    call_invite = event.EXOSIP_CALL_INVITE
+    call_reinvite = event.EXOSIP_CALL_REINVITE
+    call_noanswer = event.EXOSIP_CALL_NOANSWER
+    call_proceeding = event.EXOSIP_CALL_PROCEEDING
+    call_ringing = event.EXOSIP_CALL_RINGING
+    call_answered = event.EXOSIP_CALL_ANSWERED
+    call_redirected = event.EXOSIP_CALL_REDIRECTED
+    call_requestfailure = event.EXOSIP_CALL_REQUESTFAILURE
+    call_serverfailure = event.EXOSIP_CALL_SERVERFAILURE
+    call_globalfailure = event.EXOSIP_CALL_GLOBALFAILURE
+    call_ack = event.EXOSIP_CALL_ACK
+    call_cancelled = event.EXOSIP_CALL_CANCELLED
+    call_message_new = event.EXOSIP_CALL_MESSAGE_NEW
+    call_message_proceeding = event.EXOSIP_CALL_MESSAGE_PROCEEDING
+    call_message_answered = event.EXOSIP_CALL_MESSAGE_ANSWERED
+    call_message_redirected = event.EXOSIP_CALL_MESSAGE_REDIRECTED
+    call_message_requestfailure = event.EXOSIP_CALL_MESSAGE_REQUESTFAILURE
+    call_message_serverfailure = event.EXOSIP_CALL_MESSAGE_SERVERFAILURE
+    call_message_globalfailure = event.EXOSIP_CALL_MESSAGE_GLOBALFAILURE
+    call_closed = event.EXOSIP_CALL_CLOSED
+    call_released = event.EXOSIP_CALL_RELEASED
+    message_new = event.EXOSIP_MESSAGE_NEW
+    message_proceeding = event.EXOSIP_MESSAGE_PROCEEDING
+    message_answered = event.EXOSIP_MESSAGE_ANSWERED
+    message_redirected = event.EXOSIP_MESSAGE_REDIRECTED
+    message_requestfailure = event.EXOSIP_MESSAGE_REQUESTFAILURE
+    message_serverfailure = event.EXOSIP_MESSAGE_SERVERFAILURE
+    message_globalfailure = event.EXOSIP_MESSAGE_GLOBALFAILURE
+    subscription_noanswer = event.EXOSIP_SUBSCRIPTION_NOANSWER
+    subscription_proceeding = event.EXOSIP_SUBSCRIPTION_PROCEEDING
+    subscription_answered = event.EXOSIP_SUBSCRIPTION_ANSWERED
+    subscription_redirected = event.EXOSIP_SUBSCRIPTION_REDIRECTED
+    subscription_requestfailure = event.EXOSIP_SUBSCRIPTION_REQUESTFAILURE
+    subscription_serverfailure = event.EXOSIP_SUBSCRIPTION_SERVERFAILURE
+    subscription_globalfailure = event.EXOSIP_SUBSCRIPTION_GLOBALFAILURE
+    subscription_notify = event.EXOSIP_SUBSCRIPTION_NOTIFY
+    in_subscription_new = event.EXOSIP_IN_SUBSCRIPTION_NEW
+    notification_noanswer = event.EXOSIP_NOTIFICATION_NOANSWER
+    notification_proceeding = event.EXOSIP_NOTIFICATION_PROCEEDING
+    notification_answered = event.EXOSIP_NOTIFICATION_ANSWERED
+    notification_redirected = event.EXOSIP_NOTIFICATION_REDIRECTED
+    notification_requestfailure = event.EXOSIP_NOTIFICATION_REQUESTFAILURE
+    notification_serverfailure = event.EXOSIP_NOTIFICATION_SERVERFAILURE
+    notification_globalfailure = event.EXOSIP_NOTIFICATION_GLOBALFAILURE
+    # event_count = event.EXOSIP_EVENT_COUNT
 
 
 class Event:
     def __init__(self, ptr):
+        """
+        :param ptr: pointer to the `eXosip_event_t` C structure allocated in C API `eXosip_event_wait()`
+        :type ptr: exosip2ctypes._c.event.Event*
+        """
         self._ptr = ptr
         self._type = EventType(int(ptr.contents.type))
         self._tid = int(ptr.contents.tid)
@@ -78,20 +82,38 @@ class Event:
         self.dispose()
 
     def dispose(self):
+        """free the `eXosip_event_t` C Structure allocated in C API `eXosip_event_wait()`
+
+        ..attention::
+
+            cause `libeXosip2` would not manage the event structure automatic, we shall free it manually!
+            The memory free action is done in :class:`Event` 's destruction.
+            so you can either `del` the event object or using the `with` statement,
+            python's GC will free memory when the object is to free.
+        """
         if self._ptr:
             event.FuncEventFree.c_func(self._ptr)
             self._ptr = None
 
     @property
     def type(self):
+        """Event's Type
+        :rtype: EventType
+        """
         return self._type
 
     @property
     def tid(self):
+        """Event's transaction ID
+        :rtype: int
+        """
         return self._tid
 
     @property
     def did(self):
+        """Event's dialog ID
+        :rtype: int
+        """
         return self._did
 
     @property

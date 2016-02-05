@@ -1,36 +1,45 @@
 # -*- coding: utf-8 -*-
 
 
+from ._c.osip_error import *
+
+
 class MallocError(Exception):
     pass
 
 
-error_codes = {
-0: 'SUCCESS',
-- 1: 'UNDEFINED_ERROR',
-- 2:'BADPARAMETER',
-- 3:'WRONG_STATE',
-- 4:'NOMEM',
-- 5:'SYNTAXERROR',
-- 6:'NOTFOUND',
-- 7: 'API_NOT_INITIALIZED',
-- 10: 'NO_NETWORK',
-- 11:'PORT_BUSY',
-- 12:'UNKNOWN_HOST',
-- 30:'DISK_FULL',
-- 31:'NO_RIGHTS',
-- 32:'FILE_NOT_EXIST',
-- 50:'TIMEOUT',
-- 51:'TOOMUCHCALL',
-- 52:'WRONG_FORMAT',
-- 53:'NOCOMMONCODEC',
+osip_errors = {
+    OSIP_SUCCESS: 'SUCCESS',
+    OSIP_UNDEFINED_ERROR: 'UNDEFINED_ERROR',
+    OSIP_BADPARAMETER: 'BADPARAMETER',
+    OSIP_WRONG_STATE: 'WRONG_STATE',
+    OSIP_NOMEM: 'NOMEM',
+    OSIP_SYNTAXERROR: 'SYNTAXERROR',
+    OSIP_NOTFOUND: 'NOTFOUND',
+    OSIP_API_NOT_INITIALIZED: 'API_NOT_INITIALIZED',
+    OSIP_NO_NETWORK: 'NO_NETWORK',
+    OSIP_PORT_BUSY: 'PORT_BUSY',
+    OSIP_UNKNOWN_HOST: 'UNKNOWN_HOST',
+    OSIP_DISK_FULL: 'DISK_FULL',
+    OSIP_NO_RIGHTS: 'NO_RIGHTS',
+    OSIP_FILE_NOT_EXIST: 'FILE_NOT_EXIST',
+    OSIP_TIMEOUT: 'TIMEOUT',
+    OSIP_TOOMUCHCALL: 'TOOMUCHCALL',
+    OSIP_WRONG_FORMAT: 'WRONG_FORMAT',
+    OSIP_NOCOMMONCODEC: 'NOCOMMONCODEC',
 }
 
-class ApiReturnError(Exception):
-    def __init__(self, exit_code):
-        super().__init__("eXosip2 function returns {}".format(int(exit_code)))
-        self._exit_code = exit_code
+
+class OsipError(Exception):
+    def __init__(self, error_code):
+        self._error_code = error_code
+        self._error_message = osip_errors.get(error_code, '')
+        super(OsipError, self).__init__("osip/eXosip error: {}.".format(self._error_message))
 
     @property
-    def exit_code(self):
-        return self._exit_code
+    def error_code(self):
+        return self._error_code
+
+    @property
+    def error_message(self):
+        return self._error_message

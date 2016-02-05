@@ -3,7 +3,7 @@
 from ctypes import byref, create_string_buffer, string_at, c_char_p
 
 from ._c import osip_message, osip_content_type
-from .utils import raise_if_not_zero
+from .utils import raise_if_osip_error
 
 
 class OsipMessage(object):
@@ -37,7 +37,7 @@ class OsipMessage(object):
             return None
         pch = c_char_p()  # TODO: fix the memory leak!!!
         err_code = osip_content_type.FuncContentTypeToStr.c_func(head_ptr, byref(pch))
-        raise_if_not_zero(err_code)
+        raise_if_osip_error(err_code)
         if not pch:
             return None
         result = string_at(pch)
@@ -48,7 +48,7 @@ class OsipMessage(object):
     def content_type(self, val):
         buf = create_string_buffer(val.encode())
         err_code = osip_message.FuncMessageSetBody.c_func(self._ptr, byref(buf), len(buf))
-        raise_if_not_zero(err_code)
+        raise_if_osip_error(err_code)
 
 
 class ExosipMessage(OsipMessage):

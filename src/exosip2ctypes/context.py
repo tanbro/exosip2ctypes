@@ -12,7 +12,7 @@ from ctypes import c_char_p, c_int
 from ._c import DLL_NAME, conf, event, auth, call
 from .error import MallocError
 from .event import Event, EventType
-from .utils import raise_if_not_zero, b2s, s2b
+from .utils import raise_if_osip_error, b2s, s2b
 from .version import get_library_version
 
 __all__ = ['Context', 'ContextLock']
@@ -42,7 +42,7 @@ class Context:
         if self._ptr is None:
             raise MallocError()
         err_code = conf.FuncInit.c_func(self._ptr)
-        raise_if_not_zero(err_code)
+        raise_if_osip_error(err_code)
         self._user_agent = '{} ({} ({}/{}))'.format(DLL_NAME, get_library_version(), platform.machine(),
                                                     platform.system())
         self._set_user_agent(self._user_agent)
@@ -133,7 +133,7 @@ class Context:
             c_int(family),
             c_int(secure)
         )
-        raise_if_not_zero(err_code)
+        raise_if_osip_error(err_code)
 
     def event_wait(self, s, ms):
         evt_ptr = event.FuncEventWait.c_func(self._ptr, c_int(s), c_int(ms))
@@ -166,11 +166,11 @@ class Context:
         self.start(s, ms)
         self._loop_thread.join(timeout)
 
-#     def send_message(self, message):
-#         if isinstance(message, call.Message):
-#             self.call_send_answer(message=message)
-#         else:
-#             raise TypeError('Unsupported libeXosip2 message type %s' % type(message))
+    # def send_message(self, message):
+    #     if isinstance(message, call.Message):
+    #         self.call_send_answer(message=message)
+    #     else:
+    #         raise TypeError('Unsupported libeXosip2 message type %s' % type(message))
 
     def call_send_ack(self, did=None, message=None):
         if message is not None:
@@ -180,7 +180,7 @@ class Context:
            c_int(did),
            message.ptr if message else None
         )
-        raise_if_not_zero(err_code)
+        raise_if_osip_error(err_code)
 
     def call_send_answer(self, tid=None, status=None, message=None):
         if message is not None:
@@ -192,10 +192,10 @@ class Context:
             c_int(status),
             message.ptr if message else None
         )
-        raise_if_not_zero(err_code)
+        raise_if_osip_error(err_code)
 
     def process_event(self, evt):
-        if evt.type == EventType.CALL_INVITE:
+        if evt.type == EventType.call_invite:
             self.on_call_invite(evt)
 
     def on_call_invite(self, evt):

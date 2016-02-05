@@ -3,6 +3,7 @@
 @author: liuxy
 '''
 
+
 OSIP_SUCCESS = 0
 OSIP_UNDEFINED_ERROR = -1
 OSIP_BADPARAMETER = -2

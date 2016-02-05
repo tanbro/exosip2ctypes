@@ -19,7 +19,7 @@ from ctypes import byref, c_void_p, c_int
 
 from ._c import call
 from .message import ExosipMessage
-from .utils import raise_if_not_zero
+from .utils import raise_if_osip_error
 
 __all__ = ['Answer']
 
@@ -28,7 +28,7 @@ class Ack(ExosipMessage):
     def __init__(self, context, did):
         ptr = c_void_p
         err_code = call.FuncCallBuildAck.c_func(context.ptr, int(did), byref(ptr))
-        raise_if_not_zero(err_code)
+        raise_if_osip_error(err_code)
         super(Answer, self).__init__(ptr, context)
         self._did = did
 
@@ -41,7 +41,7 @@ class Answer(ExosipMessage):
     def __init__(self, context, tid, status):
         ptr = c_void_p()  # struct osip_message_t *p ===> void *p
         err_code = call.FuncCallBuildAnswer.c_func(context.ptr, c_int(tid), c_int(status), byref(ptr))
-        raise_if_not_zero(err_code)
+        raise_if_osip_error(err_code)
         super(Answer, self).__init__(ptr, context)
         self._tid = tid
         self._status = status

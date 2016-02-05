@@ -4,9 +4,9 @@
 some helper functions
 """
 
-from .error import ApiReturnError
+from .error import OsipError, OSIP_SUCCESS
 
-__all__ = ['raise_if_not_zero']
+__all__ = ['b2s', 's2b', 'raise_if_osip_error']
 
 
 def b2s(s):
@@ -23,13 +23,12 @@ def s2b(s):
     return s
 
 
-def raise_if_not_zero(err_code):
-    """raise an :exception:`ApiReturnError` exception if `err_code` is not zero
+def raise_if_osip_error(err_code):
+    """raise an :exception:`OsipError` exception if `err_code` is not :var:`OSIP_SUCCESS`
 
-    use it to check eXosip2 API function integer return value
+    use it to check osip2/eXosip2 API function integer return value
     :param int err_code:
-    :raises ApiReturnError: if `err_code` is not zero
+    :raises OsipError: if `err_code` is not zero
     """
-    err_code = int(err_code)
-    if err_code != 0:
-        raise ApiReturnError(err_code)
+    if int(err_code) != OSIP_SUCCESS:
+        raise OsipError(err_code)
