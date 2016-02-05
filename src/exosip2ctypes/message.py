@@ -3,7 +3,7 @@
 from ctypes import byref, create_string_buffer, string_at, c_char_p
 
 from ._c import osip_message, osip_content_type
-from .utils import raise_if_osip_error
+from .error import raise_if_osip_error
 
 
 class OsipMessage(object):
@@ -53,8 +53,8 @@ class OsipMessage(object):
 
 class ExosipMessage(OsipMessage):
     def __init__(self, ptr, context):
-        super(ExosipMessage, self).__init__(ptr)
         self._context = context
+        super(ExosipMessage, self).__init__(ptr)
 
     def send(self):
         self._context.send_message(self)

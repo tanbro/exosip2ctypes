@@ -10,9 +10,9 @@ import threading
 from ctypes import c_char_p, c_int
 
 from ._c import DLL_NAME, conf, event, auth, call
-from .error import MallocError
+from .error import MallocError, raise_if_osip_error
 from .event import Event, EventType
-from .utils import raise_if_osip_error, b2s, s2b
+from .utils import b2s, s2b
 from .version import get_library_version
 
 __all__ = ['Context', 'ContextLock']

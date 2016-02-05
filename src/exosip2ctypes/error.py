@@ -8,38 +8,112 @@ class MallocError(Exception):
     pass
 
 
-osip_errors = {
-    OSIP_SUCCESS: 'SUCCESS',
-    OSIP_UNDEFINED_ERROR: 'UNDEFINED_ERROR',
-    OSIP_BADPARAMETER: 'BADPARAMETER',
-    OSIP_WRONG_STATE: 'WRONG_STATE',
-    OSIP_NOMEM: 'NOMEM',
-    OSIP_SYNTAXERROR: 'SYNTAXERROR',
-    OSIP_NOTFOUND: 'NOTFOUND',
-    OSIP_API_NOT_INITIALIZED: 'API_NOT_INITIALIZED',
-    OSIP_NO_NETWORK: 'NO_NETWORK',
-    OSIP_PORT_BUSY: 'PORT_BUSY',
-    OSIP_UNKNOWN_HOST: 'UNKNOWN_HOST',
-    OSIP_DISK_FULL: 'DISK_FULL',
-    OSIP_NO_RIGHTS: 'NO_RIGHTS',
-    OSIP_FILE_NOT_EXIST: 'FILE_NOT_EXIST',
-    OSIP_TIMEOUT: 'TIMEOUT',
-    OSIP_TOOMUCHCALL: 'TOOMUCHCALL',
-    OSIP_WRONG_FORMAT: 'WRONG_FORMAT',
-    OSIP_NOCOMMONCODEC: 'NOCOMMONCODEC',
+class OsipError(Exception):
+    pass
+
+
+class OsipUndefinedError(OsipError):
+    pass
+
+
+class OsipBadParameter(OsipError):
+    pass
+
+
+class OsipWrongState(OsipError):
+    pass
+
+
+class OsipNoMem(OsipError):
+    pass
+
+
+class OsipSyntaxError(OsipError):
+    pass
+
+
+class OsipNotFound(OsipError):
+    pass
+
+
+class OsipApiNotInitialized(OsipError):
+    pass
+
+
+class OsipNoNetwork(OsipError):
+    pass
+
+
+class OsipPortBusy(OsipError):
+    pass
+
+
+class OsipUnknownHost(OsipError):
+    pass
+
+
+class OsipDiskFull(OsipError):
+    pass
+
+
+class OsipNoRights(OsipError):
+    pass
+
+
+class OsipFileNotExists(OsipError):
+    pass
+
+
+class OsipTimeout(OsipError):
+    pass
+
+
+class OsipTooMuchCall(OsipError):
+    pass
+
+
+class OsipWrongFormat(OsipError):
+    pass
+
+
+class OsipNoCommonCodec(OsipError):
+    pass
+
+
+osip_error_map = {
+    OSIP_UNDEFINED_ERROR: OsipUndefinedError,
+    OSIP_BADPARAMETER: OsipBadParameter,
+    OSIP_WRONG_STATE: OsipWrongFormat,
+    OSIP_NOMEM: OsipNoMem,
+    OSIP_SYNTAXERROR: OsipSyntaxError,
+    OSIP_NOTFOUND: OsipNotFound,
+    OSIP_API_NOT_INITIALIZED: OsipApiNotInitialized,
+    OSIP_NO_NETWORK: OsipNoNetwork,
+    OSIP_PORT_BUSY: OsipPortBusy,
+    OSIP_UNKNOWN_HOST: OsipUnknownHost,
+    OSIP_DISK_FULL: OsipDiskFull,
+    OSIP_NO_RIGHTS: OsipNoRights,
+    OSIP_FILE_NOT_EXIST: OsipFileNotExists,
+    OSIP_TIMEOUT: OsipTimeout,
+    OSIP_TOOMUCHCALL: OsipTooMuchCall,
+    OSIP_WRONG_FORMAT: OsipWrongFormat,
+    OSIP_NOCOMMONCODEC: OsipNoCommonCodec,
 }
 
 
-class OsipError(Exception):
-    def __init__(self, error_code):
-        self._error_code = error_code
-        self._error_message = osip_errors.get(error_code, '')
-        super(OsipError, self).__init__("osip/eXosip error: {}.".format(self._error_message))
+def raise_if_osip_error(error_code, message=None):
+    """raise an :exception:`OsipError` exception if `err_code` is not :var:`OSIP_SUCCESS`
 
-    @property
-    def error_code(self):
-        return self._error_code
-
-    @property
-    def error_message(self):
-        return self._error_message
+    use it to check osip2/eXosip2 API function integer return value
+    :param error_code:
+    :type error_code: int or ctypes.c_int
+    :param message: Exception message
+    :raises OsipError: if `err_code` is not zero
+    """
+    error_code = int(error_code)
+    if error_code != OSIP_SUCCESS:
+        exce_cls = osip_error_map.get(error_code, OsipError)
+        if message:
+            raise exce_cls(message)
+        else:
+            raise exce_cls()
