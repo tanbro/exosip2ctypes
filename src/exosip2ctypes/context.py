@@ -7,7 +7,7 @@ eXosip2 context API
 import platform
 import socket
 import threading
-from ctypes import c_char_p, c_int
+from ctypes import c_char_p, c_int, create_string_buffer
 
 from ._c import DLL_NAME, conf, event, auth, call
 from .error import MallocError, raise_if_osip_error
@@ -37,14 +37,15 @@ class ContextLock:
 
 
 class Context:
-    def __init__(self, using_internal_lock=False):
+    def __init__(self, contact_adress=(None, 0), using_internal_lock=False):
         self._ptr = conf.FuncMalloc.c_func()
         if self._ptr is None:
             raise MallocError()
         err_code = conf.FuncInit.c_func(self._ptr)
         raise_if_osip_error(err_code)
-        self._user_agent = '{} ({} ({}/{}))'.format(DLL_NAME, get_library_version(), platform.machine(),
-                                                    platform.system())
+        if contact_adress[0]:
+            self.masquerade_contact(*contact_adress)
+        self._user_agent = '{} ({} ({}/{}))'.format(DLL_NAME, get_library_version(), platform.machine(), platform.system())
         self._set_user_agent(self._user_agent)
         if using_internal_lock:
             self._lock = ContextLock(self)
@@ -119,12 +120,18 @@ class Context:
         conf.FuncQuit.c_func(self._ptr)
         self._ptr = None
 
-    def listen_on_address(self, address='localhost', transport=socket.IPPROTO_UDP, port=5060, family=socket.AF_INET,
-                          secure=False):
+    def masquerade_contact(self, public_address, port):
+        conf.FuncMasqueradeContact.c_func(
+           self._ptr,
+           create_string_buffer(s2b(public_address)) if public_address else None,
+           c_int(port) if public_address else 0
+        )
+
+    def listen_on_address(self, address='localhost', transport=socket.IPPROTO_UDP, port=5060, family=socket.AF_INET, secure=False):
         if transport not in [socket.IPPROTO_TCP, socket.IPPROTO_UDP]:
             raise RuntimeError('Unsupported socket transport type %s' % transport)
         if family not in [socket.AF_INET, socket.AF_INET6]:
-            raise RuntimeError('Unsupported socket family typo %s' % family)
+            raise RuntimeError('Unsupported socket family type %s' % family)
         err_code = conf.FuncListenAddr.c_func(
             self._ptr,
             c_int(transport),
@@ -197,7 +204,22 @@ class Context:
     def process_event(self, evt):
         if evt.type == EventType.call_invite:
             self.on_call_invite(evt)
+        elif evt.type == EventType.call_cancelled:
+            self.on_call_cancelled(evt)
+        elif evt.type == EventType.call_answered:
+            self.on_call_answered(evt)
+        elif evt.type == EventType.call_closed:
+            self.on_call_closed(evt)
 
     def on_call_invite(self, evt):
+        pass
+
+    def on_call_cancelled(self, evt):
+        pass
+
+    def on_call_answered(self, evt):
+        pass
+
+    def on_call_closed(self, evt):
         pass
 

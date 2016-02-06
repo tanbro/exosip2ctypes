@@ -12,6 +12,10 @@ class OsipError(Exception):
     pass
 
 
+class OsipUnknownError(OsipError):
+    pass
+
+
 class OsipUndefinedError(OsipError):
     pass
 
@@ -112,7 +116,7 @@ def raise_if_osip_error(error_code, message=None):
     """
     error_code = int(error_code)
     if error_code != OSIP_SUCCESS:
-        exce_cls = osip_error_map.get(error_code, OsipError)
+        exce_cls = osip_error_map.get(error_code, OsipUnknownError)
         if message:
             raise exce_cls(message)
         else:

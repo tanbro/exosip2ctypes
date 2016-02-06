@@ -4,6 +4,7 @@ from ctypes import byref, create_string_buffer, string_at, c_char_p
 
 from ._c import osip_message, osip_content_type
 from .error import raise_if_osip_error
+from .utils import s2b
 
 
 class OsipMessage(object):
@@ -46,8 +47,13 @@ class OsipMessage(object):
 
     @content_type.setter
     def content_type(self, val):
-        buf = create_string_buffer(val.encode())
-        err_code = osip_message.FuncMessageSetBody.c_func(self._ptr, byref(buf), len(buf))
+        buf = create_string_buffer(s2b(val))
+        err_code = osip_message.FuncMessageSetContentType.c_func(self._ptr, buf)
+        raise_if_osip_error(err_code)
+
+    def set_body(self, val):
+        buf = create_string_buffer(s2b(val))
+        err_code = osip_message.FuncMessageSetBody.c_func(self._ptr, buf, len(buf))
         raise_if_osip_error(err_code)
 
 

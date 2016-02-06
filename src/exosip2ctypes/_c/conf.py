@@ -58,6 +58,11 @@ class FuncSetOption(ExosipFunc):
     restype = c_char_p
 
 
+class FuncMasqueradeContact(ExosipFunc):
+    func_name = 'masquerade_contact'
+    argtypes = [c_void_p, c_char_p, c_int]
+
+
 globs.func_classes.extend([
     FuncMalloc,
     FuncInit,
@@ -68,4 +73,5 @@ globs.func_classes.extend([
     FuncSetUserAgent,
     FuncGetVersion,
     FuncSetOption,
+    FuncMasqueradeContact,
 ])

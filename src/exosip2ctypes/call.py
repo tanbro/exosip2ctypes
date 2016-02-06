@@ -19,7 +19,7 @@ from ctypes import byref, c_void_p, c_int
 
 from ._c import call
 from .message import ExosipMessage
-from .utils import raise_if_osip_error
+from .error import raise_if_osip_error
 
 __all__ = ['Answer']
 
@@ -39,6 +39,13 @@ class Ack(ExosipMessage):
 
 class Answer(ExosipMessage):
     def __init__(self, context, tid, status):
+        '''Build default Answer for request.
+
+        :param context: eXosip context instance
+        :type context: exosip2ctypes.context.Context
+        :param int tid: transaction ID
+        :param int status: SIP response status code
+        '''
         ptr = c_void_p()  # struct osip_message_t *p ===> void *p
         err_code = call.FuncCallBuildAnswer.c_func(context.ptr, c_int(tid), c_int(status), byref(ptr))
         raise_if_osip_error(err_code)
