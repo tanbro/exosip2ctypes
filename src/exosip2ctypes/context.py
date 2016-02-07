@@ -19,7 +19,13 @@ __all__ = ['Context', 'ContextLock']
 
 
 class ContextLock:
+    """eXosip context lock's python class
+    """
+
     def __init__(self, context):
+        """
+        :param Context context: Context which the lock is for
+        """
         self._context = context
 
     def acquire(self):
@@ -37,15 +43,24 @@ class ContextLock:
 
 
 class Context:
-    def __init__(self, contact_adress=(None, 0), using_internal_lock=False):
+    """Class for eXosip's context structure
+    """
+
+    def __init__(self, contact_address=(None, 0), using_internal_lock=False):
+        """
+        :param contact_address: address used in `Contact` header. See :meth:`masquerade_contact`
+        :type contact_address: tuple<ip_address: str, port: int>
+        :param bool using_internal_lock: Is the :attr:`lock` using Python stdlib's `threading.Lock` or eXosip2's context lock. Default `False` (using Python's)
+        """
         self._ptr = conf.FuncMalloc.c_func()
         if self._ptr is None:
             raise MallocError()
         err_code = conf.FuncInit.c_func(self._ptr)
         raise_if_osip_error(err_code)
-        if contact_adress[0]:
-            self.masquerade_contact(*contact_adress)
-        self._user_agent = '{} ({} ({}/{}))'.format(DLL_NAME, get_library_version(), platform.machine(), platform.system())
+        if contact_address[0]:
+            self.masquerade_contact(*contact_address)
+        self._user_agent = '{} ({} ({}/{}))'.format(DLL_NAME, get_library_version(), platform.machine(),
+                                                    platform.system())
         self._set_user_agent(self._user_agent)
         if using_internal_lock:
             self._lock = ContextLock(self)
@@ -58,6 +73,12 @@ class Context:
         self._stop_cond = threading.Condition()
 
     def _loop(self, s, ms):
+        """Context main loop
+
+        It won't return util :meth:`stop` called or set :attr:`started` to `False`
+        :param s: seconds for :meth:`event_wait`
+        :param ms: milliseconds for :meth:`event_wait`
+        """
         self._start_cond.acquire()
         self._started = True
         self._start_cond.notify()
@@ -84,18 +105,31 @@ class Context:
 
     @property
     def ptr(self):
+        """C Pointer to the context's `eXosip_t` C structure
+        """
         return self._ptr
 
     @property
     def lock(self):
+        """eXosip Context lock.
+
+        :return: Python stdlib's `threading.Lock` if `using_internal_lock` is `False`, else eXosip's native lock.
+        :rtype: threading.Lock or ContextLock
+        """
         return self._lock
 
     @property
     def started(self):
+        """
+        :return: Is the context's main loop started
+        """
         return self._started
 
     @started.setter
     def started(self, val):
+        """
+        :param bool val: start or stop the context's main loop
+        """
         if val:
             self.start()
         else:
@@ -103,10 +137,17 @@ class Context:
 
     @property
     def user_agent(self):
+        """
+        :return: Context's user agent string
+        :rtype: str
+        """
         return b2s(self._user_agent)
 
     @user_agent.setter
     def user_agent(self, val):
+        """
+        :param str val: Context's user agent string
+        """
         self._set_user_agent(val)
         self._user_agent = val
 
@@ -117,17 +158,27 @@ class Context:
         conf.FuncUnlock.c_func(self._ptr)
 
     def quit(self):
+        """Release the context's resource used by the eXtented oSIP library.
+        """
         conf.FuncQuit.c_func(self._ptr)
         self._ptr = None
 
     def masquerade_contact(self, public_address, port):
+        """This method is used to replace contact address with the public address of your NAT. The ip address should be retreived manually (fixed IP address) or with STUN. This address will only be used when the remote correspondant appears to be on an DIFFERENT LAN.
+
+        If set to `None`, then the local ip address will be guessed automatically (returns to default mode).
+
+        :param str public_address: the ip address.
+        :param int port: the port for masquerading.
+        """
         conf.FuncMasqueradeContact.c_func(
-           self._ptr,
-           create_string_buffer(s2b(public_address)) if public_address else None,
-           c_int(port) if public_address else 0
+            self._ptr,
+            create_string_buffer(s2b(public_address)) if public_address else None,
+            c_int(port) if public_address else 0
         )
 
-    def listen_on_address(self, address='localhost', transport=socket.IPPROTO_UDP, port=5060, family=socket.AF_INET, secure=False):
+    def listen_on_address(self, address='localhost', transport=socket.IPPROTO_UDP, port=5060, family=socket.AF_INET,
+                          secure=False):
         if transport not in [socket.IPPROTO_TCP, socket.IPPROTO_UDP]:
             raise RuntimeError('Unsupported socket transport type %s' % transport)
         if family not in [socket.AF_INET, socket.AF_INET6]:
@@ -179,13 +230,17 @@ class Context:
     #     else:
     #         raise TypeError('Unsupported libeXosip2 message type %s' % type(message))
 
+    def call_terminate(self, cid, did):
+        err_code = call.FuncCallTerminate.c_func(self._ptr, int(cid), int(did))
+        raise_if_osip_error(err_code)
+
     def call_send_ack(self, did=None, message=None):
         if message is not None:
             did = message.did
         err_code = call.FuncCallSendAck.c_func(
-           self._ptr,
-           c_int(did),
-           message.ptr if message else None
+            self._ptr,
+            c_int(did),
+            message.ptr if message else None
         )
         raise_if_osip_error(err_code)
 
@@ -222,4 +277,3 @@ class Context:
 
     def on_call_closed(self, evt):
         pass
-

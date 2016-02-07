@@ -3,7 +3,7 @@ import sys
 from exosip2ctypes import load, Context, Answer
 
 load()
-ctx = Context()
+ctx = Context(contact_address=('192.168.56.101', 5060))
 ctx.masquerade_contact('192.168.56.101', 5060)
 
 latest_event = None
@@ -14,10 +14,12 @@ def on_call_invite(evt):
     latest_event = evt
     print('[%s] on_call_invite' % evt.did)
 
+
 def on_call_cancelled(evt):
     global latest_event
     latest_event = evt
     print('[%s] call_cancelled' % evt.did)
+
 
 def on_call_closed(evt):
     global latest_event
@@ -45,6 +47,9 @@ while True:
     elif s == 'ack':
         with ctx.lock:
             ctx.call_send_ack(latest_event.did)
+    elif s == 'term':
+        with ctx.lock:
+            ctx.call_terminate(latest_event.cid, latest_event.did)
     elif s.isdecimal():
         status = int(s)
         if status == 200:

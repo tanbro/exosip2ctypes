@@ -15,14 +15,14 @@ class OsipMessage(object):
     def __init__(self, ptr):
         self._ptr = ptr
 
-#     ATTENTION: in eXosip2, messages are managed by the library, so we should NOT free the messages manually
-#     def __del__(self):
-#         self.dispose()
-#
-#     def dispose(self):
-#         if self._ptr:
-#             osip_message.FuncMessageFree.c_func(self._ptr)
-#             self._ptr = None
+    #     ATTENTION: in eXosip2, messages are managed by the library, so we should NOT free the messages manually
+    #     def __del__(self):
+    #         self.dispose()
+    #
+    #     def dispose(self):
+    #         if self._ptr:
+    #             osip_message.FuncMessageFree.c_func(self._ptr)
+    #             self._ptr = None
 
     @property
     def ptr(self):
