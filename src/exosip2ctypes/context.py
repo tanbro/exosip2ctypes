@@ -19,7 +19,7 @@ __all__ = ['Context', 'ContextLock']
 
 
 class ContextLock:
-    """eXosip context lock's python class
+    """eXosip Context lock's python class
     """
 
     def __init__(self, context):
@@ -43,14 +43,12 @@ class ContextLock:
 
 
 class Context:
-    """Class for eXosip's context structure
-    """
-
     def __init__(self, contact_address=(None, 0), using_internal_lock=False):
-        """
+        """Allocate and Initiate an eXosip context.
+
         :param contact_address: address used in `Contact` header. See :meth:`masquerade_contact`
         :type contact_address: tuple<ip_address: str, port: int>
-        :param bool using_internal_lock: Is the :attr:`lock` using Python stdlib's `threading.Lock` or eXosip2's context lock. Default `False` (using Python's)
+        :param bool using_internal_lock: Is the :attr:`lock` using Python stdlib's :class:`threading.Lock` or eXosip2's context lock. Default `False` (using Python's)
         """
         self._ptr = conf.FuncMalloc.c_func()
         if self._ptr is None:
@@ -152,13 +150,17 @@ class Context:
         self._user_agent = val
 
     def internal_lock(self):
+        """Lock the eXtented oSIP library.
+        """
         conf.FuncLock.c_func(self._ptr)
 
     def internal_unlock(self):
+        """UnLock the eXtented oSIP library.
+        """
         conf.FuncUnlock.c_func(self._ptr)
 
     def quit(self):
-        """Release the context's resource used by the eXtented oSIP library.
+        """Release ressource used by the eXtented oSIP library.
         """
         conf.FuncQuit.c_func(self._ptr)
         self._ptr = None
@@ -177,8 +179,16 @@ class Context:
             c_int(port) if public_address else 0
         )
 
-    def listen_on_address(self, address='localhost', transport=socket.IPPROTO_UDP, port=5060, family=socket.AF_INET,
+    def listen_on_address(self, address=None, transport=socket.IPPROTO_UDP, port=5060, family=socket.AF_INET,
                           secure=False):
+        """Listen on a specified socket.
+
+        :param address: the address to bind (`NULL` for all interface)
+        :param transport: `IPPROTO_UDP` for udp. (soon to come: TCP/TLS?)
+        :param port: the listening port. (0 for random port)
+        :param family: the address to bind (NULL for all interface)
+        :param secure: `False` for UDP or TCP, `True` for TLS (with TCP).
+        """
         if transport not in [socket.IPPROTO_TCP, socket.IPPROTO_UDP]:
             raise RuntimeError('Unsupported socket transport type %s' % transport)
         if family not in [socket.AF_INET, socket.AF_INET6]:
@@ -186,7 +196,7 @@ class Context:
         err_code = conf.FuncListenAddr.c_func(
             self._ptr,
             c_int(transport),
-            c_char_p(address.encode()),
+            c_char_p(s2b(address)),
             c_int(port),
             c_int(family),
             c_int(secure)
@@ -194,6 +204,13 @@ class Context:
         raise_if_osip_error(err_code)
 
     def event_wait(self, s, ms):
+        """Wait for an eXosip event.
+
+        :param int s: timeout value (seconds).
+        :param int ms: timeout value (seconds).
+        :return: event triggered, `None` if nothing happened
+        :rtype: Event
+        """
         evt_ptr = event.FuncEventWait.c_func(self._ptr, c_int(s), c_int(ms))
         if evt_ptr:
             return Event(evt_ptr)
@@ -201,6 +218,14 @@ class Context:
             return None
 
     def automatic_action(self):
+        """Initiate some automatic actions:
+
+            * Retry with credentials upon reception of 401/407.
+            * Retry with higher Session-Expires upon reception of 422.
+            * Refresh REGISTER and SUBSCRIBE before the expiration delay.
+            * Retry with Contact header upon reception of 3xx request.
+            * Send automatic UPDATE for session-timer feature.
+        """
         auth.FuncAutomaticAction.c_func(self._ptr)
 
     def start(self, s=0, ms=50):

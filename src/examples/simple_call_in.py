@@ -13,6 +13,9 @@ def on_call_invite(evt):
     global latest_event
     latest_event = evt
     print('[%s] on_call_invite' % evt.did)
+    print('[%s] from: %s' % (evt.did, evt.request.from_))
+    for hname in ('User-Agent', 'From'):
+        print('[%s] header["%s"]: %s' % (evt.did, hname, evt.request.get_header(hname)))
 
 
 def on_call_cancelled(evt):
@@ -33,7 +36,7 @@ ctx.on_call_closed = on_call_closed
 
 
 print('listening...')
-ctx.listen_on_address(address='0.0.0.0')
+ctx.listen_on_address()
 print('starting...')
 
 ctx.start()

@@ -1,29 +1,26 @@
 # -*- coding: utf-8 -*-
 
 """
-oSIP SIP Message Accessor Routines
+oSIP parser Handling
 """
 
-from ctypes import c_int, c_void_p, c_char_p, c_size_t
+from ctypes import POINTER, c_int, c_void_p, c_char_p, c_size_t
 
 from . import globs
 from .utils import OsipFunc
 
-
-class FuncMessageInit(OsipFunc):
-    func_name = 'message_init'
-    argtypes = [c_void_p]
-    restype = c_int
-
-
-class FuncMessageFree(OsipFunc):
-    func_name = 'message_free'
-    argtypes = [c_void_p]
+from .osip_header import Header
 
 
 class FuncMessageSetBody(OsipFunc):
     func_name = 'message_set_body'
     argtypes = [c_void_p, c_char_p, c_size_t]
+    restype = c_int
+
+
+class FuncMessageHeaderGetByName(OsipFunc):
+    func_name = 'message_header_get_byname'
+    argtypes = [c_void_p, c_char_p, c_int, POINTER(POINTER(Header))]
     restype = c_int
 
 
@@ -39,10 +36,23 @@ class FuncMessageSetContentType(OsipFunc):
     restype = c_int
 
 
+class FuncMessageGetFrom(OsipFunc):
+    func_name = 'message_get_from'
+    argtypes = [c_void_p]
+    restype = c_void_p
+
+
+class FuncMessageSetFrom(OsipFunc):
+    func_name = 'message_set_from'
+    argtypes = [c_void_p, c_char_p]
+    restype = c_int
+
+
 globs.func_classes.extend([
-    FuncMessageInit,
-    FuncMessageFree,
     FuncMessageSetBody,
+    FuncMessageHeaderGetByName,
     FuncMessageGetContentType,
     FuncMessageSetContentType,
+    FuncMessageGetFrom,
+    FuncMessageSetFrom,
 ])

@@ -4,14 +4,19 @@
 eXosip2 event API
 """
 
+from ctypes import string_at, byref
 from enum import IntEnum
 
 from ._c import event
+from .utils import b2s
+from .message import OsipMessage
 
 __all__ = ['EventType', 'Event']
 
 
 class EventType(IntEnum):
+    """Enumeration of event types
+    """
     registration_success = event.EXOSIP_REGISTRATION_SUCCESS
     registration_failure = event.EXOSIP_REGISTRATION_FAILURE
     call_invite = event.EXOSIP_CALL_INVITE
@@ -63,12 +68,16 @@ class EventType(IntEnum):
 
 class Event:
     def __init__(self, ptr):
-        """
-        :param ptr: pointer to the `eXosip_event_t` C structure allocated in C API `eXosip_event_wait()`
-        :type ptr: exosip2ctypes._c.event.Event*
+        """Class for event description
+
+        :param ptr: Pointer to `struct eXosip_event_t`
         """
         self._ptr = ptr
         self._type = EventType(int(ptr.contents.type))
+        self._textinfo = b2s(ptr.contents.textinfo)
+        self._request = OsipMessage(ptr.contents.request)
+        self._response = OsipMessage(ptr.contents.response)
+        self._ack = OsipMessage(ptr.contents.ack)
         self._tid = int(ptr.contents.tid)
         self._did = int(ptr.contents.did)
         self._rid = int(ptr.contents.rid)
@@ -82,62 +91,124 @@ class Event:
         self.dispose()
 
     def dispose(self):
-        """free the `eXosip_event_t` C Structure allocated in C API `eXosip_event_wait()`
+        """Free resource in an eXosip event.
 
-        ..attention::
+        .. attention::
 
-            cause `libeXosip2` would not manage the event structure automatic, we shall free it manually!
+            Cause `eXosip` do not manage the `struct eXosip_event_t *` automatic, we shall free it manually!
             The memory free action is done in :class:`Event` 's destruction.
-            so you can either `del` the event object or using the `with` statement,
-            python's GC will free memory when the object is to free.
+            so you can either ``del`` the event object or use the ``with`` statement,
+            python's GC will free memory when the object is destructed.
         """
         if self._ptr:
             event.FuncEventFree.c_func(self._ptr)
             self._ptr = None
+            self._request = None
+            self._response = None
+            self._ack = None
 
     @property
     def type(self):
-        """Event's Type
+        """type of the event
+
         :rtype: EventType
         """
         return self._type
 
     @property
+    def textinfo(self):
+        """text description of event
+
+        :rtype: str
+        """
+        return self._textinfo
+
+    @property
+    def request(self):
+        """request within current transaction
+
+        :rtype: OsipMessage
+        """
+        return self._request
+
+    @property
+    def response(self):
+        """last response within current transaction
+
+        :rtype: OsipMessage
+        """
+        return self._response
+
+    @property
+    def ack(self):
+        """ack within current transaction
+
+        :rtype: OsipMessage
+        """
+        return self._ack
+
+    @property
     def tid(self):
-        """Event's transaction ID
+        """unique id for transactions (to be used for answers)
+
         :rtype: int
         """
         return self._tid
 
     @property
     def did(self):
-        """Event's dialog ID
+        """unique id for SIP dialogs
+
         :rtype: int
         """
         return self._did
 
     @property
     def rid(self):
+        """unique id for registration
+
+        :rtype: int
+        """
         return self._rid
 
     @property
     def cid(self):
+        """unique id for SIP calls (but multiple dialogs!)
+
+        :rtype: int
+        """
         return self._cid
 
     @property
     def sid(self):
+        """unique id for outgoing subscriptions
+
+        :rtype: int
+        """
         return self._sid
 
     @property
     def nid(self):
+        """unique id for incoming subscriptions
+
+        :rtype: int
+        """
         return self._nid
 
     @property
     def ss_status(self):
+        """current Subscription-State for subscription
+
+        :rtype: int
+        """
         return self._ss_status
 
     @property
     def ss_reason(self):
+        """current Reason status for subscription
+
+        :rtype: int
+        """
         return self._ss_reason
 
     def __enter__(self):

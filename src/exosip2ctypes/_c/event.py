@@ -59,21 +59,24 @@ EXOSIP_EVENT_COUNT = 46
 
 
 class Event(Structure):
+    """
+    Structure for event description
+    """
     _fields_ = [
-        ('type', c_uint),
-        ('textinfo', c_char * 256),
-        ('external_reference', c_void_p),
-        ('request', c_void_p),
-        ('response', c_void_p),
-        ('ack', c_void_p),
-        ('tid', c_int),
-        ('did', c_int),
-        ('rid', c_int),
-        ('cid', c_int),
-        ('sid', c_int),
-        ('nid', c_int),
-        ('ss_status', c_int),
-        ('ss_reason', c_int),
+        ('type', c_uint),  # < type of the event
+        ('textinfo', c_char * 256),  # < text description of event
+        ('external_reference', c_void_p),  # < external reference (for calls)
+        ('request', c_void_p),  # < request within current transaction
+        ('response', c_void_p),  # < last response within current transaction
+        ('ack', c_void_p),  # < ack within current transaction
+        ('tid', c_int),  # < unique id for transactions (to be used for answers)
+        ('did', c_int),  # < unique id for transactions (to be used for answers)
+        ('rid', c_int),  # < unique id for registration
+        ('cid', c_int),  # < unique id for SIP calls (but multiple dialogs!)
+        ('sid', c_int),  # < unique id for outgoing subscriptions
+        ('nid', c_int),  # < unique id for incoming subscriptions
+        ('ss_status', c_int),  # < unique id for incoming subscriptions
+        ('ss_reason', c_int),  # < current Reason status for subscription
     ]
 
 

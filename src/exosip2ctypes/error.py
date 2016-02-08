@@ -106,7 +106,7 @@ osip_error_map = {
 
 
 def raise_if_osip_error(error_code, message=None):
-    """raise an :exception:`OsipError` exception if `err_code` is not :var:`OSIP_SUCCESS`
+    """raise an :exc:`OsipError` exception if `err_code` is not :data:`OSIP_SUCCESS`
 
     use it to check osip2/eXosip2 API function integer return value
     :param error_code:

@@ -7,4 +7,8 @@ __all__ = ['get_library_version']
 
 
 def get_library_version():
+    """
+    :return: eXosip library version string
+    :rtype: str
+    """
     return b2s(string_at(conf.FuncGetVersion.c_func()))
