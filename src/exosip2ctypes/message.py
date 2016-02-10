@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from ctypes import POINTER, byref, create_string_buffer, string_at, c_void_p, c_char_p, c_int
+from ctypes import POINTER, byref, create_string_buffer, string_at, c_void_p, c_char_p, c_int, c_size_t
 
 from ._c import lib, osip_parser, osip_content_type, osip_from, osip_header
 from .error import raise_if_osip_error
@@ -12,12 +12,23 @@ class OsipMessage:
         """class for osip2 message API
 
         :param c_void_p ptr: Pointer to the `osip_message_t` structure in C library
-
-        .. danger:: **Do NOT** con/destruct the class yourself unless you known what you are doing.
-
-        .. attention:: in eXosip2, messages are managed by the library, so we should NOT free the messages manuall
         """
         self._ptr = ptr
+
+    def __str__(self):
+        """Get a string representation of a osip_message_t element.
+
+        :rtype: str
+        """
+        dest = c_char_p()
+        message_length = c_size_t()
+        error_code = osip_parser.FuncMessageToStr.c_func(self._ptr, byref(dest), byref(message_length))
+        raise_if_osip_error(error_code)
+        if not dest:
+            return None
+        result = string_at(dest)
+        lib.free(dest)
+        return b2s(result)
 
     @property
     def ptr(self):
@@ -27,20 +38,18 @@ class OsipMessage:
     def content_type(self):
         """Content Type string of the SIP message
 
-        :type: str
-
-        .. warning:: memory leak on setter!!!
+        :rtype: str
         """
         head_ptr = osip_parser.FuncMessageGetContentType.c_func(self._ptr)
         if not head_ptr:
             return None
-        pch = c_char_p()
-        err_code = osip_content_type.FuncContentTypeToStr.c_func(head_ptr, byref(pch))
+        dest = c_char_p()
+        err_code = osip_content_type.FuncContentTypeToStr.c_func(head_ptr, byref(dest))
         raise_if_osip_error(err_code)
-        if not pch:
+        if not dest:
             return None
-        result = string_at(pch)
-        lib.free(pch)
+        result = string_at(dest)
+        lib.free(dest)
         return b2s(result)
 
     @content_type.setter
@@ -56,13 +65,13 @@ class OsipMessage:
         :rtype: str
         """
         ptr = osip_parser.FuncMessageGetFrom.c_func(self._ptr)
-        pch = c_char_p()
-        error_code = osip_from.FuncFromToStr.c_func(ptr, byref(pch))
+        dest = c_char_p()
+        error_code = osip_from.FuncFromToStr.c_func(ptr, byref(dest))
         raise_if_osip_error(error_code)
-        if not pch:
+        if not dest:
             return None
-        result = string_at(pch)
-        lib.free(pch)
+        result = string_at(dest)
+        lib.free(dest)
         return b2s(result)
 
     @from_.setter
@@ -70,6 +79,10 @@ class OsipMessage:
         buf = create_string_buffer(s2b(val))
         error_code = osip_parser.FuncMessageSetFrom.c_func(self._ptr, buf)
         raise_if_osip_error(error_code)
+
+    @property
+    def allow(self):
+        pass
 
     def get_header(self, name, pos=0):
         """Find an "unknown" header. (not defined in oSIP)
@@ -121,7 +134,9 @@ class ExosipMessage(OsipMessage):
         :param c_void_p ptr: Pointer to the `osip_message_t` structure in C library
         :param Context context: eXosip context
 
-        .. danger:: **Do NOT** con/destruct the class yourself unless you known what you are doing.
+        .. danger:: Do **NOT** con/destruct the class yourself unless you known what you are doing.
+
+        .. attention:: In eXosip2, messages are managed inside the library, so we should **NOT** free :class:`OsipMessage` object manually.
         """
         self._context = context
         super(ExosipMessage, self).__init__(ptr)

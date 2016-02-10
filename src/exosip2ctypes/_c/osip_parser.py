@@ -12,6 +12,11 @@ from .utils import OsipFunc
 from .osip_header import Header
 
 
+class FuncMessageToStr(OsipFunc):
+    func_name = 'message_to_str'
+    argtypes = [c_void_p, POINTER(c_char_p), POINTER(c_size_t)]
+
+
 class FuncMessageSetBody(OsipFunc):
     func_name = 'message_set_body'
     argtypes = [c_void_p, c_char_p, c_size_t]
@@ -55,6 +60,7 @@ class FuncMessageSetFrom(OsipFunc):
 
 
 globs.func_classes.extend([
+    FuncMessageToStr,
     FuncMessageSetBody,
     FuncMessageHeaderGetByName,
     FuncMessageSetHeader,
