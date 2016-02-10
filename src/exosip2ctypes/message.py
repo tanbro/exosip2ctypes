@@ -82,22 +82,28 @@ class OsipMessage:
 
     @property
     def allow(self):
-        """Get Allow header.
+        """Allow header.
 
         :rtype: list
         """
-        pos = 0
-        ret = 0
         result = []
+        pos = ret = 0
         while True:
             dest = POINTER(osip_content_length.Allow)()
             ret = osip_parser.FuncMessageGetAllow.c_func(self._ptr, c_int(pos), byref(dest))
-            ret = int(ret)
-            if ret < 0:
+            if int(ret) < 0:
                 break
-            pos += 1
             result.append(b2s(dest.contents.value))
+            pos += 1
         return result
+
+    @allow.setter
+    def allow(self, val):
+        if isinstance(val, (list, tuple)):
+            val = ', '.join(val)
+        buf = create_string_buffer(s2b(val))
+        error_code = osip_parser.FuncMessageSetAllow.c_func(self._ptr, buf)
+        raise_if_osip_error(error_code)
 
     def get_header(self, name, pos=0):
         """Find an "unknown" header. (not defined in oSIP)
