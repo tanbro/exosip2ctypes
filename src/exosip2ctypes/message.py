@@ -2,7 +2,7 @@
 
 from ctypes import POINTER, byref, create_string_buffer, string_at, c_void_p, c_char_p, c_int, c_size_t
 
-from ._c import lib, osip_parser, osip_content_type, osip_from, osip_header
+from ._c import lib, osip_parser, osip_content_type, osip_from, osip_header, osip_content_length
 from .error import raise_if_osip_error
 from .utils import b2s, s2b
 
@@ -82,7 +82,22 @@ class OsipMessage:
 
     @property
     def allow(self):
-        pass
+        """Get Allow header.
+
+        :rtype: list
+        """
+        pos = 0
+        ret = 0
+        result = []
+        while True:
+            dest = POINTER(osip_content_length.Allow)()
+            ret = osip_parser.FuncMessageGetAllow.c_func(self._ptr, c_int(pos), byref(dest))
+            ret = int(ret)
+            if ret < 0:
+                break
+            pos += 1
+            result.append(b2s(dest.contents.value))
+        return result
 
     def get_header(self, name, pos=0):
         """Find an "unknown" header. (not defined in oSIP)

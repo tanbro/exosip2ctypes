@@ -13,8 +13,9 @@ def on_call_invite(evt):
     global latest_event
     latest_event = evt
     print('[%s] on_call_invite' % evt.did)
-    print("%s" % evt.request)
+    # print("%s" % evt.request)
     print('[%s] from: %s' % (evt.did, evt.request.from_))
+    print('[%s] allow: %s' % (evt.did, evt.request.allow))
     for hname in ('User-Agent', ):
         print('[%s] header["%s"]: %s' % (evt.did, hname, evt.request.get_header(hname)))
 
