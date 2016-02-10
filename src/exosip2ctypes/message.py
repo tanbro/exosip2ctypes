@@ -81,8 +81,25 @@ class OsipMessage:
         raise_if_osip_error(error_code)
 
     @property
-    def allow(self):
-        """Allow header.
+    def contacts(self):
+        result = []
+        pos = ret = 0
+        while True:
+            dest = POINTER(c_void_p)
+            ret = osip_parser.FuncMessageGetContact.c_func(self._ptr, c_int(pos), byref(dest))
+            if int(ret) < 0:
+                break
+            pch_contact = c_char_p()
+            error_code = osip_from.FuncFromToStr.c_func(dest.contents, byref(pch_contact))
+            raise_if_osip_error(error_code)
+            contact = string_at(pch_contact)
+            lib.free(pch_contact)
+            result.append(contact)
+        return result
+
+    @property
+    def allows(self):
+        """Allow header list.
 
         :rtype: list
         """
@@ -97,11 +114,10 @@ class OsipMessage:
             pos += 1
         return result
 
-    @allow.setter
-    def allow(self, val):
-        if isinstance(val, (list, tuple)):
-            val = ', '.join(val)
-        buf = create_string_buffer(s2b(val))
+    @allows.setter
+    def allows(self, val):
+        allows_str = ', '.join(val)
+        buf = create_string_buffer(s2b(allows_str))
         error_code = osip_parser.FuncMessageSetAllow.c_func(self._ptr, buf)
         raise_if_osip_error(error_code)
 

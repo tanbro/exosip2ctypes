@@ -60,6 +60,18 @@ class FuncMessageSetFrom(OsipFunc):
     restype = c_int
 
 
+class FuncMessageGetContact(OsipFunc):
+    func_name = 'message_get_contact'
+    argtypes = [c_void_p, c_int, c_void_p]
+    restype = c_void_p
+
+
+class FuncMessageSetContact(OsipFunc):
+    func_name = 'message_set_contact'
+    argtypes = [c_void_p, c_char_p]
+    restype = c_int
+
+
 class FuncMessageGetAllow(OsipFunc):
     func_name = 'message_get_allow'
     argtypes = [c_void_p, c_int, POINTER(POINTER(Allow))]
@@ -81,6 +93,8 @@ globs.func_classes.extend([
     FuncMessageSetContentType,
     FuncMessageGetFrom,
     FuncMessageSetFrom,
+    FuncMessageGetContact,
+    FuncMessageSetContact,
     FuncMessageGetAllow,
-    FuncMessageSetAllow
+    FuncMessageSetAllow,
 ])

@@ -15,7 +15,8 @@ def on_call_invite(evt):
     print('[%s] on_call_invite' % evt.did)
     # print("%s" % evt.request)
     print('[%s] from: %s' % (evt.did, evt.request.from_))
-    print('[%s] allow: %s' % (evt.did, evt.request.allow))
+    print('[%s] allows: %s' % (evt.did, evt.request.allows))
+    print('[%s] contacts: %s' % (evt.did, evt.request.contacts))
     for hname in ('User-Agent', ):
         print('[%s] header["%s"]: %s' % (evt.did, hname, evt.request.get_header(hname)))
 
