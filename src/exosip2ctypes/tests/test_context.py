@@ -2,14 +2,14 @@ import unittest
 
 from time import time
 
-from exosip2ctypes import load, Context
+from exosip2ctypes import initialize, Context
 
 
 class ContextTestCase(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        load()
+        initialize()
 
     def setUp(self):
         self.ctx = Context()

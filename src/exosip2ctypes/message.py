@@ -2,7 +2,7 @@
 
 from ctypes import POINTER, byref, create_string_buffer, string_at, c_void_p, c_char_p, c_int
 
-from ._c import osip_parser, osip_content_type, osip_from, osip_header
+from ._c import lib, osip_parser, osip_content_type, osip_from, osip_header
 from .error import raise_if_osip_error
 from .utils import b2s, s2b
 
@@ -34,13 +34,13 @@ class OsipMessage:
         head_ptr = osip_parser.FuncMessageGetContentType.c_func(self._ptr)
         if not head_ptr:
             return None
-        pch = c_char_p()  # TODO: fix the memory leak!!!
+        pch = c_char_p()
         err_code = osip_content_type.FuncContentTypeToStr.c_func(head_ptr, byref(pch))
         raise_if_osip_error(err_code)
         if not pch:
             return None
         result = string_at(pch)
-        del pch
+        lib.free(pch)
         return b2s(result)
 
     @content_type.setter
@@ -62,13 +62,14 @@ class OsipMessage:
         if not pch:
             return None
         result = string_at(pch)
-        del pch
+        lib.free(pch)
         return b2s(result)
 
     @from_.setter
     def from_(self, val):
         buf = create_string_buffer(s2b(val))
         error_code = osip_parser.FuncMessageSetFrom.c_func(self._ptr, buf)
+        raise_if_osip_error(error_code)
 
     def get_header(self, name, pos=0):
         """Find an "unknown" header. (not defined in oSIP)
@@ -85,12 +86,27 @@ class OsipMessage:
             self._ptr,
             pc_name,
             c_int(pos),
-            byref(p_header),
+            byref(p_header)
         )
         if found_pos < 0:
             raise KeyError('Header by name "{}" can not be found in the SIP message'.format(name))
         value = p_header.contents.hvalue
         return b2s(value)
+
+    def set_header(self, name, value):
+        """Allocate and Add an "unknown" header (not defined in oSIP).
+
+        :param str name: The token name.
+        :param str value: The token value.
+        """
+        pc_name = create_string_buffer(s2b(name))
+        pc_value = create_string_buffer(s2b(value))
+        error_code = osip_parser.FuncMessageSetHeader.c_func(
+            self._ptr,
+            pc_name,
+            pc_value
+        )
+        raise_if_osip_error(error_code)
 
     def set_body(self, val):
         buf = create_string_buffer(s2b(val))

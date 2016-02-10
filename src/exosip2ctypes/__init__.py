@@ -24,7 +24,7 @@ Here are the eXosip capabilities:
    * any other request        to handle what you want!
 """
 
-from ._c import DLL_NAME, load
+from ._c.lib import DLL_NAME, initialize
 from .call import *
 from .context import *
 from .version import *

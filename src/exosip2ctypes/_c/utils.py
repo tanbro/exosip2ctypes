@@ -11,7 +11,7 @@ class OsipFunc:
     @classmethod
     def bind(cls, dll=None):
         if dll is None:
-            dll = globs.dll
+            dll = globs.libexosip2
         cls.c_func = getattr(dll, '{0}{1}'.format(cls.prefix, cls.func_name))
         if cls.argtypes:
             cls.c_func.argtypes = cls.argtypes

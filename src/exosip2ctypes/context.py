@@ -9,7 +9,8 @@ import socket
 import threading
 from ctypes import c_char_p, c_int, create_string_buffer
 
-from ._c import DLL_NAME, conf, event, auth, call
+from ._c import conf, event, auth, call
+from ._c.lib import DLL_NAME
 from .error import MallocError, raise_if_osip_error
 from .event import Event, EventType
 from .utils import b2s, s2b

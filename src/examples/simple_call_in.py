@@ -1,8 +1,8 @@
 import sys
 
-from exosip2ctypes import load, Context, Answer
+from exosip2ctypes import initialize, Context, Answer
 
-load()
+initialize()
 ctx = Context(contact_address=('192.168.56.101', 5060))
 ctx.masquerade_contact('192.168.56.101', 5060)
 
@@ -14,7 +14,7 @@ def on_call_invite(evt):
     latest_event = evt
     print('[%s] on_call_invite' % evt.did)
     print('[%s] from: %s' % (evt.did, evt.request.from_))
-    for hname in ('User-Agent', 'From'):
+    for hname in ('User-Agent', 'Expires', 'Fuck!'):
         print('[%s] header["%s"]: %s' % (evt.did, hname, evt.request.get_header(hname)))
 
 

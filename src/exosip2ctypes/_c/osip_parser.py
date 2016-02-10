@@ -24,6 +24,12 @@ class FuncMessageHeaderGetByName(OsipFunc):
     restype = c_int
 
 
+class FuncMessageSetHeader(OsipFunc):
+    func_name = 'message_set_header'
+    argtypes = [c_void_p, c_char_p, c_char_p]
+    restype = c_int
+
+
 class FuncMessageGetContentType(OsipFunc):
     func_name = 'message_get_content_type'
     argtypes = [c_void_p]
@@ -51,6 +57,7 @@ class FuncMessageSetFrom(OsipFunc):
 globs.func_classes.extend([
     FuncMessageSetBody,
     FuncMessageHeaderGetByName,
+    FuncMessageSetHeader,
     FuncMessageGetContentType,
     FuncMessageSetContentType,
     FuncMessageGetFrom,
