@@ -85,16 +85,17 @@ class OsipMessage:
         result = []
         pos = ret = 0
         while True:
-            dest = POINTER(c_void_p)
+            dest = c_void_p()
             ret = osip_parser.FuncMessageGetContact.c_func(self._ptr, c_int(pos), byref(dest))
             if int(ret) < 0:
                 break
             pch_contact = c_char_p()
-            error_code = osip_from.FuncFromToStr.c_func(dest.contents, byref(pch_contact))
+            error_code = osip_from.FuncFromToStr.c_func(dest, byref(pch_contact))
             raise_if_osip_error(error_code)
             contact = string_at(pch_contact)
             lib.free(pch_contact)
-            result.append(contact)
+            result.append(b2s(contact))
+            pos += 1
         return result
 
     @property

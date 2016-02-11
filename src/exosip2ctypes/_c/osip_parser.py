@@ -63,7 +63,7 @@ class FuncMessageSetFrom(OsipFunc):
 class FuncMessageGetContact(OsipFunc):
     func_name = 'message_get_contact'
     argtypes = [c_void_p, c_int, c_void_p]
-    restype = c_void_p
+    restype = c_int
 
 
 class FuncMessageSetContact(OsipFunc):

@@ -1,7 +1,7 @@
-'''
+"""
 @date: 2016-02-03
 @author: liuxy
-'''
+"""
 
 
 OSIP_SUCCESS = 0
