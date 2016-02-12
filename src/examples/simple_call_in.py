@@ -18,7 +18,7 @@ def on_call_invite(evt):
     print('[%s] from: %s' % (evt.did, evt.request.from_))
     print('[%s] allows: %s' % (evt.did, evt.request.allows))
     print('[%s] contacts: %s' % (evt.did, evt.request.contacts))
-    for hname in ('User-Agent', ):
+    for hname in ('User-Agent',):
         print('[%s] header["%s"]: %s' % (evt.did, hname, evt.request.get_header(hname)))
 
 
@@ -38,7 +38,6 @@ ctx.on_call_invite = on_call_invite
 ctx.on_call_cancelled = on_call_cancelled
 ctx.on_call_closed = on_call_closed
 
-
 print('listening...')
 ctx.listen_on_address()
 print('starting...')
@@ -54,7 +53,7 @@ while True:
     elif s == 'ack':
         with ctx.lock:
             ctx.call_send_ack(latest_event.did)
-    elif s == 'term':
+    elif s in ('t', 'terminate'):
         with ctx.lock:
             ctx.call_terminate(latest_event.cid, latest_event.did)
     elif s.isdecimal():
@@ -74,8 +73,7 @@ while True:
                     "a=rtpmap:8 PCMA/8000\r\n"
                     "a=rtpmap:101 telephone-event/8000\r\n"
                 )
-                ctx.call_send_answer(message=msg)
+                ctx.call_send_answer(answer=msg)
         else:
             with ctx.lock:
                 ctx.call_send_answer(latest_event.tid, status)
-

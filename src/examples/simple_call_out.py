@@ -8,6 +8,12 @@ ctx = Context(contact_address=('192.168.56.101', 5060))
 latest_event = None
 
 
+def on_call_ack(evt):
+    global latest_event
+    latest_event = evt
+    print('[%s] on_call_ack' % evt.did)
+
+
 def on_call_invite(evt):
     global latest_event
     latest_event = evt
@@ -32,9 +38,18 @@ def on_call_closed(evt):
     print('[%s] call_closed' % evt.did)
 
 
+def on_call_answered(evt):
+    global latest_event
+    latest_event = evt
+    print('[%s] on_call_answered' % evt.did)
+    # print('%s' % evt.response)
+
+
 ctx.on_call_invite = on_call_invite
 ctx.on_call_cancelled = on_call_cancelled
 ctx.on_call_closed = on_call_closed
+ctx.on_call_answered = on_call_answered
+ctx.on_call_ack = on_call_ack
 
 print('listening...')
 ctx.listen_on_address()
@@ -51,7 +66,7 @@ while True:
     elif s == 'ack':
         with ctx.lock:
             ctx.call_send_ack(latest_event.did)
-    elif s == 'term':
+    elif s in ('t', 'terminate'):
         with ctx.lock:
             ctx.call_terminate(latest_event.cid, latest_event.did)
     elif s in ('m', 'makecall'):
@@ -72,5 +87,5 @@ while True:
                 "a=rtpmap:8 PCMA/8000\r\n"
                 "a=rtpmap:101 telephone-event/8000\r\n"
             )
-            print("%s" % invite)
+            # print("%s" % invite)
             ctx.call_send_init_invite(invite)

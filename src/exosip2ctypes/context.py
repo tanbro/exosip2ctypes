@@ -340,6 +340,8 @@ class Context:
             self.on_call_answered(evt)
         elif evt.type == EventType.call_closed:
             self.on_call_closed(evt)
+        elif evt.type == EventType.call_ack:
+            self.on_call_ack(evt)
 
     def on_call_invite(self, evt):
         pass
@@ -351,4 +353,7 @@ class Context:
         pass
 
     def on_call_closed(self, evt):
+        pass
+
+    def on_call_ack(self, evt):
         pass
