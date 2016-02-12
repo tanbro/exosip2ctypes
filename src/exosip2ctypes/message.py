@@ -35,6 +35,22 @@ class OsipMessage:
         return self._ptr
 
     @property
+    def call_id(self):
+        """Call-id header.
+
+        :rtype: str
+        """
+        ret = osip_parser.FuncMessageGetCallId.c_func(self._ptr)
+        result = ret.contents.number
+        return b2s(result)
+
+    @call_id.setter
+    def call_id(self, val):
+        buf = create_string_buffer(s2b(val))
+        error_code = osip_parser.FuncMessageSetCallId.c_func(self._ptr, buf)
+        raise_if_osip_error(error_code)
+
+    @property
     def content_type(self):
         """Content Type string of the SIP message
 
@@ -82,6 +98,10 @@ class OsipMessage:
 
     @property
     def contacts(self):
+        """Contact header list.
+
+        :rtype: list
+        """
         result = []
         pos = ret = 0
         while True:
@@ -97,6 +117,13 @@ class OsipMessage:
             result.append(b2s(contact))
             pos += 1
         return result
+
+    @contacts.setter
+    def contacts(self, val):
+        contacts_str = ','.join(val)
+        buf = create_string_buffer(s2b(contacts_str))
+        error_code = osip_parser.FuncMessageSetContact.c_func(self._ptr, buf)
+        raise_if_osip_error(error_code)
 
     @property
     def allows(self):

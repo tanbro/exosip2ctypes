@@ -13,13 +13,72 @@ This API can be used to build the following messages:
    INVITE, INFO, OPTIONS, REFER, UPDATE, NOTIFY
 """
 
-from ctypes import byref, c_void_p, c_int
+from ctypes import byref, create_string_buffer, c_void_p, c_int
 
 from ._c import call
-from .message import ExosipMessage
 from .error import raise_if_osip_error
+from .message import ExosipMessage
+from .utils import s2b
 
-__all__ = ['Ack', 'Answer']
+__all__ = ['InitInvite', 'Ack', 'Answer']
+
+
+class InitInvite(ExosipMessage):
+    def __init__(self, context, to, from_, route=None, subject=None):
+        """Build a default INVITE message for a new call.
+
+        :param Context context: :class:`Context` object contains the `eXosip_t` instance.
+        :param str to: SIP url for callee.
+        :param str from_: SIP url for caller.
+        :param str route: Route header for INVITE. (optional)
+        :param str subject: Subject for the call.
+        """
+        ptr = c_void_p()  # osip_message_t* invite = NULL;
+        pc_to = create_string_buffer(s2b(to))
+        pc_from = create_string_buffer(s2b(from_))
+        pc_route = create_string_buffer(s2b(route)) if route else None
+        pc_subject = create_string_buffer(s2b(subject)) if subject else None
+        error_code = call.FuncCallBuildInitialInvite.c_func(
+            context.ptr, byref(ptr), pc_to, pc_from, pc_route, pc_subject
+        )
+        raise_if_osip_error(error_code)
+        self._to = to
+        self._from = from_
+        self._route = route
+        self._subject = subject
+        super(InitInvite, self).__init__(ptr, context)
+
+    @property
+    def to(self):
+        """SIP url for callee.
+
+        :rtype: str
+        """
+        return self.to
+
+    @property
+    def from_(self):
+        """SIP url for caller.
+
+        :rtype: str
+        """
+        return self._from
+
+    @property
+    def route(self):
+        """Route header for INVITE. (optional)
+
+        :rtype: str
+        """
+        return self._route
+
+    @property
+    def subject(self):
+        """Subject for the call.
+
+        :rtype: str
+        """
+        return self._subject
 
 
 class Ack(ExosipMessage):

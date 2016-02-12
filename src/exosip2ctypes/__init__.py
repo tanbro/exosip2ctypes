@@ -25,6 +25,5 @@ Here are the eXosip capabilities:
 """
 
 from ._c.lib import DLL_NAME, initialize
-from .call import *
 from .context import *
 from .version import *

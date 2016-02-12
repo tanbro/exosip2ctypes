@@ -20,19 +20,39 @@ __all__ = ['Context', 'ContextLock']
 
 
 class ContextLock:
-    """eXosip Context lock's python class
-    """
-
     def __init__(self, context):
-        """
+        """eXosip Context lock's python class
+
         :param Context context: Context which the lock is for
+
+        | This class wraps eXosip's native context lock.
+        | Use :meth:`acquire` to lock and :meth:`release` to unlock.
+        | ``with`` statement is supported.
+
+        eg::
+
+            context.lock.acquire()
+            try:
+                do_something()
+                # ...
+            finally:
+                context.lock.release()
+
+        or::
+
+            with context.lock:
+                do_something()
+                # ...
+
         """
         self._context = context
 
     def acquire(self):
+        """lock"""
         self._context.internal_lock()
 
     def release(self):
+        """unlock"""
         self._context.internal_unlock()
 
     def __enter__(self):
@@ -54,8 +74,8 @@ class Context:
         self._ptr = conf.FuncMalloc.c_func()
         if self._ptr is None:
             raise MallocError()
-        err_code = conf.FuncInit.c_func(self._ptr)
-        raise_if_osip_error(err_code)
+        error_code = conf.FuncInit.c_func(self._ptr)
+        raise_if_osip_error(error_code)
         if contact_address[0]:
             self.masquerade_contact(*contact_address)
         self._user_agent = '{} ({} ({}/{}))'.format(DLL_NAME, get_library_version(), platform.machine(),
@@ -113,7 +133,7 @@ class Context:
         """eXosip Context lock.
 
         :return: Python stdlib's `threading.Lock` if `using_internal_lock` is `False`, else eXosip's native lock.
-        :rtype: threading.Lock or ContextLock
+        :type: :class:`ContextLock` or :class:`threading.Lock`
         """
         return self._lock
 
@@ -194,7 +214,7 @@ class Context:
             raise RuntimeError('Unsupported socket transport type %s' % transport)
         if family not in [socket.AF_INET, socket.AF_INET6]:
             raise RuntimeError('Unsupported socket family type %s' % family)
-        err_code = conf.FuncListenAddr.c_func(
+        error_code = conf.FuncListenAddr.c_func(
             self._ptr,
             c_int(transport),
             c_char_p(s2b(address)),
@@ -202,7 +222,7 @@ class Context:
             c_int(family),
             c_int(secure)
         )
-        raise_if_osip_error(err_code)
+        raise_if_osip_error(error_code)
 
     def event_wait(self, s, ms):
         """Wait for an eXosip event.
@@ -257,30 +277,59 @@ class Context:
     #         raise TypeError('Unsupported libeXosip2 message type %s' % type(message))
 
     def call_terminate(self, cid, did):
-        err_code = call.FuncCallTerminate.c_func(self._ptr, int(cid), int(did))
-        raise_if_osip_error(err_code)
+        """Terminate a call. send CANCEL, BYE or 603 Decline.
 
-    def call_send_ack(self, did=None, message=None):
-        if message is not None:
-            did = message.did
-        err_code = call.FuncCallSendAck.c_func(
+        :param int cid: call id of call.
+        :param int did: dialog id of call.
+        """
+        error_code = call.FuncCallTerminate.c_func(self._ptr, int(cid), int(did))
+        raise_if_osip_error(error_code)
+
+    def call_send_init_invite(self, invite):
+        """Initiate a call.
+
+        :param call.InitInvite invite: SIP INVITE message to send.
+        :return: unique id for SIP calls (but multiple dialogs!)
+        :rtype: int
+
+        .. attention:: returned `call id` is an integer, which different from SIP message's `Call-Id` header
+        """
+        result = call.FuncCallSendInitialInvite.c_func(self._ptr, invite.ptr)
+        raise_if_osip_error(result)
+        return int(result)
+
+    def call_send_ack(self, did=None, ack=None):
+        """Send the ACK for the 200ok received.
+
+        :param int did: dialog id of call.
+        :param call.Ack ack: SIP ACK message to send.
+        """
+        if ack is not None:
+            did = ack.did
+        error_code = call.FuncCallSendAck.c_func(
             self._ptr,
             c_int(did),
-            message.ptr if message else None
+            ack.ptr if ack else None
         )
-        raise_if_osip_error(err_code)
+        raise_if_osip_error(error_code)
 
-    def call_send_answer(self, tid=None, status=None, message=None):
-        if message is not None:
-            tid = message.tid
-            status = message.status
-        err_code = call.FuncCallSendAnswer.c_func(
+    def call_send_answer(self, tid=None, status=None, answer=None):
+        """Send Answer for invite.
+
+        :param int tid: id of transaction to answer.
+        :param int status: response status if `answer` is NULL. (not allowed for 2XX)
+        :param call.Answer answer: The sip answer to send.
+        """
+        if answer is not None:
+            tid = answer.tid
+            status = answer.status
+        error_code = call.FuncCallSendAnswer.c_func(
             self._ptr,
             c_int(tid),
             c_int(status),
-            message.ptr if message else None
+            answer.ptr if answer else None
         )
-        raise_if_osip_error(err_code)
+        raise_if_osip_error(error_code)
 
     def process_event(self, evt):
         if evt.type == EventType.call_invite:

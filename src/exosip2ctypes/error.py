@@ -108,15 +108,16 @@ osip_error_map = {
 def raise_if_osip_error(error_code, message=None):
     """raise an :exc:`OsipError` exception if `error_code` is not :data:`OSIP_SUCCESS`
 
-    use it to check osip2/eXosip2 API function integer return value
+    :param int error_code: `osip` and/or `exosip` C functions return code
+    :param str message: Exception message passed to the raised :class:`OsipError`
+    :raises OsipError: Throw exception if `error_code` is smaller than zero(:data:`OSIP_SUCCESS`)
 
-    :param error_code:
-    :type error_code: int or ctypes.c_int
-    :param message: Exception message
-    :raises OsipError: if `err_code` is not zero
+    Can be used to check osip2/eXosip2 API function integer return value
+
+    .. attention:: All error codes in `osip` are smaller than 0
     """
     error_code = int(error_code)
-    if error_code != OSIP_SUCCESS:
+    if error_code < OSIP_SUCCESS:
         exce_cls = osip_error_map.get(error_code, OsipUnknownError)
         if message:
             raise exce_cls(message)
