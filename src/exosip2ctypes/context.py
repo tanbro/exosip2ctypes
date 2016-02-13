@@ -85,14 +85,14 @@ class Context:
             self._lock = ContextLock(self)
         else:
             self._lock = threading.Lock()
-        self._started = False
+        self._is_running = False
         self._stop_sentinel = False
         self._loop_thread = None
         self._start_cond = threading.Condition()
         self._stop_cond = threading.Condition()
 
     def __del__(self):
-        if self._started:
+        if self._is_running:
             self.stop()
         self.quit()
 
@@ -104,7 +104,7 @@ class Context:
         :param ms: milliseconds for :meth:`event_wait`
         """
         self._start_cond.acquire()
-        self._started = True
+        self._is_running = True
         self._start_cond.notify()
         self._start_cond.release()
         try:
@@ -117,7 +117,7 @@ class Context:
                         self.process_event(evt)
         finally:
             self._stop_cond.acquire()
-            self._started = False
+            self._is_running = False
             self._stop_sentinel = False
             self._stop_cond.notify()
             self._stop_cond.release()
@@ -141,7 +141,7 @@ class Context:
         return self._lock
 
     @property
-    def started(self):
+    def is_running(self):
         """Whether the context's main loop started or not
 
         :rtype: bool
@@ -149,10 +149,10 @@ class Context:
         * Set it to `True` equals :meth:`start()`
         * Set it to `False` equals :meth:`stop()`
         """
-        return self._started
+        return self._is_running
 
-    @started.setter
-    def started(self, val):
+    @is_running.setter
+    def is_running(self, val):
         if val:
             self.start()
         else:
@@ -259,9 +259,11 @@ class Context:
         :return: New created thread.
         :rtype: threading.Thread
 
-        This method will returned soon after the main loop thread started, so it **does not block**.
+        This method returns soon after the main loop thread started, so it **does not block**.
+
+        Invoke the method equals set :attr:`is_running` to `True`
         """
-        if self._started:
+        if self._is_running:
             raise RuntimeError("Context loop already started.")
         self._loop_thread = threading.Thread(target=self._loop, args=(s, ms))
         self._start_cond.acquire()
@@ -274,8 +276,10 @@ class Context:
         """Stop the main loop for the context
 
         Returns after the main loop thread stopped.
+
+        Invoke the method equals set :attr:`is_running` to `False`
         """
-        if not self._started:
+        if not self._is_running:
             raise RuntimeError("Context loop not started.")
         self._stop_cond.acquire()
         self._stop_sentinel = True
