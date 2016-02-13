@@ -397,7 +397,7 @@ class Context:
         pass
 
     def on_call_ringing(self, evt):
-        self.on_call_ringing(evt)
+        pass
 
     def on_call_requestfailure(self, evt):
         pass
