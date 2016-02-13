@@ -57,6 +57,30 @@ def on_call_ringing(evt):
     print('[%s] on_call_ringing' % evt.did)
 
 
+def on_call_noanswer(evt):
+    global latest_event
+    latest_event = evt
+    print('[%s] on_call_noanswer' % evt.did)
+
+
+def on_call_proceeding(evt):
+    global latest_event
+    latest_event = evt
+    print('[%s] on_call_proceeding' % evt.did)
+
+
+def on_call_serverfailure(evt):
+    global latest_event
+    latest_event = evt
+    print('[%s] on_call_serverfailure' % evt.did)
+
+
+def on_call_released(evt):
+    global latest_event
+    latest_event = evt
+    print('[%s] on_call_released' % evt.did)
+
+
 ctx.on_call_invite = on_call_invite
 ctx.on_call_cancelled = on_call_cancelled
 ctx.on_call_closed = on_call_closed
@@ -64,6 +88,10 @@ ctx.on_call_answered = on_call_answered
 ctx.on_call_ack = on_call_ack
 ctx.on_call_requestfailure = on_call_requestfailure
 ctx.on_call_ringing = on_call_ringing
+ctx.on_call_noanswer = on_call_noanswer
+ctx.on_call_proceeding = on_call_proceeding
+ctx.on_call_serverfailure = on_call_serverfailure
+ctx.on_call_released = on_call_released
 
 print('listening...')
 ctx.listen_on_address()
@@ -85,7 +113,7 @@ while True:
             ctx.call_terminate(latest_event.cid, latest_event.did)
     elif s in ('m', 'makecall'):
         with ctx.lock:
-            invite = call.InitInvite(ctx, 'sip:192.168.56.1', 'sip:example@192.168.56.101', None, None)
+            invite = call.InitInvite(ctx, 'sip:192.168.56.1', 'sip:example@192.168.56.101')
             invite.allows = ['INVITE', 'ACK', 'CANCEL', 'OPTIONS', 'BYE', 'REFER', 'NOTIFY', 'MESSAGE', 'SUBSCRIBE',
                              'INFO', 'UPDATE']
             invite.set_header('Supported', 'outbound')

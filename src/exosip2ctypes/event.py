@@ -16,10 +16,17 @@ __all__ = ['EventType', 'Event']
 
 class EventType(IntEnum):
     """Enumeration of event types
+
+    see: http://www.antisip.com/doc/exosip2/group__eXosip2__event.html
     """
+
+    #: user is successfully registred.
     registration_success = event.EXOSIP_REGISTRATION_SUCCESS
+    #: user is not registred.
     registration_failure = event.EXOSIP_REGISTRATION_FAILURE
+    #: announce a new call
     call_invite = event.EXOSIP_CALL_INVITE
+    #: announce a new INVITE within call
     call_reinvite = event.EXOSIP_CALL_REINVITE
     call_noanswer = event.EXOSIP_CALL_NOANSWER
     call_proceeding = event.EXOSIP_CALL_PROCEEDING

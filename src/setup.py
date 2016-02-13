@@ -5,6 +5,7 @@ setup(
     version='0.1',
     packages=['exosip2ctypes', 'exosip2ctypes._c', 'exosip2ctypes.tests'],
     package_dir={'': 'src'},
+    test_suite='exosipctypes.tests',
     url='',
     license='GPL',
     author='Liu Xue Yan',

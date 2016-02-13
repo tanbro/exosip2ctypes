@@ -380,6 +380,12 @@ class Context:
             self.on_call_requestfailure(evt)
         elif evt.type == EventType.call_noanswer:
             self.on_call_noanswer(evt)
+        elif evt.type == EventType.call_proceeding:
+            self.on_call_proceeding(evt)
+        elif evt.type == EventType.call_serverfailure:
+            self.on_call_serverfailure(evt)
+        elif evt.type == EventType.call_released:
+            self.on_call_released(evt)
 
     def on_call_invite(self, evt):
         pass
@@ -403,4 +409,13 @@ class Context:
         pass
 
     def on_call_noanswer(self, evt):
+        pass
+
+    def on_call_proceeding(self, evt):
+        pass
+
+    def on_call_serverfailure(self, evt):
+        pass
+
+    def on_call_released(self, evt):
         pass
