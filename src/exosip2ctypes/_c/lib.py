@@ -36,6 +36,7 @@ def initialize(path=''):
     _logger.debug('initialize: libc=%s', globs.libc)
     if not globs.libc:
         raise RuntimeError('Can not load "c" library')
+    _logger.info('initialize: <<<')
 
 
 def free(ptr):

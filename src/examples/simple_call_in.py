@@ -1,6 +1,10 @@
 import sys
+import logging.config
 
 from exosip2ctypes import initialize, Context, call
+
+
+logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
 
 initialize()
 ctx = Context()
