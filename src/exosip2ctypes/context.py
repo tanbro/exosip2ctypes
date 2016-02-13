@@ -91,6 +91,11 @@ class Context:
         self._start_cond = threading.Condition()
         self._stop_cond = threading.Condition()
 
+    def __del__(self):
+        if self._started:
+            self.stop()
+        self.quit()
+
     def _loop(self, s, ms):
         """Context main loop
 
@@ -104,13 +109,11 @@ class Context:
         self._start_cond.release()
         try:
             while not self._stop_sentinel:
+                with self._lock:
+                    self.automatic_action()
                 evt = self.event_wait(s, ms)
-                if evt is None:
-                    continue
-                with evt:
-                    with self._lock:
-                        self.automatic_action()
-                    if evt:
+                if evt:
+                    with evt:
                         self.process_event(evt)
         finally:
             self._stop_cond.acquire()
@@ -139,16 +142,17 @@ class Context:
 
     @property
     def started(self):
-        """
-        :return: Is the context's main loop started
+        """Whether the context's main loop started or not
+
+        :rtype: bool
+
+        * Set it to `True` equals :meth:`start()`
+        * Set it to `False` equals :meth:`stop()`
         """
         return self._started
 
     @started.setter
     def started(self, val):
-        """
-        :param bool val: start or stop the context's main loop
-        """
         if val:
             self.start()
         else:
@@ -156,35 +160,33 @@ class Context:
 
     @property
     def user_agent(self):
-        """
-        :return: Context's user agent string
+        """Context's user agent string
+
         :rtype: str
         """
         return b2s(self._user_agent)
 
     @user_agent.setter
     def user_agent(self, val):
-        """
-        :param str val: Context's user agent string
-        """
         self._set_user_agent(val)
         self._user_agent = val
 
     def internal_lock(self):
-        """Lock the eXtented oSIP library.
+        """Lock the eXtented oSIP library, using eXosip's native lock.
         """
         conf.FuncLock.c_func(self._ptr)
 
     def internal_unlock(self):
-        """UnLock the eXtented oSIP library.
+        """UnLock the eXtented oSIP library, using eXosip's native lock.
         """
         conf.FuncUnlock.c_func(self._ptr)
 
     def quit(self):
-        """Release ressource used by the eXtented oSIP library.
+        """Release resource used by the eXtented oSIP library.
         """
-        conf.FuncQuit.c_func(self._ptr)
-        self._ptr = None
+        if self._ptr:
+            conf.FuncQuit.c_func(self._ptr)
+            self._ptr = None
 
     def masquerade_contact(self, public_address, port):
         """This method is used to replace contact address with the public address of your NAT. The ip address should be retreived manually (fixed IP address) or with STUN. This address will only be used when the remote correspondant appears to be on an DIFFERENT LAN.
@@ -250,6 +252,15 @@ class Context:
         auth.FuncAutomaticAction.c_func(self._ptr)
 
     def start(self, s=0, ms=50):
+        """Start the main loop for the context in a new thread, and then return.
+
+        :param int s: timeout value (seconds). Passed to :meth:`event_wait` in the main loop.
+        :param int ms: timeout value (seconds). Passed to :meth:`event_wait` in the main loop.
+        :return: New created thread.
+        :rtype: threading.Thread
+
+        This method will returned soon after the main loop thread started, so it **does not block**.
+        """
         if self._started:
             raise RuntimeError("Context loop already started.")
         self._loop_thread = threading.Thread(target=self._loop, args=(s, ms))
@@ -257,8 +268,13 @@ class Context:
         self._loop_thread.start()
         self._start_cond.wait()
         self._start_cond.release()
+        return self._loop_thread
 
     def stop(self):
+        """Stop the main loop for the context
+
+        Returns after the main loop thread stopped.
+        """
         if not self._started:
             raise RuntimeError("Context loop not started.")
         self._stop_cond.acquire()
@@ -267,6 +283,18 @@ class Context:
         self._stop_cond.release()
 
     def run(self, s=0, ms=50, timeout=None):
+        """Start the main loop for the context in a new thread, and then wait until the thread terminates.
+
+        :param int s: timeout value (seconds). Passed to :meth:`event_wait` in the main loop.
+        :param int ms: timeout value (seconds). Passed to :meth:`event_wait` in the main loop.
+        :param float timeout: When the timeout argument is present and not None, it should be a floating point number
+                              specifying a timeout for the operation in seconds (or fractions thereof)
+
+        This method **blocks**, it equals::
+
+            trd = context.start(s, ms)
+            trd.join(timeout)
+        """
         self.start(s, ms)
         self._loop_thread.join(timeout)
 
@@ -332,6 +360,10 @@ class Context:
         raise_if_osip_error(error_code)
 
     def process_event(self, evt):
+        """Process the events generated in the main loop, and then trigger event callbacks.
+
+        :param Event evt: Event generated in the main loop
+        """
         if evt.type == EventType.call_invite:
             self.on_call_invite(evt)
         elif evt.type == EventType.call_cancelled:
@@ -342,6 +374,12 @@ class Context:
             self.on_call_closed(evt)
         elif evt.type == EventType.call_ack:
             self.on_call_ack(evt)
+        elif evt.type == EventType.call_ringing:
+            self.on_call_ringing(evt)
+        elif evt.type == EventType.call_requestfailure:
+            self.on_call_requestfailure(evt)
+        elif evt.type == EventType.call_noanswer:
+            self.on_call_noanswer(evt)
 
     def on_call_invite(self, evt):
         pass
@@ -356,4 +394,13 @@ class Context:
         pass
 
     def on_call_ack(self, evt):
+        pass
+
+    def on_call_ringing(self, evt):
+        self.on_call_ringing(evt)
+
+    def on_call_requestfailure(self, evt):
+        pass
+
+    def on_call_noanswer(self, evt):
         pass

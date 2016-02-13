@@ -45,11 +45,25 @@ def on_call_answered(evt):
     # print('%s' % evt.response)
 
 
+def on_call_requestfailure(evt):
+    global latest_event
+    latest_event = evt
+    print('[%s] on_call_requestfailure' % evt.did)
+
+
+def on_call_ringing(evt):
+    global latest_event
+    latest_event = evt
+    print('[%s] on_call_ringing' % evt.did)
+
+
 ctx.on_call_invite = on_call_invite
 ctx.on_call_cancelled = on_call_cancelled
 ctx.on_call_closed = on_call_closed
 ctx.on_call_answered = on_call_answered
 ctx.on_call_ack = on_call_ack
+ctx.on_call_requestfailure = on_call_requestfailure
+ctx.on_call_ringing = on_call_ringing
 
 print('listening...')
 ctx.listen_on_address()
