@@ -1,8 +1,8 @@
 """
-@date: 2016-02-03
-@author: liuxy
+:date: 2016-02-03
+:author: liuxy
 """
-
+#: see `osip/include/osipparser2/osip_port.h`
 
 OSIP_SUCCESS = 0
 OSIP_UNDEFINED_ERROR = -1

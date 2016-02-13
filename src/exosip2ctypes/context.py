@@ -392,8 +392,6 @@ class Context(LogMixin):
         :param Event evt: Event generated in the main loop
         """
         self.logger.debug('<%s>process_event: >>> %s', hex(id(self)), evt)
-        # self.logger.debug('<%s>process_event: >>> event<type=%s, cid=%s, did=%s, text_info=%s>',
-        #                   hex(id(self)), evt.type, evt.cid, evt.did, evt.textinfo)
         if evt.type == EventType.call_invite:
             self.on_call_invite(evt)
         elif evt.type == EventType.call_cancelled:
