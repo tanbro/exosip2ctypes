@@ -4,7 +4,9 @@
 Some helper functions
 """
 
-__all__ = ['b2s', 's2b']
+import logging
+
+__all__ = ['b2s', 's2b', 'LogMixin']
 
 
 def b2s(s, encoding='utf-8'):
@@ -38,3 +40,20 @@ def s2b(s, encoding='utf-8'):
         if isinstance(s, str):
             return s.encode(encoding)
     return s
+
+
+class LogMixin:
+    """Mixin Class provide :attr:`logger` which is a :class:`logging.Logger` instance for the Class
+    """
+
+    @property
+    def logger(self):
+        """`logger` instance, `logger` `name` is Class name.
+
+        :rtype logging.Logger:
+        """
+        try:
+            name = self.__class__.__qualname__
+        except AttributeError:
+            name = '.'.join([__name__, self.__class__.__name__])
+        return logging.getLogger(name)

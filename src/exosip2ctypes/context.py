@@ -13,7 +13,7 @@ from ._c import conf, event, auth, call
 from ._c.lib import DLL_NAME
 from .error import MallocError, raise_if_osip_error
 from .event import Event, EventType
-from .utils import b2s, s2b
+from .utils import b2s, s2b, LogMixin
 from .version import get_library_version
 
 __all__ = ['Context', 'ContextLock']
@@ -63,15 +63,20 @@ class ContextLock:
         self.release()
 
 
-class Context:
+class Context(LogMixin):
     def __init__(self, contact_address=(None, 0), using_internal_lock=False):
         """Allocate and Initiate an eXosip context.
 
         :param contact_address: address used in `Contact` header. See :meth:`masquerade_contact`
         :type contact_address: tuple<ip_address: str, port: int>
-        :param bool using_internal_lock: Is the :attr:`lock` using Python stdlib's :class:`threading.Lock` or eXosip2's context lock. Default `False` (using Python's)
+        :param bool using_internal_lock:
+            Is the :attr:`lock` using Python stdlib's :class:`threading.Lock` or eXosip2's native context lock.
+            Default `False` (using Python's)
         """
+        self.logger.info('<%s>__init__: contact_address=%s, using_internal_lock=%s',
+                         id(self), contact_address, using_internal_lock)
         self._ptr = conf.FuncMalloc.c_func()
+        self.logger.debug('<%s>__init__: malloc() -> %s', id(self), self._ptr)
         if self._ptr is None:
             raise MallocError()
         error_code = conf.FuncInit.c_func(self._ptr)
@@ -92,6 +97,7 @@ class Context:
         self._stop_cond = threading.Condition()
 
     def __del__(self):
+        self.logger.info('<%s>__del__', id(self))
         if self._is_running:
             self.stop()
         self.quit()
@@ -103,6 +109,7 @@ class Context:
         :param s: seconds for :meth:`event_wait`
         :param ms: milliseconds for :meth:`event_wait`
         """
+        self.logger.debug('<%s>_loop: >>>', id(self))
         self._start_cond.acquire()
         self._is_running = True
         self._start_cond.notify()
@@ -121,6 +128,7 @@ class Context:
             self._stop_sentinel = False
             self._stop_cond.notify()
             self._stop_cond.release()
+        self.logger.debug('<%s>_loop: <<<', id(self))
 
     def _set_user_agent(self, user_agent):
         conf.FuncSetUserAgent.c_func(self._ptr, c_char_p(s2b(user_agent)))
@@ -184,9 +192,12 @@ class Context:
     def quit(self):
         """Release resource used by the eXtented oSIP library.
         """
+        self.logger.info('<%s>quit: >>>', id(self))
         if self._ptr:
+            self.logger.debug('<%s>quit: quit(%s)', id(self), self._ptr)
             conf.FuncQuit.c_func(self._ptr)
             self._ptr = None
+        self.logger.info('<%s>quit: <<<', id(self))
 
     def masquerade_contact(self, public_address, port):
         """This method is used to replace contact address with the public address of your NAT. The ip address should be retreived manually (fixed IP address) or with STUN. This address will only be used when the remote correspondant appears to be on an DIFFERENT LAN.
@@ -196,6 +207,7 @@ class Context:
         :param str public_address: the ip address.
         :param int port: the port for masquerading.
         """
+        self.logger.info('<%s>masquerade_contact: public_address=%s, port=%s', id(self), public_address, port)
         conf.FuncMasqueradeContact.c_func(
             self._ptr,
             create_string_buffer(s2b(public_address)) if public_address else None,
@@ -212,6 +224,11 @@ class Context:
         :param family: the address to bind (NULL for all interface)
         :param secure: `False` for UDP or TCP, `True` for TLS (with TCP).
         """
+        self.logger.info(
+            '<%s>listen_on_address: '
+            'address=%s, transport=%s, port=%s, family=%s, secure=%s',
+            id(self), address, transport, port, family, secure
+        )
         if transport not in [socket.IPPROTO_TCP, socket.IPPROTO_UDP]:
             raise RuntimeError('Unsupported socket transport type %s' % transport)
         if family not in [socket.AF_INET, socket.AF_INET6]:
@@ -263,6 +280,7 @@ class Context:
 
         Invoke the method equals set :attr:`is_running` to `True`
         """
+        self.logger.info('<%s>start: >>> s=%s, ms=%s', id(self), s, ms)
         if self._is_running:
             raise RuntimeError("Context loop already started.")
         self._loop_thread = threading.Thread(target=self._loop, args=(s, ms))
@@ -270,6 +288,7 @@ class Context:
         self._loop_thread.start()
         self._start_cond.wait()
         self._start_cond.release()
+        self.logger.info('<%s>start: <<<', id(self))
         return self._loop_thread
 
     def stop(self):
@@ -279,12 +298,14 @@ class Context:
 
         Invoke the method equals set :attr:`is_running` to `False`
         """
+        self.logger.info('<%s>stop: >>>', id(self))
         if not self._is_running:
             raise RuntimeError("Context loop not started.")
         self._stop_cond.acquire()
         self._stop_sentinel = True
         self._stop_cond.wait()
         self._stop_cond.release()
+        self.logger.info('<%s>stop: <<<', id(self))
 
     def run(self, s=0, ms=50, timeout=None):
         """Start the main loop for the context in a new thread, and then wait until the thread terminates.
@@ -299,8 +320,10 @@ class Context:
             trd = context.start(s, ms)
             trd.join(timeout)
         """
+        self.logger.info('<%s>run: >>> s=%s, ms=%s, timeout=%s', id(self), s, ms, timeout)
         self.start(s, ms)
         self._loop_thread.join(timeout)
+        self.logger.info('<%s>run: <<<', id(self))
 
     # def send_message(self, message):
     #     if isinstance(message, call.Message):
@@ -368,6 +391,9 @@ class Context:
 
         :param Event evt: Event generated in the main loop
         """
+        self.logger.debug('<%s>process_event: >>> %s', id(self), evt)
+        # self.logger.debug('<%s>process_event: >>> event<type=%s, cid=%s, did=%s, text_info=%s>',
+        #                   id(self), evt.type, evt.cid, evt.did, evt.textinfo)
         if evt.type == EventType.call_invite:
             self.on_call_invite(evt)
         elif evt.type == EventType.call_cancelled:
@@ -390,6 +416,7 @@ class Context:
             self.on_call_serverfailure(evt)
         elif evt.type == EventType.call_released:
             self.on_call_released(evt)
+        self.logger.debug('<%s>process_event: <<<', id(self))
 
     def on_call_invite(self, evt):
         pass

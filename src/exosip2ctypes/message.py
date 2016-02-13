@@ -201,7 +201,9 @@ class ExosipMessage(OsipMessage):
 
         .. danger:: Do **NOT** con/destruct the class yourself unless you known what you are doing.
 
-        .. attention:: In eXosip2, messages are managed inside the library, so we should **NOT** free :class:`OsipMessage` object manually.
+        .. attention::
+            In eXosip2, messages are managed inside the library,
+            so we should **NOT** free :class:`OsipMessage` object manually.
         """
         self._context = context
         super(ExosipMessage, self).__init__(ptr)

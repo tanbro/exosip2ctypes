@@ -1,6 +1,12 @@
 import sys
+import logging.config
 
 from exosip2ctypes import initialize, Context, call
+
+
+logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
+
+logging.info('startup!!!!')
 
 initialize()
 ctx = Context(contact_address=('192.168.56.101', 5060))

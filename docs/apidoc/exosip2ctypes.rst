@@ -11,6 +11,7 @@ Submodules
    exosip2ctypes.error
    exosip2ctypes.event
    exosip2ctypes.message
+   exosip2ctypes.sdp
    exosip2ctypes.utils
    exosip2ctypes.version
 

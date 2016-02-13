@@ -97,6 +97,15 @@ class Event:
     def __del__(self):
         self.dispose()
 
+    def __str__(self):
+        try:
+            cls_name = self.__class__.__qualname__
+        except AttributeError:
+            cls_name = '.'.join([__name__, self.__class__.__name__])
+        return '<%s type:%s textinfo:%s tid:%s did:%s rid:%s cid:%s sid:%s nid:%s>' % (
+            cls_name, self._type, self._textinfo, self._tid, self._did, self._rid, self._cid, self._sid, self._nid
+        )
+
     def dispose(self):
         """Free resource in an eXosip event.
 

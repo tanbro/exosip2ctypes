@@ -44,9 +44,9 @@ class ContextTestCase(unittest.TestCase):
 
     def test_start_and_stop(self):
         self.ctx.start()
-        self.assertTrue(self.ctx.started)
+        self.assertTrue(self.ctx.is_running)
         self.ctx.stop()
-        self.assertFalse(self.ctx.started)
+        self.assertFalse(self.ctx.is_running)
 
 if __name__ == '__main__':
     unittest.main()
