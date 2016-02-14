@@ -12,10 +12,10 @@ DLL_NAME = 'eXosip2'
 _logger = logging.getLogger(__name__)
 
 
-def initialize(path=''):
+def initialize(path=None):
     """Load `libeXosip2` into this Python library
 
-    :param path: `libeXosip2` SO/DLL path.
+    :param str path: `libeXosip2` SO/DLL path, `default` is `None`.
         When `None` or empty string, the function will try to find and load so/dll by :data:`DLL_NAME`
     """
     _logger.info('initialize: >>> path=%s', path)

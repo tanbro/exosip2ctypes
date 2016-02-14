@@ -1,18 +1,37 @@
 # -*- coding: utf-8 -*-
 
+"""
+Error definitions
+
+see `osip/include/osipparser2/osip_port.h`
+"""
 
 from ._c.osip_error import *
 
+__all__ = ['MallocError', 'OsipError', 'OsipUnknownError', 'OsipUndefinedError', 'OsipBadParameter', 'OsipWrongState',
+           'OsipNoMem', 'OsipSyntaxError', 'OsipNotFound', 'OsipApiNotInitialized', 'OsipNoNetwork', 'OsipPortBusy',
+           'OsipUnknownHost', 'OsipDiskFull', 'OsipNoRights', 'OsipFileNotExists', 'OsipTimeout', 'OsipTooMuchCall',
+           'OsipWrongFormat', 'OsipNoCommonCodec']
+
 
 class MallocError(Exception):
+    """
+    Failed to allocate an `eXosip` context.
+    """
     pass
 
 
 class OsipError(Exception):
+    """
+    Base `Osip` error :class:`Exception` Class
+    """
     pass
 
 
 class OsipUnknownError(OsipError):
+    """
+    Osip error, but don't known the error code
+    """
     pass
 
 
@@ -84,6 +103,7 @@ class OsipNoCommonCodec(OsipError):
     pass
 
 
+#: mappings between osip error codes and exception classes
 osip_error_map = {
     OSIP_UNDEFINED_ERROR: OsipUndefinedError,
     OSIP_BADPARAMETER: OsipBadParameter,

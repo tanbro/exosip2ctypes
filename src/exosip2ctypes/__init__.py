@@ -22,6 +22,26 @@ Here are the eXosip capabilities:
    * MESSAGE                  to send Instant Message.
    * SUBSCRIBE/NOTIFY         to handle presence capabilities.
    * any other request        to handle what you want!
+
+Constants
+==========
+
+.. data:: DLL_NAME
+
+    Default so/dll name, value is ``eXosip2``
+
+Functions
+==========
+
+.. function:: initialize(path: str=None) -> None:
+
+    Load `libeXosip2` into this Python library
+
+    :param str path: `libeXosip2` SO/DLL path, `default` is `None`.
+        When `None` or empty string, the function will try to find and load so/dll by :data:`DLL_NAME`
+
+    .. attention:: You **MUST** call this function **FIRST** to initialize `libeXosip2`, before any other actions!
+
 """
 
 from ._c.lib import DLL_NAME, initialize

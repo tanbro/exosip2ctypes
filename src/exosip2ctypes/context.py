@@ -19,50 +19,6 @@ from .version import get_library_version
 __all__ = ['Context', 'ContextLock']
 
 
-class ContextLock:
-    def __init__(self, context):
-        """eXosip Context lock's python class
-
-        :param Context context: Context which the lock is for
-
-        | This class wraps eXosip's native context lock.
-        | Use :meth:`acquire` to lock and :meth:`release` to unlock.
-        | ``with`` statement is supported.
-
-        eg::
-
-            context.lock.acquire()
-            try:
-                do_something()
-                # ...
-            finally:
-                context.lock.release()
-
-        or::
-
-            with context.lock:
-                do_something()
-                # ...
-
-        """
-        self._context = context
-
-    def acquire(self):
-        """lock"""
-        self._context.internal_lock()
-
-    def release(self):
-        """unlock"""
-        self._context.internal_unlock()
-
-    def __enter__(self):
-        self.acquire()
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.release()
-
-
 class Context(LogMixin):
     def __init__(self, contact_address=(None, 0), using_internal_lock=False):
         """Allocate and Initiate an eXosip context.
@@ -448,3 +404,47 @@ class Context(LogMixin):
 
     def on_call_released(self, evt):
         pass
+
+
+class ContextLock:
+    def __init__(self, context):
+        """eXosip Context lock's python class
+
+        :param Context context: Context which the lock is for
+
+        | This class wraps eXosip's native context lock.
+        | Use :meth:`acquire` to lock and :meth:`release` to unlock.
+        | ``with`` statement is supported.
+
+        eg::
+
+            context.lock.acquire()
+            try:
+                do_something()
+                # ...
+            finally:
+                context.lock.release()
+
+        or::
+
+            with context.lock:
+                do_something()
+                # ...
+
+        """
+        self._context = context
+
+    def acquire(self):
+        """lock"""
+        self._context.internal_lock()
+
+    def release(self):
+        """unlock"""
+        self._context.internal_unlock()
+
+    def __enter__(self):
+        self.acquire()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.release()
