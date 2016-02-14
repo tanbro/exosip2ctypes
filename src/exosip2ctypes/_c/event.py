@@ -2,6 +2,8 @@
 
 """
 eXosip2 event API
+
+see: http://www.antisip.com/doc/exosip2/group__eXosip2__event.html
 """
 
 from ctypes import POINTER, Structure, c_uint, c_int, c_void_p, c_char
