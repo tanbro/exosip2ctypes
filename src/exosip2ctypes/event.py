@@ -13,107 +13,7 @@ from ._c import event
 from .utils import b2s
 from .message import OsipMessage
 
-__all__ = ['EventType', 'Event']
-
-
-class EventType(IntEnum):
-    """Enumeration of event types
-    """
-
-    #: user is successfully registred.
-    registration_success = event.EXOSIP_REGISTRATION_SUCCESS
-    #: user is not registred.
-    registration_failure = event.EXOSIP_REGISTRATION_FAILURE
-    #: announce a new call
-    call_invite = event.EXOSIP_CALL_INVITE
-    #: announce a new INVITE within call
-    call_reinvite = event.EXOSIP_CALL_REINVITE
-    #: announce no answer within the timeout
-    call_noanswer = event.EXOSIP_CALL_NOANSWER
-    #: announce processing by a remote app
-    call_proceeding = event.EXOSIP_CALL_PROCEEDING
-    #: announce ringback
-    call_ringing = event.EXOSIP_CALL_RINGING
-    #: announce start of call
-    call_answered = event.EXOSIP_CALL_ANSWERED
-    #: announce a redirection
-    call_redirected = event.EXOSIP_CALL_REDIRECTED
-    #: announce a request failure
-    call_requestfailure = event.EXOSIP_CALL_REQUESTFAILURE
-    #: announce a server failure
-    call_serverfailure = event.EXOSIP_CALL_SERVERFAILURE
-    #: announce a global failure
-    call_globalfailure = event.EXOSIP_CALL_GLOBALFAILURE
-    #: ACK received for 200ok to INVITE
-    call_ack = event.EXOSIP_CALL_ACK
-    #: announce that call has been cancelled
-    call_cancelled = event.EXOSIP_CALL_CANCELLED
-    #: announce new incoming request.
-    call_message_new = event.EXOSIP_CALL_MESSAGE_NEW
-    #: announce a 1xx for request.
-    call_message_proceeding = event.EXOSIP_CALL_MESSAGE_PROCEEDING
-    #: announce a 200ok
-    call_message_answered = event.EXOSIP_CALL_MESSAGE_ANSWERED
-    #: announce a redirection.
-    call_message_redirected = event.EXOSIP_CALL_MESSAGE_REDIRECTED
-    #: announce a failure.
-    call_message_requestfailure = event.EXOSIP_CALL_MESSAGE_REQUESTFAILURE
-    #: announce a failure.
-    call_message_serverfailure = event.EXOSIP_CALL_MESSAGE_SERVERFAILURE
-    #: announce a failure.
-    call_message_globalfailure = event.EXOSIP_CALL_MESSAGE_GLOBALFAILURE
-    #: a BYE was received for this call
-    call_closed = event.EXOSIP_CALL_CLOSED
-    #: call context is cleared.
-    call_released = event.EXOSIP_CALL_RELEASED
-    #: announce new incoming request.
-    message_new = event.EXOSIP_MESSAGE_NEW
-    #: announce a 1xx for request.
-    message_proceeding = event.EXOSIP_MESSAGE_PROCEEDING
-    #: announce a 200ok
-    message_answered = event.EXOSIP_MESSAGE_ANSWERED
-    #: announce a redirection.
-    message_redirected = event.EXOSIP_MESSAGE_REDIRECTED
-    #: announce a failure.
-    message_requestfailure = event.EXOSIP_MESSAGE_REQUESTFAILURE
-    #: announce a failure.
-    message_serverfailure = event.EXOSIP_MESSAGE_SERVERFAILURE
-    #: announce a failure.
-    message_globalfailure = event.EXOSIP_MESSAGE_GLOBALFAILURE
-    #: announce no answer
-    subscription_noanswer = event.EXOSIP_SUBSCRIPTION_NOANSWER
-    #: announce a 1xx
-    subscription_proceeding = event.EXOSIP_SUBSCRIPTION_PROCEEDING
-    #: announce a 200ok
-    subscription_answered = event.EXOSIP_SUBSCRIPTION_ANSWERED
-    #: announce a redirection
-    subscription_redirected = event.EXOSIP_SUBSCRIPTION_REDIRECTED
-    #: announce a request failure
-    subscription_requestfailure = event.EXOSIP_SUBSCRIPTION_REQUESTFAILURE
-    #: announce a server failure
-    subscription_serverfailure = event.EXOSIP_SUBSCRIPTION_SERVERFAILURE
-    #: announce a global failure
-    subscription_globalfailure = event.EXOSIP_SUBSCRIPTION_GLOBALFAILURE
-    #: announce new NOTIFY request
-    subscription_notify = event.EXOSIP_SUBSCRIPTION_NOTIFY
-    #: announce new incoming SUBSCRIBE.
-    in_subscription_new = event.EXOSIP_IN_SUBSCRIPTION_NEW
-    #: announce no answer
-    notification_noanswer = event.EXOSIP_NOTIFICATION_NOANSWER
-    #: announce a 1xx
-    notification_proceeding = event.EXOSIP_NOTIFICATION_PROCEEDING
-    #: announce a 200ok
-    notification_answered = event.EXOSIP_NOTIFICATION_ANSWERED
-    #: announce a redirection
-    notification_redirected = event.EXOSIP_NOTIFICATION_REDIRECTED
-    #: announce a request failure
-    notification_requestfailure = event.EXOSIP_NOTIFICATION_REQUESTFAILURE
-    #: announce a server failure
-    notification_serverfailure = event.EXOSIP_NOTIFICATION_SERVERFAILURE
-    #: announce a global failure
-    notification_globalfailure = event.EXOSIP_NOTIFICATION_GLOBALFAILURE
-    #: MAX number of events
-    event_count = event.EXOSIP_EVENT_COUNT
+__all__ = ['Event', 'EventType']
 
 
 class Event:
@@ -275,3 +175,103 @@ class Event:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.dispose()
+
+
+class EventType(IntEnum):
+    """Enumeration of event types
+    """
+
+    #: user is successfully registred.
+    registration_success = event.EXOSIP_REGISTRATION_SUCCESS
+    #: user is not registred.
+    registration_failure = event.EXOSIP_REGISTRATION_FAILURE
+    #: announce a new call
+    call_invite = event.EXOSIP_CALL_INVITE
+    #: announce a new INVITE within call
+    call_reinvite = event.EXOSIP_CALL_REINVITE
+    #: announce no answer within the timeout
+    call_noanswer = event.EXOSIP_CALL_NOANSWER
+    #: announce processing by a remote app
+    call_proceeding = event.EXOSIP_CALL_PROCEEDING
+    #: announce ringback
+    call_ringing = event.EXOSIP_CALL_RINGING
+    #: announce start of call
+    call_answered = event.EXOSIP_CALL_ANSWERED
+    #: announce a redirection
+    call_redirected = event.EXOSIP_CALL_REDIRECTED
+    #: announce a request failure
+    call_requestfailure = event.EXOSIP_CALL_REQUESTFAILURE
+    #: announce a server failure
+    call_serverfailure = event.EXOSIP_CALL_SERVERFAILURE
+    #: announce a global failure
+    call_globalfailure = event.EXOSIP_CALL_GLOBALFAILURE
+    #: ACK received for 200ok to INVITE
+    call_ack = event.EXOSIP_CALL_ACK
+    #: announce that call has been cancelled
+    call_cancelled = event.EXOSIP_CALL_CANCELLED
+    #: announce new incoming request.
+    call_message_new = event.EXOSIP_CALL_MESSAGE_NEW
+    #: announce a 1xx for request.
+    call_message_proceeding = event.EXOSIP_CALL_MESSAGE_PROCEEDING
+    #: announce a 200ok
+    call_message_answered = event.EXOSIP_CALL_MESSAGE_ANSWERED
+    #: announce a redirection.
+    call_message_redirected = event.EXOSIP_CALL_MESSAGE_REDIRECTED
+    #: announce a failure.
+    call_message_requestfailure = event.EXOSIP_CALL_MESSAGE_REQUESTFAILURE
+    #: announce a failure.
+    call_message_serverfailure = event.EXOSIP_CALL_MESSAGE_SERVERFAILURE
+    #: announce a failure.
+    call_message_globalfailure = event.EXOSIP_CALL_MESSAGE_GLOBALFAILURE
+    #: a BYE was received for this call
+    call_closed = event.EXOSIP_CALL_CLOSED
+    #: call context is cleared.
+    call_released = event.EXOSIP_CALL_RELEASED
+    #: announce new incoming request.
+    message_new = event.EXOSIP_MESSAGE_NEW
+    #: announce a 1xx for request.
+    message_proceeding = event.EXOSIP_MESSAGE_PROCEEDING
+    #: announce a 200ok
+    message_answered = event.EXOSIP_MESSAGE_ANSWERED
+    #: announce a redirection.
+    message_redirected = event.EXOSIP_MESSAGE_REDIRECTED
+    #: announce a failure.
+    message_requestfailure = event.EXOSIP_MESSAGE_REQUESTFAILURE
+    #: announce a failure.
+    message_serverfailure = event.EXOSIP_MESSAGE_SERVERFAILURE
+    #: announce a failure.
+    message_globalfailure = event.EXOSIP_MESSAGE_GLOBALFAILURE
+    #: announce no answer
+    subscription_noanswer = event.EXOSIP_SUBSCRIPTION_NOANSWER
+    #: announce a 1xx
+    subscription_proceeding = event.EXOSIP_SUBSCRIPTION_PROCEEDING
+    #: announce a 200ok
+    subscription_answered = event.EXOSIP_SUBSCRIPTION_ANSWERED
+    #: announce a redirection
+    subscription_redirected = event.EXOSIP_SUBSCRIPTION_REDIRECTED
+    #: announce a request failure
+    subscription_requestfailure = event.EXOSIP_SUBSCRIPTION_REQUESTFAILURE
+    #: announce a server failure
+    subscription_serverfailure = event.EXOSIP_SUBSCRIPTION_SERVERFAILURE
+    #: announce a global failure
+    subscription_globalfailure = event.EXOSIP_SUBSCRIPTION_GLOBALFAILURE
+    #: announce new NOTIFY request
+    subscription_notify = event.EXOSIP_SUBSCRIPTION_NOTIFY
+    #: announce new incoming SUBSCRIBE.
+    in_subscription_new = event.EXOSIP_IN_SUBSCRIPTION_NEW
+    #: announce no answer
+    notification_noanswer = event.EXOSIP_NOTIFICATION_NOANSWER
+    #: announce a 1xx
+    notification_proceeding = event.EXOSIP_NOTIFICATION_PROCEEDING
+    #: announce a 200ok
+    notification_answered = event.EXOSIP_NOTIFICATION_ANSWERED
+    #: announce a redirection
+    notification_redirected = event.EXOSIP_NOTIFICATION_REDIRECTED
+    #: announce a request failure
+    notification_requestfailure = event.EXOSIP_NOTIFICATION_REQUESTFAILURE
+    #: announce a server failure
+    notification_serverfailure = event.EXOSIP_NOTIFICATION_SERVERFAILURE
+    #: announce a global failure
+    notification_globalfailure = event.EXOSIP_NOTIFICATION_GLOBALFAILURE
+    #: MAX number of events
+    event_count = event.EXOSIP_EVENT_COUNT

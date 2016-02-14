@@ -1,103 +1,79 @@
 import sys
 import logging.config
 
-from exosip2ctypes import initialize, Context, call
-
+from exosip2ctypes import initialize, Context, ContextEventHandler, call
 
 logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
-
-logging.info('startup!!!!')
-
-initialize()
-ctx = Context(contact_address=('192.168.56.101', 5060))
 
 latest_event = None
 
 
-def on_call_ack(evt):
-    global latest_event
-    latest_event = evt
-    print('[%s] on_call_ack' % evt.did)
+class MyEventHandler(ContextEventHandler):
+    def on_call_ack(self, evt):
+        global latest_event
+        latest_event = evt
+        print('[%s] on_call_ack' % evt.did)
+
+    def on_call_invite(self, evt):
+        global latest_event
+        latest_event = evt
+        print('[%s] on_call_invite' % evt.did)
+        # print("%s" % evt.request)
+        print('[%s] from: %s' % (evt.did, evt.request.from_))
+        print('[%s] allows: %s' % (evt.did, evt.request.allows))
+        print('[%s] contacts: %s' % (evt.did, evt.request.contacts))
+        for hname in ('User-Agent',):
+            print('[%s] header["%s"]: %s' % (evt.did, hname, evt.request.get_header(hname)))
+
+    def on_call_cancelled(self, evt):
+        global latest_event
+        latest_event = evt
+        print('[%s] call_cancelled' % evt.did)
+
+    def on_call_closed(self, evt):
+        global latest_event
+        latest_event = evt
+        print('[%s] call_closed' % evt.did)
+
+    def on_call_answered(self, evt):
+        global latest_event
+        latest_event = evt
+        print('[%s] on_call_answered' % evt.did)
+        # print('%s' % evt.response)
+
+    def on_call_requestfailure(self, evt):
+        global latest_event
+        latest_event = evt
+        print('[%s] on_call_requestfailure' % evt.did)
+
+    def on_call_ringing(self, evt):
+        global latest_event
+        latest_event = evt
+        print('[%s] on_call_ringing' % evt.did)
+
+    def on_call_noanswer(self, evt):
+        global latest_event
+        latest_event = evt
+        print('[%s] on_call_noanswer' % evt.did)
+
+    def on_call_proceeding(self, evt):
+        global latest_event
+        latest_event = evt
+        print('[%s] on_call_proceeding' % evt.did)
+
+    def on_call_serverfailure(self, evt):
+        global latest_event
+        latest_event = evt
+        print('[%s] on_call_serverfailure' % evt.did)
+
+    def on_call_released(self, evt):
+        global latest_event
+        latest_event = evt
+        print('[%s] on_call_released' % evt.did)
 
 
-def on_call_invite(evt):
-    global latest_event
-    latest_event = evt
-    print('[%s] on_call_invite' % evt.did)
-    # print("%s" % evt.request)
-    print('[%s] from: %s' % (evt.did, evt.request.from_))
-    print('[%s] allows: %s' % (evt.did, evt.request.allows))
-    print('[%s] contacts: %s' % (evt.did, evt.request.contacts))
-    for hname in ('User-Agent',):
-        print('[%s] header["%s"]: %s' % (evt.did, hname, evt.request.get_header(hname)))
-
-
-def on_call_cancelled(evt):
-    global latest_event
-    latest_event = evt
-    print('[%s] call_cancelled' % evt.did)
-
-
-def on_call_closed(evt):
-    global latest_event
-    latest_event = evt
-    print('[%s] call_closed' % evt.did)
-
-
-def on_call_answered(evt):
-    global latest_event
-    latest_event = evt
-    print('[%s] on_call_answered' % evt.did)
-    # print('%s' % evt.response)
-
-
-def on_call_requestfailure(evt):
-    global latest_event
-    latest_event = evt
-    print('[%s] on_call_requestfailure' % evt.did)
-
-
-def on_call_ringing(evt):
-    global latest_event
-    latest_event = evt
-    print('[%s] on_call_ringing' % evt.did)
-
-
-def on_call_noanswer(evt):
-    global latest_event
-    latest_event = evt
-    print('[%s] on_call_noanswer' % evt.did)
-
-
-def on_call_proceeding(evt):
-    global latest_event
-    latest_event = evt
-    print('[%s] on_call_proceeding' % evt.did)
-
-
-def on_call_serverfailure(evt):
-    global latest_event
-    latest_event = evt
-    print('[%s] on_call_serverfailure' % evt.did)
-
-
-def on_call_released(evt):
-    global latest_event
-    latest_event = evt
-    print('[%s] on_call_released' % evt.did)
-
-
-ctx.on_call_invite = on_call_invite
-ctx.on_call_cancelled = on_call_cancelled
-ctx.on_call_closed = on_call_closed
-ctx.on_call_answered = on_call_answered
-ctx.on_call_ack = on_call_ack
-ctx.on_call_requestfailure = on_call_requestfailure
-ctx.on_call_ringing = on_call_ringing
-ctx.on_call_noanswer = on_call_noanswer
-ctx.on_call_proceeding = on_call_proceeding
-ctx.on_call_serverfailure = on_call_serverfailure
-ctx.on_call_released = on_call_released
+initialize()
+ctx = Context(event_handler=MyEventHandler(), contact_address=('192.168.56.101', 5060))
 
 print('listening...')
 ctx.listen_on_address()

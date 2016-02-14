@@ -12,17 +12,18 @@ from ctypes import c_char_p, c_int, create_string_buffer
 from ._c import conf, event, auth, call
 from ._c.lib import DLL_NAME
 from .error import MallocError, raise_if_osip_error
-from .event import Event, EventType
+from .event import Event
 from .utils import b2s, s2b, LogMixin
 from .version import get_library_version
 
-__all__ = ['Context', 'ContextLock']
+__all__ = ['Context', 'ContextEventHandler', 'ContextLock']
 
 
 class Context(LogMixin):
-    def __init__(self, contact_address=(None, 0), using_internal_lock=False):
+    def __init__(self, event_handler=None, contact_address=(None, 0), using_internal_lock=False):
         """Allocate and Initiate an eXosip context.
 
+        :param ContextEventHandler event_handler: An object gathers all event callbacks for the context
         :param contact_address: address used in `Contact` header. See :meth:`masquerade_contact`
         :type contact_address: tuple<ip_address: str, port: int>
         :param bool using_internal_lock:
@@ -32,7 +33,7 @@ class Context(LogMixin):
         self.logger.info('<%s>__init__: contact_address=%s, using_internal_lock=%s',
                          hex(id(self)), contact_address, using_internal_lock)
         self._ptr = conf.FuncMalloc.c_func()
-        self.logger.debug('<%s>__init__: malloc() -> %s', hex(id(self)), self._ptr)
+        self.logger.debug('<%s>__init__: eXosip_malloc() -> %s', hex(id(self)), self._ptr)
         if self._ptr is None:
             raise MallocError()
         error_code = conf.FuncInit.c_func(self._ptr)
@@ -51,6 +52,7 @@ class Context(LogMixin):
         self._loop_thread = None
         self._start_cond = threading.Condition()
         self._stop_cond = threading.Condition()
+        self._event_handler = event_handler
 
     def __del__(self):
         self.logger.info('<%s>__del__', hex(id(self)))
@@ -94,6 +96,18 @@ class Context(LogMixin):
         """C Pointer to the context's `eXosip_t` C structure
         """
         return self._ptr
+
+    @property
+    def event_handler(self):
+        """Event handler for the context
+
+        :rtype: ContextEventHandler
+        """
+        return self._event_handler
+
+    @event_handler.setter
+    def event_handler(self, val):
+        self._event_handler = val
 
     @property
     def lock(self):
@@ -152,7 +166,7 @@ class Context(LogMixin):
         """
         self.logger.info('<%s>quit: >>>', hex(id(self)))
         if self._ptr:
-            self.logger.debug('<%s>quit: quit(%s)', hex(id(self)), self._ptr)
+            self.logger.debug('<%s>quit: eXosip_quit(%s)', hex(id(self)), self._ptr)
             conf.FuncQuit.c_func(self._ptr)
             self._ptr = None
         self.logger.info('<%s>quit: <<<', hex(id(self)))
@@ -208,7 +222,7 @@ class Context(LogMixin):
 
         :param int s: timeout value (seconds).
         :param int ms: timeout value (seconds).
-        :return: event triggered, `None` if nothing happened
+        :return: triggered event, `None` if nothing happened
         :rtype: Event
         """
         evt_ptr = event.FuncEventWait.c_func(self._ptr, c_int(s), c_int(ms))
@@ -351,30 +365,54 @@ class Context(LogMixin):
 
         :param Event evt: Event generated in the main loop
         """
-        self.logger.debug('<%s>process_event: >>> %s', hex(id(self)), evt)
-        if evt.type == EventType.call_invite:
-            self.on_call_invite(evt)
-        elif evt.type == EventType.call_cancelled:
-            self.on_call_cancelled(evt)
-        elif evt.type == EventType.call_answered:
-            self.on_call_answered(evt)
-        elif evt.type == EventType.call_closed:
-            self.on_call_closed(evt)
-        elif evt.type == EventType.call_ack:
-            self.on_call_ack(evt)
-        elif evt.type == EventType.call_ringing:
-            self.on_call_ringing(evt)
-        elif evt.type == EventType.call_requestfailure:
-            self.on_call_requestfailure(evt)
-        elif evt.type == EventType.call_noanswer:
-            self.on_call_noanswer(evt)
-        elif evt.type == EventType.call_proceeding:
-            self.on_call_proceeding(evt)
-        elif evt.type == EventType.call_serverfailure:
-            self.on_call_serverfailure(evt)
-        elif evt.type == EventType.call_released:
-            self.on_call_released(evt)
-        self.logger.debug('<%s>process_event: <<<', hex(id(self)))
+        self.logger.debug('<%s>process_event: <%s> %s', hex(id(self)), hex(id(evt)), evt)
+        if not self._event_handler:
+            return
+        callback_name = 'on_{}'.format(str(evt.type).split('.')[-1])
+        callback = getattr(self._event_handler, callback_name, None)
+        if callable(callback):
+            self.logger.debug('<%s>process_event: <%s> callback >>> "%s"', hex(id(self)), hex(id(evt)), callback_name)
+            callback(evt)
+            self.logger.debug('<%s>process_event: <%s> callback <<< "%s"', hex(id(self)), hex(id(evt)), callback_name)
+
+
+class ContextEventHandler:
+    """This Class gathers all event callbacks for a context
+
+    You can inherit the class, define the event handler callback methods in the inherited class::
+
+        class MyEventHandler(ContextEventHandler):
+            def on_call_invite(self, evt):
+                # do sth...
+                pass
+
+            def on_xxxx(self, evt):
+                # do sth...
+                pass
+
+    or just assign callable object to the instance::
+
+        handler = ContextEventHandler()
+
+        def my_on_call_invite(evt):
+            # do sth...
+            pass
+
+        handler.on_call_invite = my_on_call_invite
+
+    Event handler callback methods names format are: ``on_<event_type>``, eg:
+
+      * ``on_call_invite``
+      * ``on_call_answered``
+      * ``on_call_closed``
+      * ``on_xxx``
+
+    In which, the ``<event_type>`` part is name of :class:`exosip2ctypes.event.EventType` enum item.
+
+    Every event handler callback method has only one parameter,
+    whose data type is :class:`exosip2ctypes.event.Event`,
+    you can use it to retrieve the triggered event.
+    """
 
     def on_call_invite(self, evt):
         pass
@@ -438,6 +476,13 @@ class ContextLock:
         """
         self._context = context
 
+    def __enter__(self):
+        self.acquire()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.release()
+
     def acquire(self):
         """lock"""
         self._context.internal_lock()
@@ -445,10 +490,3 @@ class ContextLock:
     def release(self):
         """unlock"""
         self._context.internal_unlock()
-
-    def __enter__(self):
-        self.acquire()
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.release()
