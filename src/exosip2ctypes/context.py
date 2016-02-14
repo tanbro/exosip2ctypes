@@ -99,19 +99,21 @@ class Context(LogMixin):
     def lock(self):
         """eXosip Context lock.
 
-        :return: Python stdlib's `threading.Lock` if `using_internal_lock` is `False`, else eXosip's native lock.
         :type: :class:`ContextLock` or :class:`threading.Lock`
+
+        Returns a Python stdlib's `threading.Lock` object if `using_internal_lock` is `False` (see :class:`Context`),
+        else an eXosip native lock's wrapper class( :class:`ContextLock` ) object.
         """
         return self._lock
 
     @property
     def is_running(self):
-        """Whether the context's main loop started or not
+        """Is the context's main loop running
 
         :rtype: bool
 
-        * Set it to `True` equals :meth:`start()`
-        * Set it to `False` equals :meth:`stop()`
+        * Set it to `True` equals calling :meth:`start()`
+        * Set it to `False` equals calling :meth:`stop()`
         """
         return self._is_running
 
@@ -156,7 +158,9 @@ class Context(LogMixin):
         self.logger.info('<%s>quit: <<<', hex(id(self)))
 
     def masquerade_contact(self, public_address, port):
-        """This method is used to replace contact address with the public address of your NAT. The ip address should be retreived manually (fixed IP address) or with STUN. This address will only be used when the remote correspondant appears to be on an DIFFERENT LAN.
+        """This method is used to replace contact address with the public address of your NAT.
+        The ip address should be retrieved manually (fixed IP address) or with STUN.
+        This address will only be used when the remote correspondent appears to be on an DIFFERENT LAN.
 
         If set to `None`, then the local ip address will be guessed automatically (returns to default mode).
 
@@ -174,11 +178,11 @@ class Context(LogMixin):
                           secure=False):
         """Listen on a specified socket.
 
-        :param address: the address to bind (`NULL` for all interface)
-        :param transport: `IPPROTO_UDP` for udp. (soon to come: TCP/TLS?)
-        :param port: the listening port. (0 for random port)
-        :param family: the address to bind (NULL for all interface)
-        :param secure: `False` for UDP or TCP, `True` for TLS (with TCP).
+        :param str address: the address to bind (`NULL` for all interface)
+        :param int transport: `IPPROTO_UDP` for udp. (soon to come: TCP/TLS?)
+        :param int port: the listening port. (0 for random port)
+        :param int family: the IP family (AF_INET or AF_INET6).
+        :param bool secure: `False` for UDP or TCP, `True` for TLS (with TCP).
         """
         self.logger.info(
             '<%s>listen_on_address: '
@@ -216,11 +220,11 @@ class Context(LogMixin):
     def automatic_action(self):
         """Initiate some automatic actions:
 
-            * Retry with credentials upon reception of 401/407.
-            * Retry with higher Session-Expires upon reception of 422.
-            * Refresh REGISTER and SUBSCRIBE before the expiration delay.
-            * Retry with Contact header upon reception of 3xx request.
-            * Send automatic UPDATE for session-timer feature.
+        * Retry with credentials upon reception of 401/407.
+        * Retry with higher Session-Expires upon reception of 422.
+        * Refresh REGISTER and SUBSCRIBE before the expiration delay.
+        * Retry with Contact header upon reception of 3xx request.
+        * Send automatic UPDATE for session-timer feature.
         """
         auth.FuncAutomaticAction.c_func(self._ptr)
 
@@ -244,7 +248,7 @@ class Context(LogMixin):
         self._loop_thread.start()
         self._start_cond.wait()
         self._start_cond.release()
-        self.logger.info('<%s>start: <<<', hex(id(self)))
+        self.logger.info('<%s>start: <<< -> %s', hex(id(self)), self._loop_thread)
         return self._loop_thread
 
     def stop(self):
