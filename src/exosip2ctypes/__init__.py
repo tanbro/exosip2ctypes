@@ -47,3 +47,6 @@ Functions
 from ._c.lib import DLL_NAME, initialize
 from .context import *
 from .version import *
+
+
+__version__ = version
