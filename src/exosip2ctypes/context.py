@@ -366,7 +366,11 @@ class Context(LogMixin):
         :param Event evt: Event generated in the main loop
         """
         self.logger.debug('<%s>process_event: %s', hex(id(self)), evt)
-        callback = getattr(self._event_handler, 'on_{0.type.name}'.format(evt).lower(), None)
+        callback_name = 'on_{0.type.name}'.format(evt).lower()
+        if isinstance(self._event_handler, dict):
+            callback = self._event_handler.get(callback_name, None)
+        else:
+            callback = getattr(self._event_handler, callback_name, None)
         if callable(callback):
             self.logger.debug('<%s>process_event: %s: callback >>>', hex(id(self)), evt)
             callback(self, evt)
