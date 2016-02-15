@@ -1,14 +1,14 @@
 import sys
 import logging.config
 
-from exosip2ctypes import initialize, Context, ContextEventHandler, call
+from exosip2ctypes import initialize, Context, call
 
 logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
 
 latest_event = None
 
 
-class MyEventHandler(ContextEventHandler):
+class MyEventHandler:
     def on_call_invite(self, context, evt):
         global latest_event
         latest_event = evt
@@ -31,11 +31,11 @@ class MyEventHandler(ContextEventHandler):
         latest_event = evt
         print('[%s] call_closed' % evt.did)
 
+
 initialize()
 ctx = Context()
 ctx.event_handler = MyEventHandler()
 ctx.masquerade_contact('192.168.56.101', 5060)
-
 
 print('listening...')
 ctx.listen_on_address()

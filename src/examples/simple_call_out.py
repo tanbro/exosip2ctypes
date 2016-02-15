@@ -1,14 +1,14 @@
 import sys
 import logging.config
 
-from exosip2ctypes import initialize, Context, ContextEventHandler, call
+from exosip2ctypes import initialize, Context, call
 
 logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
 
 latest_event = None
 
 
-class MyEventHandler(ContextEventHandler):
+class MyEventHandler:
     def on_call_ack(self, context, evt):
         global latest_event
         latest_event = evt

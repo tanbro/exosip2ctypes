@@ -366,7 +366,7 @@ class Context(LogMixin):
         :param Event evt: Event generated in the main loop
         """
         self.logger.debug('<%s>process_event: %s', hex(id(self)), evt)
-        callback_name = 'on_{0.type.name}'.format(evt).lower()
+        callback_name = 'on_{0.type.name}'.format(evt)
         if isinstance(self._event_handler, dict):
             callback = self._event_handler.get(callback_name, None)
         else:
@@ -378,7 +378,7 @@ class Context(LogMixin):
 
 
 class ContextEventHandler:
-    """A null class gathers all event callbacks for a context
+    """A class where defines event callbacks for a context
 
     You can inherit it or write your own handler class, and define event handler callback methods in the your class::
 
@@ -393,7 +393,7 @@ class ContextEventHandler:
 
         ctx.event_handler = MyEventHandler()
 
-    Or just assign callable objects to the instance's on_xxx attribute::
+    Or just assign callable objects to the instance's on_xxx attributes::
 
         def my_on_call_invite(ctx, evt):
             # do sth...
@@ -411,12 +411,16 @@ class ContextEventHandler:
 
     In which, the ``<event_type>`` part is :class:`exosip2ctypes.event.EventType` enumeration member item name.
 
-    Every event handler callback method has tow parameter:
+    Every event handler callback method has two parameters:
 
         1. :class:`Context` ``ctx`` - eXosip context on which event triggered.
         2. :class:`exosip2ctypes.event.Event` ``evt`` - triggered event.
 
     See :class:`exosip2ctypes.event.EventType` for event types definitions.
+
+    .. tip::
+        Any `dict` has `on_<event_type>` key or `object` has `on_<event_type>` attributes,
+        and the attributes/items are callable who has two parameters an be assigned to the :attr:`Context.event_handler`
     """
     pass
 

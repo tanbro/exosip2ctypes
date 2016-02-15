@@ -44,14 +44,16 @@ class Event:
             cls_name = self.__class__.__qualname__
         except AttributeError:
             cls_name = '.'.join([__name__, self.__class__.__name__])
-        # return '<%s instance at %s, type:%s textinfo:%s tid:%s did:%s rid:%s cid:%s sid:%s nid:%s>' % (
-        #     cls_name, hex(id(self)),
-        #     self._type, self._textinfo, self._tid, self._did, self._rid, self._cid, self._sid, self._nid
-        # )
         return '<{} instance at 0x{:x}, type:{} textinfo:{!r} tid:{} did:{} rid:{} cid:{} sid:{} nid:{}>'.format(
             cls_name, id(self),
-            str(self._type), self._textinfo, self._tid, self._did, self._rid, self._cid, self._sid, self._nid
+            self._type.name, self._textinfo, self._tid, self._did, self._rid, self._cid, self._sid, self._nid
         )
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.dispose()
 
     def dispose(self):
         """Free resource in an eXosip event.
@@ -60,8 +62,9 @@ class Event:
 
             Cause `eXosip` do not manage the `struct eXosip_event_t *` automatic, we shall free it manually!
             The memory free action is done in :class:`Event` 's destruction.
-            so you can either ``del`` the event object or use the ``with`` statement,
-            python's GC will free memory when the object is destructed.
+            So you can either ``del`` the :class:`Event` object or use the ``with`` statement
+            (which is advised, :meth:`dispose` was called by destructor, python's GC will free the C Structure),
+            or call :meth:`dispose`
         """
         if self._ptr:
             event.FuncEventFree.c_func(self._ptr)
@@ -174,12 +177,6 @@ class Event:
         """
         return self._ss_reason
 
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.dispose()
-
 
 class EventType(IntEnum):
     """Enumeration of event types
@@ -277,5 +274,5 @@ class EventType(IntEnum):
     notification_serverfailure = event.EXOSIP_NOTIFICATION_SERVERFAILURE
     #: announce a global failure
     notification_globalfailure = event.EXOSIP_NOTIFICATION_GLOBALFAILURE
-    #: MAX number of events
-    event_count = event.EXOSIP_EVENT_COUNT
+    # #: MAX number of events
+    # event_count = event.EXOSIP_EVENT_COUNT
