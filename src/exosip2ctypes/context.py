@@ -365,40 +365,38 @@ class Context(LogMixin):
 
         :param Event evt: Event generated in the main loop
         """
-        self.logger.debug('<%s>process_event: <%s> %s', hex(id(self)), hex(id(evt)), evt)
-        if not self._event_handler:
-            return
-        callback_name = 'on_{}'.format(str(evt.type).split('.')[-1])
-        callback = getattr(self._event_handler, callback_name, None)
+        self.logger.debug('<%s>process_event: %s', hex(id(self)), evt)
+        callback = getattr(self._event_handler, 'on_{0.type.name}'.format(evt).lower(), None)
         if callable(callback):
-            self.logger.debug('<%s>process_event: <%s> callback >>> "%s"', hex(id(self)), hex(id(evt)), callback_name)
-            callback(evt)
-            self.logger.debug('<%s>process_event: <%s> callback <<< "%s"', hex(id(self)), hex(id(evt)), callback_name)
+            self.logger.debug('<%s>process_event: %s: callback >>>', hex(id(self)), evt)
+            callback(self, evt)
+            self.logger.debug('<%s>process_event: %s: callback <<<', hex(id(self)), evt)
 
 
 class ContextEventHandler:
-    """This Class gathers all event callbacks for a context
+    """A null class gathers all event callbacks for a context
 
-    You can inherit the class, define the event handler callback methods in the inherited class::
+    You can inherit it or write your own handler class, and define event handler callback methods in the your class::
 
         class MyEventHandler(ContextEventHandler):
-            def on_call_invite(self, evt):
+            def on_call_invite(self, ctx, evt):
                 # do sth...
                 pass
 
-            def on_xxxx(self, evt):
+            def on_xxxx(self, ctx, evt):
                 # do sth...
                 pass
 
-    or just assign callable object to the instance::
+        ctx.event_handler = MyEventHandler()
 
-        handler = ContextEventHandler()
+    Or just assign callable objects to the instance's on_xxx attribute::
 
-        def my_on_call_invite(evt):
+        def my_on_call_invite(ctx, evt):
             # do sth...
             pass
 
-        handler.on_call_invite = my_on_call_invite
+        ctx.event_handler = ContextEventHandler()
+        ctx.event_handler.on_call_invite = my_on_call_invite
 
     Event handler callback methods names format are: ``on_<event_type>``, eg:
 
@@ -407,45 +405,16 @@ class ContextEventHandler:
       * ``on_call_closed``
       * ``on_xxx``
 
-    In which, the ``<event_type>`` part is name of :class:`exosip2ctypes.event.EventType` enum item.
+    In which, the ``<event_type>`` part is :class:`exosip2ctypes.event.EventType` enumeration member item name.
 
-    Every event handler callback method has only one parameter,
-    whose data type is :class:`exosip2ctypes.event.Event`,
-    you can use it to retrieve the triggered event.
+    Every event handler callback method has tow parameter:
+
+        1. :class:`Context` ``ctx`` - eXosip context on which event triggered.
+        2. :class:`exosip2ctypes.event.Event` ``evt`` - triggered event.
+
+    See :class:`exosip2ctypes.event.EventType` for event types definitions.
     """
-
-    def on_call_invite(self, evt):
-        pass
-
-    def on_call_cancelled(self, evt):
-        pass
-
-    def on_call_answered(self, evt):
-        pass
-
-    def on_call_closed(self, evt):
-        pass
-
-    def on_call_ack(self, evt):
-        pass
-
-    def on_call_ringing(self, evt):
-        pass
-
-    def on_call_requestfailure(self, evt):
-        pass
-
-    def on_call_noanswer(self, evt):
-        pass
-
-    def on_call_proceeding(self, evt):
-        pass
-
-    def on_call_serverfailure(self, evt):
-        pass
-
-    def on_call_released(self, evt):
-        pass
+    pass
 
 
 class ContextLock:

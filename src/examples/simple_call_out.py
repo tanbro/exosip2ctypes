@@ -9,12 +9,12 @@ latest_event = None
 
 
 class MyEventHandler(ContextEventHandler):
-    def on_call_ack(self, evt):
+    def on_call_ack(self, context, evt):
         global latest_event
         latest_event = evt
         print('[%s] on_call_ack' % evt.did)
 
-    def on_call_invite(self, evt):
+    def on_call_invite(self, context, evt):
         global latest_event
         latest_event = evt
         print('[%s] on_call_invite' % evt.did)
@@ -25,48 +25,48 @@ class MyEventHandler(ContextEventHandler):
         for hname in ('User-Agent',):
             print('[%s] header["%s"]: %s' % (evt.did, hname, evt.request.get_header(hname)))
 
-    def on_call_cancelled(self, evt):
+    def on_call_cancelled(self, context, evt):
         global latest_event
         latest_event = evt
         print('[%s] call_cancelled' % evt.did)
 
-    def on_call_closed(self, evt):
+    def on_call_closed(self, context, evt):
         global latest_event
         latest_event = evt
         print('[%s] call_closed' % evt.did)
 
-    def on_call_answered(self, evt):
+    def on_call_answered(self, context, evt):
         global latest_event
         latest_event = evt
         print('[%s] on_call_answered' % evt.did)
         # print('%s' % evt.response)
 
-    def on_call_requestfailure(self, evt):
+    def on_call_requestfailure(self, context, evt):
         global latest_event
         latest_event = evt
         print('[%s] on_call_requestfailure' % evt.did)
 
-    def on_call_ringing(self, evt):
+    def on_call_ringing(self, context, evt):
         global latest_event
         latest_event = evt
         print('[%s] on_call_ringing' % evt.did)
 
-    def on_call_noanswer(self, evt):
+    def on_call_noanswer(self, context, evt):
         global latest_event
         latest_event = evt
         print('[%s] on_call_noanswer' % evt.did)
 
-    def on_call_proceeding(self, evt):
+    def on_call_proceeding(self, context, evt):
         global latest_event
         latest_event = evt
         print('[%s] on_call_proceeding' % evt.did)
 
-    def on_call_serverfailure(self, evt):
+    def on_call_serverfailure(self, context, evt):
         global latest_event
         latest_event = evt
         print('[%s] on_call_serverfailure' % evt.did)
 
-    def on_call_released(self, evt):
+    def on_call_released(self, context, evt):
         global latest_event
         latest_event = evt
         print('[%s] on_call_released' % evt.did)

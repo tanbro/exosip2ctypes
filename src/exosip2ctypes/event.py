@@ -6,7 +6,6 @@ eXosip2 event API
 see: http://www.antisip.com/doc/exosip2/group__eXosip2__event.html
 """
 
-from ctypes import string_at, byref
 from enum import IntEnum
 
 from ._c import event
@@ -45,8 +44,13 @@ class Event:
             cls_name = self.__class__.__qualname__
         except AttributeError:
             cls_name = '.'.join([__name__, self.__class__.__name__])
-        return '<%s type:%s textinfo:%s tid:%s did:%s rid:%s cid:%s sid:%s nid:%s>' % (
-            cls_name, self._type, self._textinfo, self._tid, self._did, self._rid, self._cid, self._sid, self._nid
+        # return '<%s instance at %s, type:%s textinfo:%s tid:%s did:%s rid:%s cid:%s sid:%s nid:%s>' % (
+        #     cls_name, hex(id(self)),
+        #     self._type, self._textinfo, self._tid, self._did, self._rid, self._cid, self._sid, self._nid
+        # )
+        return '<{} instance at 0x{:x}, type:{} textinfo:{!r} tid:{} did:{} rid:{} cid:{} sid:{} nid:{}>'.format(
+            cls_name, id(self),
+            str(self._type), self._textinfo, self._tid, self._did, self._rid, self._cid, self._sid, self._nid
         )
 
     def dispose(self):

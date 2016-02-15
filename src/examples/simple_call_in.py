@@ -9,7 +9,7 @@ latest_event = None
 
 
 class MyEventHandler(ContextEventHandler):
-    def on_call_invite(self, evt):
+    def on_call_invite(self, context, evt):
         global latest_event
         latest_event = evt
         print('[%s] on_call_invite' % evt.did)
@@ -21,12 +21,12 @@ class MyEventHandler(ContextEventHandler):
         for hname in ('User-Agent',):
             print('[%s] header["%s"]: %s' % (evt.did, hname, evt.request.get_header(hname)))
 
-    def on_call_cancelled(self, evt):
+    def on_call_cancelled(self, context, evt):
         global latest_event
         latest_event = evt
         print('[%s] call_cancelled' % evt.did)
 
-    def on_call_closed(self, evt):
+    def on_call_closed(self, context, evt):
         global latest_event
         latest_event = evt
         print('[%s] call_closed' % evt.did)
