@@ -6,7 +6,7 @@ Some helper functions
 
 import logging
 
-__all__ = ['b2s', 's2b', 'LogMixin']
+__all__ = ['b2s', 's2b', 'LoggerMixin']
 
 
 def b2s(s, encoding='utf-8'):
@@ -42,18 +42,20 @@ def s2b(s, encoding='utf-8'):
     return s
 
 
-class LogMixin:
+class LoggerMixin:
     """Mixin Class provide :attr:`logger` which is a :class:`logging.Logger` instance for the Class
     """
 
     @property
     def logger(self):
-        """`logger` instance, `logger` `name` is Class name.
+        """`logger` instance.
 
         :rtype logging.Logger:
+
+        logger name format is `ModuleName.ClassName`
         """
         try:
-            name = self.__class__.__qualname__
+            name = '{0.__module__:s}.{0.__qualname__:s}'.format(self.__class__)
         except AttributeError:
-            name = '.'.join([__name__, self.__class__.__name__])
+            name = '{0.__module__:s}.{0.__name__:s}'.format(self.__class__)
         return logging.getLogger(name)

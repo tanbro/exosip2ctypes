@@ -13,13 +13,17 @@ from ._c import conf, event, auth, call
 from ._c.lib import DLL_NAME
 from .error import MallocError, raise_if_osip_error
 from .event import Event
-from .utils import b2s, s2b, LogMixin
+from .utils import b2s, s2b, LoggerMixin
 from .version import get_library_version
 
 __all__ = ['Context', 'ContextEventHandler', 'ContextLock']
 
 
-class Context(LogMixin):
+class BaseContext:
+    pass
+
+
+class Context(BaseContext, LoggerMixin):
     def __init__(self, event_handler=None, contact_address=(None, 0), using_internal_lock=False):
         """Allocate and Initiate an eXosip context.
 

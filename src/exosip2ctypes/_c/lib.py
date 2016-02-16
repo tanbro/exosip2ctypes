@@ -6,7 +6,7 @@ from ctypes.util import find_library
 
 from . import globs
 
-#: Default so/dll name
+# : Default so/dll name
 DLL_NAME = 'eXosip2'
 
 _logger = logging.getLogger(__name__)
@@ -24,10 +24,12 @@ def initialize(path=None):
     if not path:
         _logger.debug('initialize: find_library "%s"', DLL_NAME)
         path = find_library(DLL_NAME)
+        if not path:
+            raise RuntimeError('Failed to find library {}'.format(DLL_NAME))
     _logger.debug('initialize: CDLL %s', path)
     globs.libexosip2 = CDLL(path)
     if not globs.libexosip2:
-        raise RuntimeError('Failed to load library %s' % path)
+        raise RuntimeError('Failed to load library {}'.format(path))
     _logger.debug('initialize: libexosip2=%s', globs.libexosip2)
     for cls in globs.func_classes:
         cls.bind()
