@@ -470,6 +470,8 @@ class ContextLock:
             with context.lock:
                 do_something()
                 # ...
+
+        .. danger:: Do **NOT** construct the class yourself, using :attr:`Context.lock`
         """
         self._context = context
 

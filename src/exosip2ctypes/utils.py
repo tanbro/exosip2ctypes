@@ -25,7 +25,7 @@ def to_bytes(s, encoding='utf-8'):
     * In Python 2, return original `s` if it's not `unicode`.
     * In Python 2, it equals to :func:`to_str`.
     * In Python 3, convert `s` to `bytes` if it's `unicode` or `str`.
-    * In Python 3, return original `s` if it's neither `unicode` nor `unicode`.
+    * In Python 3, return original `s` if it's neither `unicode` nor `str`.
     """
     if isinstance(s, unicode):
         return s.encode(encoding)

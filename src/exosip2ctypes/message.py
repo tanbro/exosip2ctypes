@@ -157,7 +157,7 @@ class OsipMessage:
         """Find an "unknown" header. (not defined in oSIP)
 
         :param str name: The name of the header to find.
-        :param pos: The index where to start searching for the header.
+        :param int pos: The index where to start searching for the header.
         :return: header's value string
         :rtype: str
         :raises KeyError: if header name not found
@@ -191,6 +191,10 @@ class OsipMessage:
         raise_if_osip_error(error_code)
 
     def set_body(self, val):
+        """Fill the body of message.
+
+        :param str val: Body string.
+        """
         buf = create_string_buffer(to_bytes(val))
         err_code = osip_parser.FuncMessageSetBody.c_func(self._ptr, buf, len(buf))
         raise_if_osip_error(err_code)
@@ -200,7 +204,7 @@ class ExosipMessage(OsipMessage):
     def __init__(self, ptr, context):
         """class for eXosip2 message API
 
-        :param c_void_p ptr: Pointer to the `osip_message_t` structure in C library
+        :param ctypes.c_void_p ptr: Pointer to the `osip_message_t` structure in C library
         :param Context context: eXosip context
 
         .. danger:: Do **NOT** con/destruct the class yourself unless you known what you are doing.
@@ -217,8 +221,8 @@ class ExosipMessage(OsipMessage):
 
     @property
     def context(self):
-        """
-        :return: eXosip context of the message
+        """eXosip context of the message
+
         :rtype: Context
         """
         return self._context
