@@ -1,12 +1,17 @@
 import unittest
-
+import sys
+import logging
 from time import time
 
 from exosip2ctypes import initialize, Context
 
+logging.basicConfig(
+    level=logging.DEBUG, stream=sys.stdout,
+    format='%(asctime)-15s [%(threadName)-10s] [%(levelname)-7s] %(name)s - %(message)s'
+)
+
 
 class ContextTestCase(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         initialize()
@@ -47,6 +52,7 @@ class ContextTestCase(unittest.TestCase):
         self.assertTrue(self.ctx.is_running)
         self.ctx.stop()
         self.assertFalse(self.ctx.is_running)
+
 
 if __name__ == '__main__':
     unittest.main()

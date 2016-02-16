@@ -3,7 +3,11 @@ import logging.config
 
 from exosip2ctypes import initialize, Context, call
 
-logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
+logging.basicConfig(
+    level=logging.DEBUG, stream=sys.stdout,
+    format='%(asctime)-15s [%(threadName)-10s] [%(levelname)-7s] %(name)s - %(message)s'
+)
+
 
 latest_event = None
 

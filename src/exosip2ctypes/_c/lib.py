@@ -6,7 +6,7 @@ from ctypes.util import find_library
 
 from . import globs
 
-# : Default so/dll name
+#: Default so/dll name
 DLL_NAME = 'eXosip2'
 
 _logger = logging.getLogger(__name__)

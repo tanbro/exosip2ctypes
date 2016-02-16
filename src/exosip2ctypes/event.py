@@ -41,9 +41,9 @@ class Event:
 
     def __str__(self):
         try:
-            cls_name = self.__class__.__qualname__
+            cls_name = '{0.__module__:s}.{0.__qualname__:s}'.format(self.__class__)
         except AttributeError:
-            cls_name = '.'.join([__name__, self.__class__.__name__])
+            cls_name = '{0.__module__:s}.{0.__name__:s}'.format(self.__class__)
         return '<{} instance at 0x{:x}, type:{} textinfo:{!r} tid:{} did:{} rid:{} cid:{} sid:{} nid:{}>'.format(
             cls_name, id(self),
             self._type.name, self._textinfo, self._tid, self._did, self._rid, self._cid, self._sid, self._nid
