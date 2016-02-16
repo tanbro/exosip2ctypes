@@ -1,4 +1,5 @@
 import sys
+import logging
 import logging.config
 
 from exosip2ctypes import initialize, Context, call

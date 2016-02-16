@@ -24,33 +24,27 @@ class BaseContext:
 
 
 class Context(BaseContext, LoggerMixin):
-    def __init__(self, event_handler=None, contact_address=(None, 0), using_internal_lock=False):
+    def __init__(self, event_handler=None, contact_address=(None, 0)):
         """Allocate and Initiate an eXosip context.
 
         :param ContextEventHandler event_handler: An object gathers all event callbacks for the context
         :param contact_address: address used in `Contact` header. See :meth:`masquerade_contact`
         :type contact_address: tuple<ip_address: str, port: int>
-        :param bool using_internal_lock:
-            Is the :attr:`lock` using Python stdlib's :class:`threading.Lock` or eXosip2's native context lock.
-            Default `False` (using Python's)
         """
-        self.logger.info('<0x%xs>__init__: contact_address=%s, using_internal_lock=%s',
-                         id(self), contact_address, using_internal_lock)
+        self.logger.info('<0x%xs>__init__: contact_address=%s', id(self), contact_address)
         self._ptr = conf.FuncMalloc.c_func()
         self.logger.debug('<0x%xs>__init__: eXosip_malloc() -> %s', id(self), self._ptr)
         if self._ptr is None:
             raise MallocError()
         error_code = conf.FuncInit.c_func(self._ptr)
         raise_if_osip_error(error_code)
+        self._locked = False
+        self._lock = ContextLock(self)
         if contact_address[0]:
             self.masquerade_contact(*contact_address)
         self._user_agent = '{} ({} ({}/{}))'.format(DLL_NAME, get_library_version(), platform.machine(),
                                                     platform.system())
         self._set_user_agent(self._user_agent)
-        if using_internal_lock:
-            self._lock = ContextLock(self)
-        else:
-            self._lock = threading.Lock()
         self._is_running = False
         self._stop_sentinel = False
         self._loop_thread = None
@@ -82,6 +76,7 @@ class Context(BaseContext, LoggerMixin):
                     self.automatic_action()
                 evt = self.event_wait(s, ms)
                 if evt:
+                    self.logger.debug('<0x%xs>_loop: event_wait() -> %s', id(self), evt)
                     with evt:
                         self.process_event(evt)
         finally:
@@ -117,12 +112,17 @@ class Context(BaseContext, LoggerMixin):
     def lock(self):
         """eXosip Context lock.
 
-        :type: :class:`ContextLock` or :class:`threading.Lock`
-
-        Returns a Python stdlib's `threading.Lock` object if `using_internal_lock` is `False` (see :class:`Context`),
-        else an eXosip native lock's wrapper class( :class:`ContextLock` ) object.
+        :type: :class:`ContextLock`
         """
         return self._lock
+
+    @property
+    def locked(self):
+        """True if the context has been acquired by some thread, False if not.
+
+        :rtype: bool
+        """
+        return self._locked
 
     @property
     def is_running(self):
@@ -155,14 +155,16 @@ class Context(BaseContext, LoggerMixin):
         self._set_user_agent(val)
         self._user_agent = val
 
-    def internal_lock(self):
+    def lock_acquire(self):
         """Lock the eXtented oSIP library, using eXosip's native lock.
         """
         conf.FuncLock.c_func(self._ptr)
+        self._locked = True
 
-    def internal_unlock(self):
+    def lock_release(self):
         """UnLock the eXtented oSIP library, using eXosip's native lock.
         """
+        self._locked = False
         conf.FuncUnlock.c_func(self._ptr)
 
     def quit(self):
@@ -226,7 +228,7 @@ class Context(BaseContext, LoggerMixin):
 
         :param int s: timeout value (seconds).
         :param int ms: timeout value (seconds).
-        :return: triggered event, `None` if nothing happened
+        :return: event or `None` if no event
         :rtype: Event
         """
         evt_ptr = event.FuncEventWait.c_func(self._ptr, c_int(s), c_int(ms))
@@ -369,8 +371,7 @@ class Context(BaseContext, LoggerMixin):
 
         :param Event evt: Event generated in the main loop
         """
-        self.logger.debug('<0x%xs>process_event: %s', id(self), evt)
-        callback_name = 'on_{0.type.name}'.format(evt)
+        callback_name = 'on_{}'.format(evt.type.name)
         if isinstance(self._event_handler, dict):
             callback = self._event_handler.get(callback_name, None)
         else:
@@ -425,6 +426,10 @@ class ContextEventHandler:
     .. tip::
         Any `dict` has `on_<event_type>` key or `object` has `on_<event_type>` attributes,
         and the attributes/items are callable who has two parameters an be assigned to the :attr:`Context.event_handler`
+
+    .. warning::
+        Events are fired in the context's main loop thread,
+        so the event handler function should return as soon as possible to avoid blocking the main loop.
     """
     pass
 
@@ -453,7 +458,6 @@ class ContextLock:
             with context.lock:
                 do_something()
                 # ...
-
         """
         self._context = context
 
@@ -465,9 +469,16 @@ class ContextLock:
         self.release()
 
     def acquire(self):
-        """lock"""
-        self._context.internal_lock()
+        """lock the context"""
+        self._context.lock_acquire()
 
     def release(self):
-        """unlock"""
-        self._context.internal_unlock()
+        """unlock the context"""
+        self._context.lock_release()
+
+    def locked(self):
+        """Return the status of the lock: True if it has been acquired by some thread, False if not.
+
+        :rtype: bool
+        """
+        return self._context.locked

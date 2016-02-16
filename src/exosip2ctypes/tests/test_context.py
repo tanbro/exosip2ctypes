@@ -1,7 +1,9 @@
 import unittest
 import sys
+import threading
+import random
 import logging
-from time import time
+from time import time, sleep
 
 from exosip2ctypes import initialize, Context
 
@@ -24,12 +26,51 @@ class ContextTestCase(unittest.TestCase):
         self.ctx = None
 
     def test_lock(self):
-        self.ctx.internal_lock()
-        self.ctx.internal_unlock()
-        with self.ctx.lock:
-            pass
-        self.ctx.lock.acquire()
-        self.ctx.lock.release()
+        self.assertFalse(self.ctx.lock.locked())
+
+        flag = 0
+
+        def r1():
+            sleep(random.random())
+            self.ctx.lock_acquire()
+            self.assertTrue(self.ctx.lock.locked())
+            nonlocal flag
+            flag = 1
+            sleep(random.random())
+            self.assertEqual(flag, 1)
+            self.ctx.lock_release()
+
+        def r2():
+            sleep(random.random())
+            with self.ctx.lock:
+                self.assertTrue(self.ctx.lock.locked())
+                nonlocal flag
+                flag = 2
+                sleep(random.random())
+                self.assertEqual(flag, 2)
+
+        def r3():
+            sleep(random.random())
+            self.ctx.lock.acquire()
+            self.assertTrue(self.ctx.lock.locked())
+            nonlocal flag
+            flag = 3
+            sleep(random.random())
+            self.assertEqual(flag, 3)
+            self.ctx.lock.release()
+
+        t1 = threading.Thread(target=r1)
+        t2 = threading.Thread(target=r2)
+        t3 = threading.Thread(target=r3)
+        thread_list = [t1, t2, t3]
+        random.shuffle(thread_list)
+        for ti in thread_list:
+            ti.start()
+        random.shuffle(thread_list)
+        for ti in thread_list:
+            ti.join()
+        #
+        self.assertFalse(self.ctx.lock.locked())
 
     def test_listen(self):
         self.ctx.listen_on_address()
