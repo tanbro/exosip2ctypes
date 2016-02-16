@@ -13,7 +13,7 @@ from ._c import conf, event, auth, call
 from ._c.lib import DLL_NAME
 from .error import MallocError, raise_if_osip_error
 from .event import Event
-from .utils import b2s, s2b, LoggerMixin
+from .utils import to_str, to_bytes, LoggerMixin
 from .version import get_library_version
 
 __all__ = ['Context', 'ContextEventHandler', 'ContextLock']
@@ -28,8 +28,14 @@ class Context(BaseContext, LoggerMixin):
         """Allocate and Initiate an eXosip context.
 
         :param ContextEventHandler event_handler: An object gathers all event callbacks for the context
-        :param contact_address: address used in `Contact` header. See :meth:`masquerade_contact`
-        :type contact_address: tuple<ip_address: str, port: int>
+
+        :param tuple contact_address: Address used in `Contact` header
+
+            This `tuple` parameter has two items:
+              0. `str` - the ip address.
+              1. `int` - the port for masquerading.
+
+            You can leave this parameter as default value, and call :meth:`masquerade_contact` later.
         """
         self.logger.info('<0x%x>__init__: contact_address=%s', id(self), contact_address)
         self._ptr = conf.FuncMalloc.c_func()
@@ -90,11 +96,13 @@ class Context(BaseContext, LoggerMixin):
         self.logger.debug('<0x%x>_loop: <<<', id(self))
 
     def _set_user_agent(self, user_agent):
-        conf.FuncSetUserAgent.c_func(self._ptr, c_char_p(s2b(user_agent)))
+        conf.FuncSetUserAgent.c_func(self._ptr, c_char_p(to_bytes(user_agent)))
 
     @property
     def ptr(self):
         """C Pointer to the context's `eXosip_t` C structure
+
+        :rtype: ctypes.c_void_p
         """
         return self._ptr
 
@@ -150,7 +158,7 @@ class Context(BaseContext, LoggerMixin):
 
         :rtype: str
         """
-        return b2s(self._user_agent)
+        return to_str(self._user_agent)
 
     @user_agent.setter
     def user_agent(self, val):
@@ -192,7 +200,7 @@ class Context(BaseContext, LoggerMixin):
         self.logger.info('<0x%x>masquerade_contact: public_address=%s, port=%s', id(self), public_address, port)
         conf.FuncMasqueradeContact.c_func(
             self._ptr,
-            create_string_buffer(s2b(public_address)) if public_address else None,
+            create_string_buffer(to_bytes(public_address)) if public_address else None,
             c_int(port) if public_address else 0
         )
 
@@ -218,7 +226,7 @@ class Context(BaseContext, LoggerMixin):
         error_code = conf.FuncListenAddr.c_func(
             self._ptr,
             c_int(transport),
-            c_char_p(s2b(address)),
+            c_char_p(to_bytes(address)),
             c_int(port),
             c_int(family),
             c_int(secure)
@@ -414,18 +422,20 @@ class ContextEventHandler:
       * ``on_call_closed``
       * ``on_xxx``
 
-    In which, the ``<event_type>`` part is :class:`exosip2ctypes.event.EventType` enumeration member item name.
+    In which, the ``<event_type>`` part is
+    :class:`EventType<exosip2ctypes.event.EventType>` enumeration member item's name.
 
     Every event handler callback method has two parameters:
 
         1. :class:`Context` ``ctx`` - eXosip context on which event triggered.
-        2. :class:`exosip2ctypes.event.Event` ``evt`` - triggered event.
+        2. :class:`Event<exosip2ctypes.event.Event>` ``evt`` - triggered event.
 
-    See :class:`exosip2ctypes.event.EventType` for event types definitions.
+    See :class:`EventType<exosip2ctypes.event.EventType>` for event types definitions.
 
     .. tip::
-        Any `dict` has `on_<event_type>` key or `object` has `on_<event_type>` attributes,
-        and the attributes/items are callable who has two parameters an be assigned to the :attr:`Context.event_handler`
+        Any `dict` has `on_<event_type>` keys or `object` has `on_<event_type>` attributes,
+        and the values/attributes are callable who has two parameters an be assigned to
+        :attr:`Context.event_handler`.
 
     .. warning::
         Events are fired in the context's main loop thread,

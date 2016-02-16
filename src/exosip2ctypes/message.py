@@ -4,14 +4,14 @@ from ctypes import POINTER, byref, create_string_buffer, string_at, c_void_p, c_
 
 from ._c import lib, osip_parser, osip_content_type, osip_from, osip_header, osip_content_length
 from .error import raise_if_osip_error
-from .utils import b2s, s2b
+from .utils import to_str, to_bytes
 
 
 class OsipMessage:
     def __init__(self, ptr):
         """class for osip2 message API
 
-        :param c_void_p ptr: Pointer to the `osip_message_t` structure in C library
+        :param ctypes.c_void_p ptr: Pointer to the `osip_message_t` structure in C library
         """
         self._ptr = ptr
 
@@ -28,10 +28,14 @@ class OsipMessage:
             return None
         result = string_at(dest)
         lib.free(dest)
-        return b2s(result)
+        return to_str(result)
 
     @property
     def ptr(self):
+        """Pointer to the `osip_message_t` C Structure
+
+        :rtype: ctypes.c_void_p
+        """
         return self._ptr
 
     @property
@@ -42,11 +46,11 @@ class OsipMessage:
         """
         ret = osip_parser.FuncMessageGetCallId.c_func(self._ptr)
         result = ret.contents.number
-        return b2s(result)
+        return to_str(result)
 
     @call_id.setter
     def call_id(self, val):
-        buf = create_string_buffer(s2b(val))
+        buf = create_string_buffer(to_bytes(val))
         error_code = osip_parser.FuncMessageSetCallId.c_func(self._ptr, buf)
         raise_if_osip_error(error_code)
 
@@ -66,11 +70,11 @@ class OsipMessage:
             return None
         result = string_at(dest)
         lib.free(dest)
-        return b2s(result)
+        return to_str(result)
 
     @content_type.setter
     def content_type(self, val):
-        buf = create_string_buffer(s2b(val))
+        buf = create_string_buffer(to_bytes(val))
         err_code = osip_parser.FuncMessageSetContentType.c_func(self._ptr, buf)
         raise_if_osip_error(err_code)
 
@@ -88,11 +92,11 @@ class OsipMessage:
             return None
         result = string_at(dest)
         lib.free(dest)
-        return b2s(result)
+        return to_str(result)
 
     @from_.setter
     def from_(self, val):
-        buf = create_string_buffer(s2b(val))
+        buf = create_string_buffer(to_bytes(val))
         error_code = osip_parser.FuncMessageSetFrom.c_func(self._ptr, buf)
         raise_if_osip_error(error_code)
 
@@ -114,14 +118,14 @@ class OsipMessage:
             raise_if_osip_error(error_code)
             contact = string_at(pch_contact)
             lib.free(pch_contact)
-            result.append(b2s(contact))
+            result.append(to_str(contact))
             pos += 1
         return result
 
     @contacts.setter
     def contacts(self, val):
         contacts_str = ','.join(val)
-        buf = create_string_buffer(s2b(contacts_str))
+        buf = create_string_buffer(to_bytes(contacts_str))
         error_code = osip_parser.FuncMessageSetContact.c_func(self._ptr, buf)
         raise_if_osip_error(error_code)
 
@@ -138,14 +142,14 @@ class OsipMessage:
             ret = osip_parser.FuncMessageGetAllow.c_func(self._ptr, c_int(pos), byref(dest))
             if int(ret) < 0:
                 break
-            result.append(b2s(dest.contents.value))
+            result.append(to_str(dest.contents.value))
             pos += 1
         return result
 
     @allows.setter
     def allows(self, val):
         allows_str = ', '.join(val)
-        buf = create_string_buffer(s2b(allows_str))
+        buf = create_string_buffer(to_bytes(allows_str))
         error_code = osip_parser.FuncMessageSetAllow.c_func(self._ptr, buf)
         raise_if_osip_error(error_code)
 
@@ -158,7 +162,7 @@ class OsipMessage:
         :rtype: str
         :raises KeyError: if header name not found
         """
-        pc_name = create_string_buffer(s2b(name))
+        pc_name = create_string_buffer(to_bytes(name))
         p_header = POINTER(osip_header.Header)()
         found_pos = osip_parser.FuncMessageHeaderGetByName.c_func(
             self._ptr,
@@ -169,7 +173,7 @@ class OsipMessage:
         if found_pos < 0:
             raise KeyError('Header by name "{}" can not be found in the SIP message'.format(name))
         value = p_header.contents.hvalue
-        return b2s(value)
+        return to_str(value)
 
     def set_header(self, name, value):
         """Allocate and Add an "unknown" header (not defined in oSIP).
@@ -177,8 +181,8 @@ class OsipMessage:
         :param str name: The token name.
         :param str value: The token value.
         """
-        pc_name = create_string_buffer(s2b(name))
-        pc_value = create_string_buffer(s2b(value))
+        pc_name = create_string_buffer(to_bytes(name))
+        pc_value = create_string_buffer(to_bytes(value))
         error_code = osip_parser.FuncMessageSetHeader.c_func(
             self._ptr,
             pc_name,
@@ -187,7 +191,7 @@ class OsipMessage:
         raise_if_osip_error(error_code)
 
     def set_body(self, val):
-        buf = create_string_buffer(s2b(val))
+        buf = create_string_buffer(to_bytes(val))
         err_code = osip_parser.FuncMessageSetBody.c_func(self._ptr, buf, len(buf))
         raise_if_osip_error(err_code)
 

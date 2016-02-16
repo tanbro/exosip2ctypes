@@ -4,10 +4,10 @@
 
 This file provide the API needed to control calls. You can use it to:
 
-    * build initial invite.
-    * send initial invite.
-    * build request within the call.
-    * send request within the call.
+* build initial invite.
+* send initial invite.
+* build request within the call.
+* send request within the call.
 
 This API can be used to build the following messages:
    INVITE, INFO, OPTIONS, REFER, UPDATE, NOTIFY
@@ -18,7 +18,7 @@ from ctypes import byref, create_string_buffer, c_void_p, c_int
 from ._c import call
 from .error import raise_if_osip_error
 from .message import ExosipMessage
-from .utils import s2b
+from .utils import to_bytes
 
 __all__ = ['InitInvite', 'Ack', 'Answer']
 
@@ -34,10 +34,10 @@ class InitInvite(ExosipMessage):
         :param str subject: Subject for the call.
         """
         ptr = c_void_p()  # osip_message_t* invite = NULL;
-        pc_to = create_string_buffer(s2b(to))
-        pc_from = create_string_buffer(s2b(from_))
-        pc_route = create_string_buffer(s2b(route)) if route else None
-        pc_subject = create_string_buffer(s2b(subject)) if subject else None
+        pc_to = create_string_buffer(to_bytes(to))
+        pc_from = create_string_buffer(to_bytes(from_))
+        pc_route = create_string_buffer(to_bytes(route)) if route else None
+        pc_subject = create_string_buffer(to_bytes(subject)) if subject else None
         error_code = call.FuncCallBuildInitialInvite.c_func(
             context.ptr, byref(ptr), pc_to, pc_from, pc_route, pc_subject
         )

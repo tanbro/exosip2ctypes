@@ -300,3 +300,8 @@ texinfo_documents = [
 # "init"
 # Only the __init__ method’s docstring is inserted.
 autoclass_content = 'both'
+
+
+# -- Options for sphinx.ext.intersphinx  -------------------------------------------
+extensions.append('sphinx.ext.intersphinx')
+intersphinx_mapping = {'python': ('http://docs.python.org/%d.%d' % (sys.version_info[0], sys.version_info[1]), None)}

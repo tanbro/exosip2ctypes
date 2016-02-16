@@ -9,7 +9,7 @@ see: http://www.antisip.com/doc/exosip2/group__eXosip2__event.html
 from enum import IntEnum
 
 from ._c import event
-from .utils import b2s
+from .utils import to_str
 from .message import OsipMessage
 
 __all__ = ['Event', 'EventType']
@@ -19,11 +19,18 @@ class Event:
     def __init__(self, ptr):
         """Class for event description
 
-        :param ptr: Pointer to `struct eXosip_event_t`
+        :param ctypes.c_void_p ptr: `struct eXosip_event_t *ptr`
+
+        .. attention::
+            Cause `eXosip` do not manage the `struct eXosip_event_t *` automatic, we shall free it manually!
+            The memory free action is done in :class:`Event` 's destruction.
+            So you can either ``del`` the :class:`Event` object or use the ``with`` statement
+            (which is advised, :meth:`dispose` was called by destructor, python's GC will free the C Structure),
+            or call :meth:`dispose`
         """
         self._ptr = ptr
         self._type = EventType(int(ptr.contents.type))
-        self._textinfo = b2s(ptr.contents.textinfo)
+        self._textinfo = to_str(ptr.contents.textinfo)
         self._request = OsipMessage(ptr.contents.request)
         self._response = OsipMessage(ptr.contents.response)
         self._ack = OsipMessage(ptr.contents.ack)
@@ -56,16 +63,7 @@ class Event:
         self.dispose()
 
     def dispose(self):
-        """Free resource in an eXosip event.
-
-        .. attention::
-
-            Cause `eXosip` do not manage the `struct eXosip_event_t *` automatic, we shall free it manually!
-            The memory free action is done in :class:`Event` 's destruction.
-            So you can either ``del`` the :class:`Event` object or use the ``with`` statement
-            (which is advised, :meth:`dispose` was called by destructor, python's GC will free the C Structure),
-            or call :meth:`dispose`
-        """
+        """Free resource in an eXosip event."""
         if self._ptr:
             event.FuncEventFree.c_func(self._ptr)
             self._ptr = None

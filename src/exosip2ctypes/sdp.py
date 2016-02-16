@@ -8,7 +8,7 @@ from ctypes import byref, create_string_buffer, string_at, c_char_p
 
 from ._c import sdp
 from .error import raise_if_osip_error
-from .utils import b2s, s2b
+from .utils import to_str, to_bytes
 
 
 class SdpMessage:

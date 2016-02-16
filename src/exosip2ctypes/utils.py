@@ -6,40 +6,69 @@ Some helper functions
 
 import logging
 
-__all__ = ['b2s', 's2b', 'LoggerMixin']
+__all__ = ['to_bytes', 'to_str', 'to_unicode', 'LoggerMixin']
+
+if bytes != str:  # Python 3
+    #: Define text string data type, same as that in Python 2.x.
+    unicode = str
 
 
-def b2s(s, encoding='utf-8'):
-    """Ensure to get a `str` string
+def to_bytes(s, encoding='utf-8'):
+    """Convert to `bytes` string.
 
-    Return original `s` if it is not a `str` string
-
-    :param s: `unicode` or `bytes` string
-    :type s: bytes or unicode
-    :param str encoding: codec
-    :return: `str` string, it's `bytes` in Python 2.x, `unicode` in Python3.x
-    :rtype: str
-    """
-    if bytes != str:
-        if isinstance(s, bytes):
-            return s.decode(encoding)
-    return s
-
-
-def s2b(s, encoding='utf-8'):
-    """Ensure to get a `bytes` string
-
-    Return original `s` if it is not a `unicode` string
-
-    :param unicode s: `unicode` or `bytes` string
-    :param str encoding: codec
-    :return: `bytes` string, it equals `bytes` in Python 2.x
+    :param s: String to convert.
+    :param str encoding: Encoding codec.
+    :return: `bytes` string, it's `bytes` or `str` in Python 2.x, `bytes` in Python 3.x.
     :rtype: bytes
+
+    * In Python 2, convert `s` to `bytes` if it's `unicode`.
+    * In Python 2, return original `s` if it's not `unicode`.
+    * In Python 2, it equals to :func:`to_str`.
+    * In Python 3, convert `s` to `bytes` if it's `unicode` or `str`.
+    * In Python 3, return original `s` if it's neither `unicode` nor `unicode`.
     """
-    if bytes != str:
-        if isinstance(s, str):
-            return s.encode(encoding)
+    if isinstance(s, unicode):
+        return s.encode(encoding)
     return s
+
+
+def to_str(s, encoding='utf-8'):
+    """Convert to `str` string.
+
+    :param s: String to convert.
+    :param str encoding: Decoding codec.
+    :return: `str` string, it's `bytes` in Python 2.x, `unicode` or `str` in Python 3.x.
+    :rtype: str
+
+    * In Python 2, convert `s` to `str` if it's `unicode`.
+    * In Python 2, return original `s` if it's not `unicode`.
+    * In Python 2, it equals to :func:`to_bytes`.
+    * In Python 3, convert `s` to `str` if it's `bytes`.
+    * In Python 3, return original `s` if it's not `bytes`.
+    * In Python 3, it equals to :func:`to_unicode`.
+    """
+    if bytes == str:  # Python 2
+        return to_bytes(s, encoding)
+    else:  # Python 3
+        return to_unicode(s, encoding)
+
+
+def to_unicode(s, encoding='utf-8'):
+    """Convert to `unicode` string.
+
+    :param s: String to convert.
+    :param str encoding: Encoding codec.
+    :return: `unicode` string, it's `unicode` in Python 2.x, `str` or `unicode` in Python 3.x.
+    :rtype: unicode
+
+    * In Python 2, convert `s` to `unicode` if it's `str` or `bytes`.
+    * In Python 2, return original `s` if it's neither `str` or `bytes`.
+    * In Python 3, convert `s` to `str` or `unicode` if it's `bytes`.
+    * In Python 3, return original `s` if it's not `bytes`.
+    * In Python 3, it equals to :func:`to_str`.
+    """
+    if isinstance(s, bytes):
+        return s.decode(encoding)
 
 
 class LoggerMixin:
