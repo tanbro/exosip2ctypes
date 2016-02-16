@@ -29,7 +29,8 @@ def to_bytes(s, encoding='utf-8'):
     """
     if isinstance(s, unicode):
         return s.encode(encoding)
-    return s
+    else:
+        return s
 
 
 def to_str(s, encoding='utf-8'):
@@ -69,6 +70,8 @@ def to_unicode(s, encoding='utf-8'):
     """
     if isinstance(s, bytes):
         return s.decode(encoding)
+    else:
+        return s
 
 
 class LoggerMixin:

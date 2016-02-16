@@ -96,7 +96,8 @@ class Context(BaseContext, LoggerMixin):
         self.logger.debug('<0x%x>_loop: <<<', id(self))
 
     def _set_user_agent(self, user_agent):
-        conf.FuncSetUserAgent.c_func(self._ptr, c_char_p(to_bytes(user_agent)))
+        pch = create_string_buffer(to_bytes(user_agent))
+        conf.FuncSetUserAgent.c_func(self._ptr, pch)
 
     @property
     def ptr(self):
