@@ -31,9 +31,9 @@ class Context(BaseContext, LoggerMixin):
         :param contact_address: address used in `Contact` header. See :meth:`masquerade_contact`
         :type contact_address: tuple<ip_address: str, port: int>
         """
-        self.logger.info('<0x%xs>__init__: contact_address=%s', id(self), contact_address)
+        self.logger.info('<0x%x>__init__: contact_address=%s', id(self), contact_address)
         self._ptr = conf.FuncMalloc.c_func()
-        self.logger.debug('<0x%xs>__init__: eXosip_malloc() -> %s', id(self), self._ptr)
+        self.logger.debug('<0x%x>__init__: eXosip_malloc() -> %s', id(self), self._ptr)
         if self._ptr is None:
             raise MallocError()
         error_code = conf.FuncInit.c_func(self._ptr)
@@ -53,19 +53,21 @@ class Context(BaseContext, LoggerMixin):
         self._event_handler = event_handler
 
     def __del__(self):
-        self.logger.info('<0x%xs>__del__', id(self))
+        self.logger.info('<0x%x>__del__', id(self))
         if self._is_running:
             self.stop()
-        self.quit()
+        if self._ptr:
+            self.quit()
 
     def _loop(self, s, ms):
-        """Context main loop
+        """Context main loop.
 
-        It won't return util :meth:`stop` called or set :attr:`started` to `False`
         :param s: seconds for :meth:`event_wait`
         :param ms: milliseconds for :meth:`event_wait`
+
+        It's running in a separated thread, and won't return util :meth:`stop` called or set :attr:`started` to `False`
         """
-        self.logger.debug('<0x%xs>_loop: >>>', id(self))
+        self.logger.debug('<0x%x>_loop: >>>', id(self))
         self._start_cond.acquire()
         self._is_running = True
         self._start_cond.notify()
@@ -76,7 +78,7 @@ class Context(BaseContext, LoggerMixin):
                     self.automatic_action()
                 evt = self.event_wait(s, ms)
                 if evt:
-                    self.logger.debug('<0x%xs>_loop: event_wait() -> %s', id(self), evt)
+                    self.logger.debug('<0x%x>_loop: event_wait() -> %s', id(self), evt)
                     with evt:
                         self.process_event(evt)
         finally:
@@ -85,7 +87,7 @@ class Context(BaseContext, LoggerMixin):
             self._stop_sentinel = False
             self._stop_cond.notify()
             self._stop_cond.release()
-        self.logger.debug('<0x%xs>_loop: <<<', id(self))
+        self.logger.debug('<0x%x>_loop: <<<', id(self))
 
     def _set_user_agent(self, user_agent):
         conf.FuncSetUserAgent.c_func(self._ptr, c_char_p(s2b(user_agent)))
@@ -112,7 +114,7 @@ class Context(BaseContext, LoggerMixin):
     def lock(self):
         """eXosip Context lock.
 
-        :type: :class:`ContextLock`
+        :rtype: :class:`ContextLock`
         """
         return self._lock
 
@@ -130,8 +132,8 @@ class Context(BaseContext, LoggerMixin):
 
         :rtype: bool
 
-        * Set it to `True` equals calling :meth:`start()`
-        * Set it to `False` equals calling :meth:`stop()`
+        * Setting to `True` equals to call :meth:`start()`
+        * Setting to `False` equals to call :meth:`stop()`
         """
         return self._is_running
 
@@ -156,13 +158,13 @@ class Context(BaseContext, LoggerMixin):
         self._user_agent = val
 
     def lock_acquire(self):
-        """Lock the eXtented oSIP library, using eXosip's native lock.
+        """Lock the eXtented oSIP library.
         """
         conf.FuncLock.c_func(self._ptr)
         self._locked = True
 
     def lock_release(self):
-        """UnLock the eXtented oSIP library, using eXosip's native lock.
+        """UnLock the eXtented oSIP library.
         """
         self._locked = False
         conf.FuncUnlock.c_func(self._ptr)
@@ -170,12 +172,12 @@ class Context(BaseContext, LoggerMixin):
     def quit(self):
         """Release resource used by the eXtented oSIP library.
         """
-        self.logger.info('<0x%xs>quit: >>>', id(self))
+        self.logger.info('<0x%x>quit: >>>', id(self))
         if self._ptr:
-            self.logger.debug('<0x%xs>quit: eXosip_quit(%s)', id(self), self._ptr)
+            self.logger.debug('<0x%x>quit: eXosip_quit(%s)', id(self), self._ptr)
             conf.FuncQuit.c_func(self._ptr)
             self._ptr = None
-        self.logger.info('<0x%xs>quit: <<<', id(self))
+        self.logger.info('<0x%x>quit: <<<', id(self))
 
     def masquerade_contact(self, public_address, port):
         """This method is used to replace contact address with the public address of your NAT.
@@ -187,7 +189,7 @@ class Context(BaseContext, LoggerMixin):
         :param str public_address: the ip address.
         :param int port: the port for masquerading.
         """
-        self.logger.info('<0x%xs>masquerade_contact: public_address=%s, port=%s', id(self), public_address, port)
+        self.logger.info('<0x%x>masquerade_contact: public_address=%s, port=%s', id(self), public_address, port)
         conf.FuncMasqueradeContact.c_func(
             self._ptr,
             create_string_buffer(s2b(public_address)) if public_address else None,
@@ -205,14 +207,14 @@ class Context(BaseContext, LoggerMixin):
         :param bool secure: `False` for UDP or TCP, `True` for TLS (with TCP).
         """
         self.logger.info(
-            '<0x%xs>listen_on_address: '
+            '<0x%x>listen_on_address: '
             'address=%s, transport=%s, port=%s, family=%s, secure=%s',
             id(self), address, transport, port, family, secure
         )
         if transport not in [socket.IPPROTO_TCP, socket.IPPROTO_UDP]:
-            raise RuntimeError('Unsupported socket transport type %s' % transport)
+            raise RuntimeError('Unsupported socket transport type {}'.format(transport))
         if family not in [socket.AF_INET, socket.AF_INET6]:
-            raise RuntimeError('Unsupported socket family type %s' % family)
+            raise RuntimeError('Unsupported socket family type {}'.format(family))
         error_code = conf.FuncListenAddr.c_func(
             self._ptr,
             c_int(transport),
@@ -258,9 +260,9 @@ class Context(BaseContext, LoggerMixin):
 
         This method returns soon after the main loop thread started, so it **does not block**.
 
-        Invoke the method equals set :attr:`is_running` to `True`
+        Equal to set :attr:`is_running` to `True`
         """
-        self.logger.info('<0x%xs>start: >>> s=%s, ms=%s', id(self), s, ms)
+        self.logger.info('<0x%x>start: >>> s=%s, ms=%s', id(self), s, ms)
         if self._is_running:
             raise RuntimeError("Context loop already started.")
         self._loop_thread = threading.Thread(target=self._loop, args=(s, ms))
@@ -268,24 +270,22 @@ class Context(BaseContext, LoggerMixin):
         self._loop_thread.start()
         self._start_cond.wait()
         self._start_cond.release()
-        self.logger.info('<0x%xs>start: <<< -> %s', id(self), self._loop_thread)
+        self.logger.info('<0x%x>start: <<< -> %s', id(self), self._loop_thread)
         return self._loop_thread
 
     def stop(self):
-        """Stop the main loop for the context
+        """Stop the context's main loop thread and return after the thread stopped.
 
-        Returns after the main loop thread stopped.
-
-        Invoke the method equals set :attr:`is_running` to `False`
+        Equal to set :attr:`is_running` to `False`
         """
-        self.logger.info('<0x%xs>stop: >>>', id(self))
+        self.logger.info('<0x%x>stop: >>>', id(self))
         if not self._is_running:
             raise RuntimeError("Context loop not started.")
         self._stop_cond.acquire()
         self._stop_sentinel = True
         self._stop_cond.wait()
         self._stop_cond.release()
-        self.logger.info('<0x%xs>stop: <<<', id(self))
+        self.logger.info('<0x%x>stop: <<<', id(self))
 
     def run(self, s=0, ms=50, timeout=None):
         """Start the main loop for the context in a new thread, and then wait until the thread terminates.
@@ -300,10 +300,10 @@ class Context(BaseContext, LoggerMixin):
             trd = context.start(s, ms)
             trd.join(timeout)
         """
-        self.logger.info('<0x%xs>run: >>> s=%s, ms=%s, timeout=%s', id(self), s, ms, timeout)
+        self.logger.info('<0x%x>run: >>> s=%s, ms=%s, timeout=%s', id(self), s, ms, timeout)
         self.start(s, ms)
         self._loop_thread.join(timeout)
-        self.logger.info('<0x%xs>run: <<<', id(self))
+        self.logger.info('<0x%x>run: <<<', id(self))
 
     # def send_message(self, message):
     #     if isinstance(message, call.Message):
@@ -377,9 +377,9 @@ class Context(BaseContext, LoggerMixin):
         else:
             callback = getattr(self._event_handler, callback_name, None)
         if callable(callback):
-            self.logger.debug('<0x%xs>process_event: %s: callback >>>', id(self), evt)
+            self.logger.debug('<0x%x>process_event: %s: callback >>>', id(self), evt)
             callback(self, evt)
-            self.logger.debug('<0x%xs>process_event: %s: callback <<<', id(self), evt)
+            self.logger.debug('<0x%x>process_event: %s: callback <<<', id(self), evt)
 
 
 class ContextEventHandler:
@@ -436,13 +436,15 @@ class ContextEventHandler:
 
 class ContextLock:
     def __init__(self, context):
-        """eXosip Context lock's python class
+        """A helper class for eXosip Context lock
 
         :param Context context: Context which the lock is for
 
-        | This class wraps eXosip's native context lock.
-        | Use :meth:`acquire` to lock and :meth:`release` to unlock.
-        | ``with`` statement is supported.
+        This class wraps eXosip's native context lock function,
+        which is invoked in :meth:`Context.lock_acquire` and :meth:`Context.lock_release`.
+        You can call theses methods directly, or use :attr:`Context.lock`.
+
+        ``with`` statement is supported.
 
         eg::
 

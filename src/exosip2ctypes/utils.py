@@ -43,14 +43,14 @@ def s2b(s, encoding='utf-8'):
 
 
 class LoggerMixin:
-    """Mixin Class provide :attr:`logger` which is a :class:`logging.Logger` instance for the Class
+    """Mixin Class provide a :attr:`logger` property
     """
 
     @property
     def logger(self):
         """`logger` instance.
 
-        :rtype logging.Logger:
+        :rtype: logging.Logger
 
         logger name format is `ModuleName.ClassName`
         """
