@@ -1,3 +1,4 @@
 Sphinx
+recommonmark
 sphinx-autobuild
 coverage

@@ -16,6 +16,15 @@
 import sys
 import os
 
+
+# -- ReadTheDocs configuration ------------------------------------------------
+
+# When RTD builds your project,
+# it sets the READTHEDOCS environment variable to the string True.
+# So within your Sphinx conf.py file, you can vary the behavior based on this
+on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
@@ -300,6 +309,19 @@ texinfo_documents = [
 # "init"
 # Only the __init__ method’s docstring is inserted.
 autoclass_content = 'both'
+
+
+# -- Markdown configuration ------------------------------------------------
+
+# You can use Markdown and reStructuredText in the same Sphinx project.
+# We support this natively on Read the Docs, and you can do it locally:
+from recommonmark.parser import CommonMarkParser
+
+source_parsers = {
+    '.md': CommonMarkParser,
+}
+
+source_suffix = ['.rst', '.md']
 
 
 # -- Options for sphinx.ext.intersphinx  -------------------------------------------
