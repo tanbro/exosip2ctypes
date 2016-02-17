@@ -1,7 +1,9 @@
 import sys
+import logging
 import logging.config
+import time
 
-from exosip2ctypes import initialize, Context, call
+from exosip2ctypes import initialize, Context, call, EventType
 
 logging.basicConfig(
     level=logging.DEBUG, stream=sys.stdout,
@@ -11,33 +13,32 @@ logging.basicConfig(
 latest_event = None
 
 
-class MyEventHandler:
-    def on_call_invite(self, context, evt):
-        global latest_event
-        latest_event = evt
-        print('[%s] on_call_invite' % evt.did)
-        print('call-id:', evt.request.call_id)
-        # print("%s" % evt.request)
-        print('[%s] from: %s' % (evt.did, evt.request.from_))
-        print('[%s] allows: %s' % (evt.did, evt.request.allows))
-        print('[%s] contacts: %s' % (evt.did, evt.request.contacts))
+def on_exosip_event(context, evt):
+    global latest_event
+    latest_event = evt
+
+    if evt.type == EventType.call_invite:
+        logging.debug('[%s] on_call_invite', evt.did)
+        logging.debug('call-id: %s', evt.request.call_id)
+        logging.debug('sleep....')
+        time.sleep(5)
+        logging.debug("%s" % evt.request)
+        logging.debug('[%s] from: %s', evt.did, evt.request.from_)
+        logging.debug('[%s] allows: %s', evt.did, evt.request.allows)
+        logging.debug('[%s] contacts: %s', evt.did, evt.request.contacts)
         for hname in ('User-Agent',):
-            print('[%s] header["%s"]: %s' % (evt.did, hname, evt.request.get_header(hname)))
+            logging.debug('[%s] header["%s"]: %s', evt.did, hname, evt.request.get_header(hname))
 
-    def on_call_cancelled(self, context, evt):
-        global latest_event
-        latest_event = evt
-        print('[%s] call_cancelled' % evt.did)
+    elif evt.type == EventType.call_cancelled:
+        logging.debug('[%s] call_cancelled', evt.did)
 
-    def on_call_closed(self, context, evt):
-        global latest_event
-        latest_event = evt
-        print('[%s] call_closed' % evt.did)
+    elif evt.type == EventType.call_closed:
+        logging.debug('[%s] call_closed', evt.did)
 
 
 initialize()
-ctx = Context()
-ctx.event_handler = MyEventHandler()
+ctx = Context(event_callback=on_exosip_event)
+# ctx.event_callback = on_exosip_event
 ctx.masquerade_contact('192.168.56.101', 5060)
 
 print('listening...')
@@ -58,7 +59,7 @@ while True:
     elif s in ('t', 'terminate'):
         with ctx.lock:
             ctx.call_terminate(latest_event.cid, latest_event.did)
-    elif s.isdecimal():
+    elif s.isdigit():
         status = int(s)
         if status == 200:
             with ctx.lock:

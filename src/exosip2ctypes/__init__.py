@@ -48,6 +48,7 @@ Functions
 
 from ._c.lib import DLL_NAME, initialize
 from .context import *
+from .event import *
 from .version import *
 
 #: version of the package, equal :data:`version.version`

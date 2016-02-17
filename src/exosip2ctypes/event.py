@@ -20,13 +20,6 @@ class Event:
         """Class for event description
 
         :param ctypes.c_void_p ptr: `struct eXosip_event_t *ptr`
-
-        .. attention::
-            Cause `eXosip` do not manage the `struct eXosip_event_t *` automatic, we shall free it manually!
-            The memory free action is done in :class:`Event` 's destruction.
-            So you can either ``del`` the :class:`Event` object or use the ``with`` statement
-            (which is advised, :meth:`dispose` was called by destructor, python's GC will free the C Structure),
-            or call :meth:`dispose`
         """
         self._ptr = ptr
         self._type = EventType(int(ptr.contents.type))
@@ -56,20 +49,34 @@ class Event:
             self._type.name, self._textinfo, self._tid, self._did, self._rid, self._cid, self._sid, self._nid
         )
 
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.dispose()
-
     def dispose(self):
-        """Free resource in an eXosip event."""
+        """Free resource in an eXosip event.
+
+        .. danger::
+            After called this method, `struct eXosip_event_t` of the object is freed,
+            following attributes will be `None`:
+
+                * :attr:`request`
+                * :attr:`response`
+                * :attr:`ack`
+
+            Class destructor invokes the method,
+            don't invokes this yourself, let Python runtime's GC dispose the structure.
+        """
         if self._ptr:
             event.FuncEventFree.c_func(self._ptr)
             self._ptr = None
             self._request = None
             self._response = None
             self._ack = None
+
+    @property
+    def disposed(self):
+        """Is resource in an eXosip event disposed
+
+        :rtype: bool
+        """
+        return self._ptr is None
 
     @property
     def type(self):

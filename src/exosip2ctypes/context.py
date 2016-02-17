@@ -4,10 +4,13 @@
 eXosip2 context API
 """
 
+import sys
 import platform
 import socket
 import threading
 from ctypes import c_char_p, c_int, create_string_buffer
+from multiprocessing.pool import ThreadPool
+from functools import partial
 
 from ._c import conf, event, auth, call
 from ._c.lib import DLL_NAME
@@ -16,7 +19,9 @@ from .event import Event
 from .utils import to_str, to_bytes, LoggerMixin
 from .version import get_library_version
 
-__all__ = ['Context', 'ContextEventHandler', 'ContextLock']
+__all__ = ['Context', 'ContextLock']
+
+_IS_PY2 = sys.version_info[0] < 3
 
 
 class BaseContext:
@@ -24,12 +29,25 @@ class BaseContext:
 
 
 class Context(BaseContext, LoggerMixin):
-    def __init__(self, event_handler=None, contact_address=(None, 0)):
+    def __init__(self, event_callback=None, contact_address=(None, 0)):
         """Allocate and Initiate an eXosip context.
 
-        :param ContextEventHandler event_handler: An object gathers all event callbacks for the context
+        :param callable event_callback: Event callback.
 
-        :param tuple contact_address: Address used in `Contact` header
+            It's a callback function or any other callable object.
+            You can avoid the parameter in constructor, and set :attr:`event_callback` later.
+
+            The callback is like::
+
+                def event_callback(context, event):
+                    # do some thing...
+                    pass
+
+            It has two parameters:
+                * :class:`Context` : eXosip context on which the event happened.
+                * :class:`Event` : The event happened.
+
+        :param tuple contact_address: Address used in `Contact` header.
 
             This `tuple` parameter has two items:
               0. `str` - the ip address.
@@ -44,6 +62,8 @@ class Context(BaseContext, LoggerMixin):
             raise MallocError()
         error_code = conf.FuncInit.c_func(self._ptr)
         raise_if_osip_error(error_code)
+        self._event_callback = event_callback
+        self._event_pool = None
         self._locked = False
         self._lock = ContextLock(self)
         if contact_address[0]:
@@ -53,19 +73,15 @@ class Context(BaseContext, LoggerMixin):
         self._set_user_agent(self._user_agent)
         self._is_running = False
         self._stop_sentinel = False
-        self._loop_thread = None
+        self._event_loop_thread = None
         self._start_cond = threading.Condition()
         self._stop_cond = threading.Condition()
-        self._event_handler = event_handler
 
     def __del__(self):
         self.logger.info('<0x%x>__del__', id(self))
-        if self._is_running:
-            self.stop()
-        if self._ptr:
-            self.quit()
+        self.quit()
 
-    def _loop(self, s, ms):
+    def _event_loop(self, s, ms):
         """Context main loop.
 
         :param s: seconds for :meth:`event_wait`
@@ -80,13 +96,36 @@ class Context(BaseContext, LoggerMixin):
         self._start_cond.release()
         try:
             while not self._stop_sentinel:
-                with self._lock:
+                self.lock_acquire()
+                try:
                     self.automatic_action()
+                finally:
+                    self.lock_release()
                 evt = self.event_wait(s, ms)
                 if evt:
                     self.logger.debug('<0x%x>_loop: event_wait() -> %s', id(self), evt)
-                    with evt:
-                        self.process_event(evt)
+                    if callable(self._event_callback):
+                        self.logger.debug('<0x%x>_loop: event<0x%x> callback >>>', id(self), id(evt))
+
+                        def callback(_evt, _):
+                            self.logger.debug('<0x%x>_loop: event<0x%x> callback <<<', id(self), id(_evt))
+
+                        def error_callback(_evt, error):
+                            self.logger.error('<0x%x>_loop: event<0x%x> error: %s', id(self), id(_evt), error)
+
+                        if _IS_PY2:
+                            self._event_pool.apply_async(
+                                func=self._event_callback,
+                                args=(self, evt),
+                                callback=partial(callback, evt)
+                            )
+                        else:
+                            self._event_pool.apply_async(
+                                func=self._event_callback,
+                                args=(self, evt),
+                                callback=partial(callback, evt),
+                                error_callback=partial(error_callback, evt)
+                            )
         finally:
             self._stop_cond.acquire()
             self._is_running = False
@@ -108,16 +147,16 @@ class Context(BaseContext, LoggerMixin):
         return self._ptr
 
     @property
-    def event_handler(self):
-        """Event handler for the context
+    def event_callback(self):
+        """Event callback
 
-        :rtype: ContextEventHandler
+        :rtype: callable
         """
-        return self._event_handler
+        return self._event_callback
 
-    @event_handler.setter
-    def event_handler(self, val):
-        self._event_handler = val
+    @event_callback.setter
+    def event_callback(self, val):
+        self._event_callback = val
 
     @property
     def lock(self):
@@ -141,17 +180,10 @@ class Context(BaseContext, LoggerMixin):
 
         :rtype: bool
 
-        * Setting to `True` equals to call :meth:`start()`
-        * Setting to `False` equals to call :meth:`stop()`
+        * It will be `True` after calling :meth:`start` or :meth:`run`
+        * It will be `False` after calling :meth:`stop`
         """
         return self._is_running
-
-    @is_running.setter
-    def is_running(self, val):
-        if val:
-            self.start()
-        else:
-            self.stop()
 
     @property
     def user_agent(self):
@@ -182,6 +214,8 @@ class Context(BaseContext, LoggerMixin):
         """Release resource used by the eXtented oSIP library.
         """
         self.logger.info('<0x%x>quit: >>>', id(self))
+        if self._is_running:
+            self.stop()
         if self._ptr:
             self.logger.debug('<0x%x>quit: eXosip_quit(%s)', id(self), self._ptr)
             conf.FuncQuit.c_func(self._ptr)
@@ -264,7 +298,7 @@ class Context(BaseContext, LoggerMixin):
 
         :param int s: timeout value (seconds). Passed to :meth:`event_wait` in the main loop.
         :param int ms: timeout value (seconds). Passed to :meth:`event_wait` in the main loop.
-        :return: New created thread.
+        :return: New created event loop thread.
         :rtype: threading.Thread
 
         This method returns soon after the main loop thread started, so it **does not block**.
@@ -274,13 +308,14 @@ class Context(BaseContext, LoggerMixin):
         self.logger.info('<0x%x>start: >>> s=%s, ms=%s', id(self), s, ms)
         if self._is_running:
             raise RuntimeError("Context loop already started.")
-        self._loop_thread = threading.Thread(target=self._loop, args=(s, ms))
+        self._event_pool = ThreadPool()
+        self._event_loop_thread = threading.Thread(target=self._event_loop, args=(s, ms))
         self._start_cond.acquire()
-        self._loop_thread.start()
+        self._event_loop_thread.start()
         self._start_cond.wait()
         self._start_cond.release()
-        self.logger.info('<0x%x>start: <<< -> %s', id(self), self._loop_thread)
-        return self._loop_thread
+        self.logger.info('<0x%x>start: <<< -> %s', id(self), self._event_loop_thread)
+        return self._event_loop_thread
 
     def stop(self):
         """Stop the context's main loop thread and return after the thread stopped.
@@ -290,10 +325,14 @@ class Context(BaseContext, LoggerMixin):
         self.logger.info('<0x%x>stop: >>>', id(self))
         if not self._is_running:
             raise RuntimeError("Context loop not started.")
+        self.logger.info('<0x%x>stop: terminate event loop', id(self))
         self._stop_cond.acquire()
         self._stop_sentinel = True
         self._stop_cond.wait()
         self._stop_cond.release()
+        self.logger.info('<0x%x>stop: terminate event pool', id(self))
+        self._event_pool.terminate()
+        self._event_pool.join()
         self.logger.info('<0x%x>stop: <<<', id(self))
 
     def run(self, s=0, ms=50, timeout=None):
@@ -311,7 +350,7 @@ class Context(BaseContext, LoggerMixin):
         """
         self.logger.info('<0x%x>run: >>> s=%s, ms=%s, timeout=%s', id(self), s, ms, timeout)
         self.start(s, ms)
-        self._loop_thread.join(timeout)
+        self._event_loop_thread.join(timeout)
         self.logger.info('<0x%x>run: <<<', id(self))
 
     # def send_message(self, message):
@@ -374,75 +413,6 @@ class Context(BaseContext, LoggerMixin):
             answer.ptr if answer else None
         )
         raise_if_osip_error(error_code)
-
-    def process_event(self, evt):
-        """Process the events generated in the main loop, and then trigger event callbacks.
-
-        :param Event evt: Event generated in the main loop
-        """
-        callback_name = 'on_{}'.format(evt.type.name)
-        if isinstance(self._event_handler, dict):
-            callback = self._event_handler.get(callback_name, None)
-        else:
-            callback = getattr(self._event_handler, callback_name, None)
-        if callable(callback):
-            self.logger.debug('<0x%x>process_event: %s: callback >>>', id(self), evt)
-            callback(self, evt)
-            self.logger.debug('<0x%x>process_event: %s: callback <<<', id(self), evt)
-
-
-class ContextEventHandler:
-    """A class where defines event callbacks for a context
-
-    You can inherit it or write your own handler class, and define event handler callback methods in the your class::
-
-        class MyEventHandler(ContextEventHandler):
-            def on_call_invite(self, ctx, evt):
-                # do sth...
-                pass
-
-            def on_xxxx(self, ctx, evt):
-                # do sth...
-                pass
-
-        ctx.event_handler = MyEventHandler()
-
-    Or just assign callable objects to the instance's on_xxx attributes::
-
-        def my_on_call_invite(ctx, evt):
-            # do sth...
-            pass
-
-        ctx.event_handler = ContextEventHandler()
-        ctx.event_handler.on_call_invite = my_on_call_invite
-
-    Event handler callback methods names format are: ``on_<event_type>``, eg:
-
-      * ``on_call_invite``
-      * ``on_call_answered``
-      * ``on_call_closed``
-      * ``on_xxx``
-
-    In which, the ``<event_type>`` part is
-    :class:`EventType<exosip2ctypes.event.EventType>` enumeration member item's name.
-
-    Every event handler callback method has two parameters:
-
-        1. :class:`Context` ``ctx`` - eXosip context on which event triggered.
-        2. :class:`Event<exosip2ctypes.event.Event>` ``evt`` - triggered event.
-
-    See :class:`EventType<exosip2ctypes.event.EventType>` for event types definitions.
-
-    .. tip::
-        Any `dict` has `on_<event_type>` keys or `object` has `on_<event_type>` attributes,
-        and the values/attributes are callable who has two parameters an be assigned to
-        :attr:`Context.event_handler`.
-
-    .. warning::
-        Events are fired in the context's main loop thread,
-        so the event handler function should return as soon as possible to avoid blocking the main loop.
-    """
-    pass
 
 
 class ContextLock:

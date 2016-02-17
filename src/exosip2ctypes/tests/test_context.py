@@ -28,35 +28,32 @@ class ContextTestCase(unittest.TestCase):
     def test_lock(self):
         self.assertFalse(self.ctx.lock.locked())
 
-        flag = 0
+        self._flag = 0
 
         def r1():
             sleep(random.random())
             self.ctx.lock_acquire()
             self.assertTrue(self.ctx.lock.locked())
-            nonlocal flag
-            flag = 1
+            self._flag = 1
             sleep(random.random())
-            self.assertEqual(flag, 1)
+            self.assertEqual(self._flag, 1)
             self.ctx.lock_release()
 
         def r2():
             sleep(random.random())
             with self.ctx.lock:
                 self.assertTrue(self.ctx.lock.locked())
-                nonlocal flag
-                flag = 2
+                self._flag = 2
                 sleep(random.random())
-                self.assertEqual(flag, 2)
+                self.assertEqual(self._flag, 2)
 
         def r3():
             sleep(random.random())
             self.ctx.lock.acquire()
             self.assertTrue(self.ctx.lock.locked())
-            nonlocal flag
-            flag = 3
+            self._flag = 3
             sleep(random.random())
-            self.assertEqual(flag, 3)
+            self.assertEqual(self._flag, 3)
             self.ctx.lock.release()
 
         t1 = threading.Thread(target=r1)
