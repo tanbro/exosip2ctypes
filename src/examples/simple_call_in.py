@@ -1,7 +1,6 @@
 import sys
 import logging
 import logging.config
-import time
 
 from exosip2ctypes import initialize, Context, call, EventType
 
@@ -20,14 +19,16 @@ def on_exosip_event(context, evt):
     if evt.type == EventType.call_invite:
         logging.debug('[%s] on_call_invite', evt.did)
         logging.debug('call-id: %s', evt.request.call_id)
-        logging.debug('sleep....')
-        time.sleep(5)
-        logging.debug("%s" % evt.request)
+        # logging.debug("%s" % evt.request)
         logging.debug('[%s] from: %s', evt.did, evt.request.from_)
         logging.debug('[%s] allows: %s', evt.did, evt.request.allows)
         logging.debug('[%s] contacts: %s', evt.did, evt.request.contacts)
         for hname in ('User-Agent',):
-            logging.debug('[%s] header["%s"]: %s', evt.did, hname, evt.request.get_header(hname))
+            logging.debug('[%s] header["%s"]: %s', evt.did, hname, evt.request.get_headers(hname))
+
+        print('**********************************************************************************')
+        logging.debug('body: %s', evt.request.bodies[0])
+        print('**********************************************************************************')
 
     elif evt.type == EventType.call_cancelled:
         logging.debug('[%s] call_cancelled', evt.did)

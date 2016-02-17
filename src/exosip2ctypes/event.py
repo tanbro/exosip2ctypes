@@ -60,8 +60,8 @@ class Event:
                 * :attr:`response`
                 * :attr:`ack`
 
-            Class destructor invokes the method,
-            don't invokes this yourself, let Python runtime's GC dispose the structure.
+            It is invoked in class destructor.
+            Don't call it yourself, let Python runtime's GC dispose the structure.
         """
         if self._ptr:
             event.FuncEventFree.c_func(self._ptr)

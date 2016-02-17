@@ -89,7 +89,7 @@ class Context(BaseContext, LoggerMixin):
 
         It's running in a separated thread, and won't return util :meth:`stop` called or set :attr:`started` to `False`
         """
-        self.logger.debug('<0x%x>_loop: >>>', id(self))
+        self.logger.debug('<0x%x>_event_loop: >>>', id(self))
         self._start_cond.acquire()
         self._is_running = True
         self._start_cond.notify()
@@ -103,15 +103,15 @@ class Context(BaseContext, LoggerMixin):
                     self.lock_release()
                 evt = self.event_wait(s, ms)
                 if evt:
-                    self.logger.debug('<0x%x>_loop: event_wait() -> %s', id(self), evt)
+                    self.logger.debug('<0x%x>_event_loop: event_wait() -> %s', id(self), evt)
                     if callable(self._event_callback):
-                        self.logger.debug('<0x%x>_loop: event<0x%x> callback >>>', id(self), id(evt))
+                        self.logger.debug('<0x%x>_event_loop: event<0x%x> callback >>>', id(self), id(evt))
 
                         def callback(_evt, _):
-                            self.logger.debug('<0x%x>_loop: event<0x%x> callback <<<', id(self), id(_evt))
+                            self.logger.debug('<0x%x>_event_loop: event<0x%x> callback <<<', id(self), id(_evt))
 
                         def error_callback(_evt, error):
-                            self.logger.error('<0x%x>_loop: event<0x%x> error: %s', id(self), id(_evt), error)
+                            self.logger.error('<0x%x>_event_loop: event<0x%x> error: %s', id(self), id(_evt), error)
 
                         if _IS_PY2:
                             self._event_pool.apply_async(
@@ -151,6 +151,8 @@ class Context(BaseContext, LoggerMixin):
         """Event callback
 
         :rtype: callable
+
+        .. attention:: Event callback is invoked in a :class:`multiprocessing.pool.ThreadPool`
         """
         return self._event_callback
 
@@ -244,9 +246,9 @@ class Context(BaseContext, LoggerMixin):
         """Listen on a specified socket.
 
         :param str address: the address to bind (`NULL` for all interface)
-        :param int transport: `IPPROTO_UDP` for udp. (soon to come: TCP/TLS?)
+        :param int transport: :data:`socket.IPPROTO_UDP` for udp. (soon to come: TCP/TLS?)
         :param int port: the listening port. (0 for random port)
-        :param int family: the IP family (AF_INET or AF_INET6).
+        :param int family: the IP family (:data:`socket.AF_INET` or :data:`socket.AF_INET6`).
         :param bool secure: `False` for UDP or TCP, `True` for TLS (with TCP).
         """
         self.logger.info(
@@ -442,7 +444,7 @@ class ContextLock:
                 do_something()
                 # ...
 
-        .. danger:: Do **NOT** construct the class yourself, using :attr:`Context.lock`
+        .. danger:: Do **NOT** create new instance, using :attr:`Context.lock`.
         """
         self._context = context
 

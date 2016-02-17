@@ -19,6 +19,12 @@ class FuncMessageToStr(OsipFunc):
     argtypes = [c_void_p, POINTER(c_char_p), POINTER(c_size_t)]
 
 
+class FuncMessageGetBody(OsipFunc):
+    func_name = 'message_get_body'
+    argtypes = [c_void_p, c_int, c_void_p]
+    restype = c_int
+
+
 class FuncMessageSetBody(OsipFunc):
     func_name = 'message_set_body'
     argtypes = [c_void_p, c_char_p, c_size_t]
@@ -99,6 +105,7 @@ class FuncMessageSetAllow(OsipFunc):
 
 globs.func_classes.extend([
     FuncMessageToStr,
+    FuncMessageGetBody,
     FuncMessageSetBody,
     FuncMessageHeaderGetByName,
     FuncMessageSetHeader,

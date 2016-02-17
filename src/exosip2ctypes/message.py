@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from ctypes import POINTER, byref, create_string_buffer, string_at, c_void_p, c_char_p, c_int, c_size_t
+from ctypes import POINTER, byref, create_string_buffer, c_void_p, c_char_p, c_int, c_size_t
 
-from ._c import lib, osip_parser, osip_content_type, osip_from, osip_header, osip_content_length
+from ._c import lib, osip_parser, osip_content_type, osip_from, osip_header, osip_content_length, osip_body
 from .error import raise_if_osip_error
 from .utils import to_str, to_bytes
 
@@ -26,9 +26,9 @@ class OsipMessage:
         raise_if_osip_error(error_code)
         if not dest:
             return None
-        result = string_at(dest)
+        result = to_str(dest.value)
         lib.free(dest)
-        return to_str(result)
+        return result.strip()
 
     @property
     def ptr(self):
@@ -68,9 +68,9 @@ class OsipMessage:
         raise_if_osip_error(err_code)
         if not dest:
             return None
-        result = string_at(dest)
+        result = to_str(dest.value)
         lib.free(dest)
-        return to_str(result)
+        return result.strip()
 
     @content_type.setter
     def content_type(self, val):
@@ -90,9 +90,9 @@ class OsipMessage:
         raise_if_osip_error(error_code)
         if not dest:
             return None
-        result = string_at(dest)
+        result = to_str(dest.value)
         lib.free(dest)
-        return to_str(result)
+        return result.strip()
 
     @from_.setter
     def from_(self, val):
@@ -102,84 +102,97 @@ class OsipMessage:
 
     @property
     def contacts(self):
-        """Contact header list.
+        """Get Contact header list.
 
         :rtype: list
         """
         result = []
-        pos = ret = 0
+        pos = 0
         while True:
             dest = c_void_p()
-            ret = osip_parser.FuncMessageGetContact.c_func(self._ptr, c_int(pos), byref(dest))
-            if int(ret) < 0:
+            found_pos = osip_parser.FuncMessageGetContact.c_func(self._ptr, c_int(pos), byref(dest))
+            if int(found_pos) < 0:
                 break
+            pos = int(found_pos) + 1
             pch_contact = c_char_p()
             error_code = osip_from.FuncFromToStr.c_func(dest, byref(pch_contact))
             raise_if_osip_error(error_code)
-            contact = string_at(pch_contact)
+            contact = to_str(pch_contact.value)
             lib.free(pch_contact)
-            result.append(to_str(contact))
-            pos += 1
+            result.append(contact.strip())
         return result
 
-    @contacts.setter
-    def contacts(self, val):
-        contacts_str = ','.join(val)
-        buf = create_string_buffer(to_bytes(contacts_str))
+    def set_contact(self, val):
+        """Set the Contact header.
+
+        :param str val: The string describing the element.
+
+        .. attention:: This method will **ADD** a new `Contact` header
+        """
+        buf = create_string_buffer(to_bytes(val))
         error_code = osip_parser.FuncMessageSetContact.c_func(self._ptr, buf)
         raise_if_osip_error(error_code)
 
     @property
     def allows(self):
-        """Allow header list.
+        """Get Allow header list.
 
         :rtype: list
         """
         result = []
-        pos = ret = 0
+        pos = 0
         while True:
             dest = POINTER(osip_content_length.Allow)()
-            ret = osip_parser.FuncMessageGetAllow.c_func(self._ptr, c_int(pos), byref(dest))
-            if int(ret) < 0:
+            found_pos = osip_parser.FuncMessageGetAllow.c_func(self._ptr, c_int(pos), byref(dest))
+            if int(found_pos) < 0:
                 break
+            pos = int(found_pos) + 1
             result.append(to_str(dest.contents.value))
-            pos += 1
         return result
 
-    @allows.setter
-    def allows(self, val):
-        allows_str = ', '.join(val)
-        buf = create_string_buffer(to_bytes(allows_str))
+    def add_allow(self, val):
+        """Set the Allow header.
+
+        :param str val: The string describing the element.
+
+        .. attention:: This method will **ADD** a new `ALLOW` header
+        """
+        buf = create_string_buffer(to_bytes(val))
         error_code = osip_parser.FuncMessageSetAllow.c_func(self._ptr, buf)
         raise_if_osip_error(error_code)
 
-    def get_header(self, name, pos=0):
-        """Find an "unknown" header. (not defined in oSIP)
+    def get_headers(self, name):
+        """Find "unknown" header's list. (not defined in oSIP)
 
         :param str name: The name of the header to find.
-        :param int pos: The index where to start searching for the header.
-        :return: header's value string
-        :rtype: str
-        :raises KeyError: if header name not found
+        :return: Header's value string list.
+        :rtype: list
         """
+        result = []
         pc_name = create_string_buffer(to_bytes(name))
-        p_header = POINTER(osip_header.Header)()
-        found_pos = osip_parser.FuncMessageHeaderGetByName.c_func(
-            self._ptr,
-            pc_name,
-            c_int(pos),
-            byref(p_header)
-        )
-        if found_pos < 0:
-            raise KeyError('Header by name "{}" can not be found in the SIP message'.format(name))
-        value = p_header.contents.hvalue
-        return to_str(value)
+        pos = 0
+        while True:
+            p_header = POINTER(osip_header.Header)()
+            found_pos = osip_parser.FuncMessageHeaderGetByName.c_func(
+                self._ptr,
+                pc_name,
+                c_int(pos),
+                byref(p_header)
+            )
+            if int(found_pos) < 0:
+                break
+            pos = int(found_pos) + 1
+            val = p_header.contents.hvalue
+            result.append(to_str(val))
+        return result
 
-    def set_header(self, name, value):
+    def add_header(self, name, value):
         """Allocate and Add an "unknown" header (not defined in oSIP).
 
         :param str name: The token name.
         :param str value: The token value.
+
+        .. attention:: This method will **ADD** a new header
         """
         pc_name = create_string_buffer(to_bytes(name))
         pc_value = create_string_buffer(to_bytes(value))
@@ -190,10 +203,35 @@ class OsipMessage:
         )
         raise_if_osip_error(error_code)
 
-    def set_body(self, val):
+    @property
+    def bodies(self):
+        """Get body header list.
+
+        :rtype: list
+        """
+        result = []
+        pos = 0
+        while True:
+            p_body = c_void_p()
+            found_post = osip_parser.FuncMessageGetBody.c_func(self._ptr, c_int(pos), byref(p_body))
+            if int(found_post) < 0:
+                break
+            pos = int(found_post) + 1
+            pc_dest = c_char_p()
+            length = c_size_t()
+            ret = osip_body.FuncBodyToStr.c_func(p_body, byref(pc_dest), byref(length))
+            raise_if_osip_error(ret)
+            val = to_str(pc_dest.value)
+            lib.free(pc_dest)
+            result.append(val.strip())
+        return result
+
+    def add_body(self, val):
         """Fill the body of message.
 
         :param str val: Body string.
+
+        .. attention:: This method will **ADD** a new body
         """
         buf = create_string_buffer(to_bytes(val))
         err_code = osip_parser.FuncMessageSetBody.c_func(self._ptr, buf, len(buf))

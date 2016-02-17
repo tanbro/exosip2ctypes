@@ -10,6 +10,8 @@ class Header(Structure):
     Definition of a generic sip header.
     """
     _fields_ = [
-        ('hname', c_char_p),  # < Name of header
-        ('hvalue', c_char_p),  # < Value for header
+        #: Name of header
+        ('hname', c_char_p),
+        #: Value for header
+        ('hvalue', c_char_p),
     ]

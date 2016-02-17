@@ -81,8 +81,9 @@ while True:
     elif s in ('m', 'makecall'):
         with ctx.lock:
             invite = call.InitInvite(ctx, 'sip:192.168.56.1', 'sip:example@192.168.56.101')
-            invite.allows = ['INVITE', 'ACK', 'CANCEL', 'OPTIONS', 'BYE', 'REFER', 'NOTIFY', 'MESSAGE', 'SUBSCRIBE',
-                             'INFO', 'UPDATE']
+            invite.set_allow(
+                ''.join(['INVITE', 'ACK', 'CANCEL', 'OPTIONS', 'BYE', 'REFER', 'NOTIFY', 'MESSAGE', 'SUBSCRIBE',
+                         'INFO', 'UPDATE']))
             invite.set_header('Supported', 'outbound')
             invite.content_type = "application/sdp"
             invite.set_body(
@@ -96,5 +97,5 @@ while True:
                 "a=rtpmap:8 PCMA/8000\r\n"
                 "a=rtpmap:101 telephone-event/8000\r\n"
             )
-            # print("%s" % invite)
+            logging.debug("%s" % invite)
             ctx.call_send_init_invite(invite)
