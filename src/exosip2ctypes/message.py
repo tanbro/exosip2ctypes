@@ -122,7 +122,7 @@ class OsipMessage:
             result.append(contact.strip())
         return result
 
-    def set_contact(self, val):
+    def add_contact(self, val):
         """Set the Contact header.
 
         :param str val: The string describing the element.
