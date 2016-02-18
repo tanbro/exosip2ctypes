@@ -326,4 +326,4 @@ source_suffix = ['.rst', '.md']
 
 # -- Options for sphinx.ext.intersphinx  -------------------------------------------
 extensions.append('sphinx.ext.intersphinx')
-intersphinx_mapping = {'python': ('http://docs.python.org/%d.%d' % (sys.version_info[0], sys.version_info[1]), None)}
+intersphinx_mapping = {'python': ('http://docs.python.org/{0[0]}.{0[1]}'.format(sys.version_info), None)}

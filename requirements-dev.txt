@@ -1,3 +1,5 @@
+setuptools
+wheel
 Sphinx
 recommonmark
 sphinx-autobuild
