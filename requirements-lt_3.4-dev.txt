@@ -1,5 +1,6 @@
 setuptools
 wheel
+twine
 enum34
 Sphinx
 recommonmark
