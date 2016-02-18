@@ -66,7 +66,7 @@ while True:
             with ctx.lock:
                 msg = call.Answer(ctx, latest_event.tid, 200)
                 msg.content_type = 'application/sdp'
-                msg.set_body(
+                msg.add_body(
                     "v=0\r\n"
                     "o=jack 0 0 IN IP4 192.168.56.101\r\n"
                     "s=conversation\r\n"

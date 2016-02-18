@@ -81,12 +81,12 @@ while True:
     elif s in ('m', 'makecall'):
         with ctx.lock:
             invite = call.InitInvite(ctx, 'sip:192.168.56.1', 'sip:example@192.168.56.101')
-            invite.set_allow(
+            invite.add_allow(
                 ''.join(['INVITE', 'ACK', 'CANCEL', 'OPTIONS', 'BYE', 'REFER', 'NOTIFY', 'MESSAGE', 'SUBSCRIBE',
                          'INFO', 'UPDATE']))
-            invite.set_header('Supported', 'outbound')
+            invite.add_header('Supported', 'outbound')
             invite.content_type = "application/sdp"
-            invite.set_body(
+            invite.add_body(
                 "v=0\r\n"
                 "o=jack 0 0 IN IP4 192.168.56.101\r\n"
                 "s=conversation\r\n"
