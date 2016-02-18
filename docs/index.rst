@@ -5,16 +5,16 @@
 
 Welcome to exosip2ctypes's documentation!
 =========================================
+| version:     |version|
+| compiled at: |today|
 
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+    :maxdepth: 2
 
-   README <readme>
-   API Doc <apidoc/modules>
-
-
+       README <readme>
+       API Doc <apidoc/modules>
 
 Indices and tables
 ==================
