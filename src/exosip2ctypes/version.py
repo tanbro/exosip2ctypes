@@ -1,5 +1,3 @@
-from ctypes import string_at
-
 from ._c import conf
 from .utils import to_str
 
@@ -14,4 +12,4 @@ def get_library_version():
     :return: eXosip library (C library) version string
     :rtype: str
     """
-    return to_str(string_at(conf.FuncGetVersion.c_func()))
+    return to_str(conf.FuncGetVersion.c_func())
