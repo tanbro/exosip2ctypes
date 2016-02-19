@@ -79,6 +79,26 @@ class OsipMessage:
         raise_if_osip_error(err_code)
 
     @property
+    def content_length(self):
+        """Content-length header.
+
+        :rtype: int
+        """
+        pdest = osip_parser.FuncMessageGetContentLength.c_func(self._ptr)
+        if isinstance(pdest, (type(None), c_void_p)):
+            return None
+        return int(pdest.contents.value)
+
+    @content_length.setter
+    def content_length(self, val):
+        val = int(val)
+        if val < 0:
+            raise ValueError('Content-Length header value must be greater than or equal 0.')
+        buf = create_string_buffer(to_bytes(str(val)))
+        error_code = osip_parser.FuncMessageSetContentLength.c_func(self._ptr, buf)
+        raise_if_osip_error(error_code)
+
+    @property
     def from_(self):
         """From header
 

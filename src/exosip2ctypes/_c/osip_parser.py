@@ -10,7 +10,7 @@ from . import globs
 from .utils import OsipFunc
 
 from .osip_call_id import CallId
-from .osip_content_length import Allow
+from .osip_content_length import ContentLength, Allow
 from .osip_header import Header
 
 
@@ -51,6 +51,18 @@ class FuncMessageGetCallId(OsipFunc):
 
 class FuncMessageSetCallId(OsipFunc):
     func_name = 'message_set_call_id'
+    argtypes = [c_void_p, c_char_p]
+    restype = c_int
+
+
+class FuncMessageGetContentLength(OsipFunc):
+    func_name = 'message_get_content_length'
+    argtypes = [c_void_p]
+    restype = POINTER(ContentLength)
+
+
+class FuncMessageSetContentLength(OsipFunc):
+    func_name = 'message_set_content_length'
     argtypes = [c_void_p, c_char_p]
     restype = c_int
 
@@ -111,6 +123,8 @@ globs.func_classes.extend([
     FuncMessageSetHeader,
     FuncMessageGetCallId,
     FuncMessageSetCallId,
+    FuncMessageGetContentLength,
+    FuncMessageSetContentLength,
     FuncMessageGetContentType,
     FuncMessageSetContentType,
     FuncMessageGetFrom,
