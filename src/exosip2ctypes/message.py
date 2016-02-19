@@ -243,7 +243,7 @@ class OsipMessage:
             raise_if_osip_error(ret)
             val = string_at(dest, length.value)
             lib.free(dest)
-            result.append(val.strip())
+            result.append(to_str(val))
         return result
 
     def add_body(self, val):
