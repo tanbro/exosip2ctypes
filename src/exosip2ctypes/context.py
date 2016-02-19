@@ -111,7 +111,7 @@ class Context(BaseContext, LoggerMixin):
                             self.logger.debug('<0x%x>_event_loop: event<0x%x> callback <<<', id(self), id(_evt))
 
                         def error_callback(_evt, error):
-                            self.logger.error('<0x%x>_event_loop: event<0x%x> error: %s', id(self), id(_evt), error)
+                            self.logger.exception('<0x%x>_event_loop: event<0x%x> error: %s', id(self), id(_evt), error)
 
                         if _IS_PY2:
                             self._event_pool.apply_async(
@@ -367,7 +367,7 @@ class Context(BaseContext, LoggerMixin):
         :param int cid: call id of call.
         :param int did: dialog id of call.
         """
-        error_code = call.FuncCallTerminate.c_func(self._ptr, int(cid), int(did))
+        error_code = call.FuncCallTerminate.c_func(self._ptr, c_int(cid), c_int(did))
         raise_if_osip_error(error_code)
 
     def call_send_init_invite(self, invite):

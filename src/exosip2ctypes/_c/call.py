@@ -30,7 +30,7 @@ class FuncCallBuildInitialInvite(ExosipFunc):
 
 class FuncCallSendInitialInvite(ExosipFunc):
     func_name = 'call_send_initial_invite'
-    argtypes =[c_void_p, c_void_p]
+    argtypes = [c_void_p, c_void_p]
     restype = c_int
 
 

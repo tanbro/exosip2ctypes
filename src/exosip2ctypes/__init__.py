@@ -2,6 +2,9 @@
 
 """eXosip API
 
+:author: Liu Xue Yan
+:email: realtanbro@gmail.com
+
 eXosip is a high layer library for rfc3261: the SIP protocol. It offers a simple API to make it easy to use.
 eXosip2 offers great flexibility for implementing SIP endpoint like:
 

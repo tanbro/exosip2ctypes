@@ -22,19 +22,19 @@ class Event:
         :param ctypes.c_void_p ptr: `struct eXosip_event_t *ptr`
         """
         self._ptr = ptr
-        self._type = EventType(int(ptr.contents.type))
+        self._type = EventType(ptr.contents.type)
         self._textinfo = to_str(ptr.contents.textinfo)
         self._request = OsipMessage(ptr.contents.request)
         self._response = OsipMessage(ptr.contents.response)
         self._ack = OsipMessage(ptr.contents.ack)
-        self._tid = int(ptr.contents.tid)
-        self._did = int(ptr.contents.did)
-        self._rid = int(ptr.contents.rid)
-        self._cid = int(ptr.contents.cid)
-        self._sid = int(ptr.contents.sid)
-        self._nid = int(ptr.contents.nid)
-        self._ss_status = int(ptr.contents.ss_status)
-        self._ss_reason = int(ptr.contents.ss_reason)
+        self._tid = ptr.contents.tid
+        self._did = ptr.contents.did
+        self._rid = ptr.contents.rid
+        self._cid = ptr.contents.cid
+        self._sid = ptr.contents.sid
+        self._nid = ptr.contents.nid
+        self._ss_status = ptr.contents.ss_status
+        self._ss_reason = ptr.contents.ss_reason
 
     def __del__(self):
         self.dispose()

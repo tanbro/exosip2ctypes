@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from ctypes import POINTER, byref, create_string_buffer, c_void_p, c_char_p, c_int, c_size_t
+from ctypes import POINTER, byref, string_at, create_string_buffer, c_void_p, c_char_p, c_int, c_size_t
 
 from ._c import lib, osip_parser, osip_content_type, osip_from, osip_header, osip_content_length, osip_body
 from .error import raise_if_osip_error
@@ -21,12 +21,12 @@ class OsipMessage:
         :rtype: str
         """
         dest = c_char_p()
-        message_length = c_size_t()
-        error_code = osip_parser.FuncMessageToStr.c_func(self._ptr, byref(dest), byref(message_length))
+        length = c_size_t()
+        error_code = osip_parser.FuncMessageToStr.c_func(self._ptr, byref(dest), byref(length))
         raise_if_osip_error(error_code)
         if not dest:
             return None
-        result = to_str(dest.value)
+        result = string_at(dest, length.value)
         lib.free(dest)
         return result.strip()
 
@@ -213,16 +213,16 @@ class OsipMessage:
         pos = 0
         while True:
             p_body = c_void_p()
-            found_post = osip_parser.FuncMessageGetBody.c_func(self._ptr, c_int(pos), byref(p_body))
-            if int(found_post) < 0:
+            found_pos = osip_parser.FuncMessageGetBody.c_func(self._ptr, c_int(pos), byref(p_body))
+            if int(found_pos) < 0:
                 break
-            pos = int(found_post) + 1
-            pc_dest = c_char_p()
+            pos = int(found_pos) + 1
+            dest = c_char_p()
             length = c_size_t()
-            ret = osip_body.FuncBodyToStr.c_func(p_body, byref(pc_dest), byref(length))
+            ret = osip_body.FuncBodyToStr.c_func(p_body, byref(dest), byref(length))
             raise_if_osip_error(ret)
-            val = to_str(pc_dest.value)
-            lib.free(pc_dest)
+            val = string_at(dest, length.value)
+            lib.free(dest)
             result.append(val.strip())
         return result
 
