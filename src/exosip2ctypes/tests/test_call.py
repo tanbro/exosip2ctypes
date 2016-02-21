@@ -42,14 +42,15 @@ class SingleCallTest(unittest.TestCase):
                 m()
                 nonlocal recv_call_id
                 recv_call_id = evt.request.call_id
-                cond.acquire()
-                cond.notify()
-                cond.release()
+            # condition of event callback returning
+            cond.acquire()
+            cond.notify()
+            cond.release()
 
         self.ctx.event_callback = event_cb
-        # start call
-        cond.acquire()
+        # start call:
         # build and send invitation message
+        cond.acquire()
         with self.ctx.lock:
             msg = call.InitInvite(
                 self.ctx,
@@ -59,7 +60,7 @@ class SingleCallTest(unittest.TestCase):
             send_call_id = msg.call_id
             self.ctx.call_send_init_invite(msg)
         # wait event result!
-        cond.wait()
+        cond.wait(1)
         cond.release()
         # assertion
         self.assertEqual(m.call_count, 1)
