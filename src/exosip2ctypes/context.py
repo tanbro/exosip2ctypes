@@ -355,6 +355,9 @@ class Context(BaseContext, LoggerMixin):
         self._event_loop_thread.join(timeout)
         self.logger.info('<0x%x>run: <<<', id(self))
 
+    def build_message(self, message_class, *args, **kwargs):
+        return message_class(self, *args, **kwargs)
+
     # def send_message(self, message):
     #     if isinstance(message, call.Message):
     #         self.call_send_answer(message=message)
