@@ -49,7 +49,7 @@ Functions
 
 """
 
-from ._c.lib import DLL_NAME, initialize
+from ._c.lib import DLL_NAME, initialize, unload
 from .context import *
 from .event import *
 from .version import *

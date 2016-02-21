@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from ctypes import CDLL, RTLD_GLOBAL, c_void_p
+from ctypes import CDLL, c_void_p
 from ctypes.util import find_library
 
 from . import globs
@@ -44,3 +44,8 @@ def free(ptr):
     if not globs.libexosip2:
         raise RuntimeError('library eXosip2 not loaded')
     globs.libexosip2.free(ptr)
+
+
+def unload():
+    if globs.libexosip2:
+        globs.libexosip2 = None

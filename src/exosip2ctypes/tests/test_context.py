@@ -5,7 +5,7 @@ import random
 import logging
 from time import time, sleep
 
-from exosip2ctypes import initialize, Context
+from exosip2ctypes import initialize, unload, Context
 
 logging.basicConfig(
     level=logging.DEBUG, stream=sys.stdout,
@@ -17,6 +17,10 @@ class ContextTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         initialize()
+
+    @classmethod
+    def tearDownClass(cls):
+        unload()
 
     def setUp(self):
         self.ctx = Context()
