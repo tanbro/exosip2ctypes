@@ -14,8 +14,7 @@ logging.basicConfig(
 
 
 class SingleCallTest(unittest.TestCase):
-    ADDR1 = ('127.0.0.1', 50060)
-    ADDR2 = ('127.0.0.1', 51060)
+    listen_address = ('127.0.0.1', 50060)
 
     @classmethod
     def setUpClass(cls):
@@ -26,16 +25,12 @@ class SingleCallTest(unittest.TestCase):
         unload()
 
     def setUp(self):
-        self.ctx1 = Context()
-        self.ctx2 = Context()
-        self.ctx1.listen_on_address(address=self.ADDR1[0], port=self.ADDR1[1])
-        self.ctx2.listen_on_address(address=self.ADDR2[0], port=self.ADDR2[1])
-        self.ctx1.start()
-        self.ctx2.start()
+        self.ctx = Context()
+        self.ctx.listen_on_address(address=self.listen_address[0], port=self.listen_address[1])
+        self.ctx.start()
 
     def tearDown(self):
-        self.ctx1.stop()
-        self.ctx2.stop()
+        self.ctx.stop()
 
     def test_call_self(self):
         m = Mock()
@@ -51,18 +46,18 @@ class SingleCallTest(unittest.TestCase):
                 cond.notify()
                 cond.release()
 
-        self.ctx1.event_callback = event_cb
+        self.ctx.event_callback = event_cb
         # start call
         cond.acquire()
         # build and send invitation message
-        with self.ctx1.lock:
+        with self.ctx.lock:
             msg = call.InitInvite(
-                self.ctx1,
-                to='sip:{0[0]}:{0[1]}'.format(self.ADDR1),
-                from_='sip:{0[0]}:{0[1]}'.format(self.ADDR1),
+                self.ctx,
+                to='sip:{0[0]}:{0[1]}'.format(self.listen_address),
+                from_='sip:{0[0]}:{0[1]}'.format(self.listen_address),
             )
             send_call_id = msg.call_id
-            self.ctx1.call_send_init_invite(msg)
+            self.ctx.call_send_init_invite(msg)
         # wait event result!
         cond.wait()
         cond.release()

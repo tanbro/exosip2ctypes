@@ -121,6 +121,28 @@ class OsipMessage:
         raise_if_osip_error(error_code)
 
     @property
+    def to(self):
+        """To header.
+
+        :rtype: str
+        """
+        ptr = osip_parser.FuncMessageGetTo.c_func(self._ptr)
+        dest = c_char_p()
+        error_code = osip_from.FuncFromToStr.c_func(ptr, byref(dest))
+        raise_if_osip_error(error_code)
+        if not dest:
+            return None
+        result = to_str(dest.value)
+        lib.free(dest)
+        return result.strip()
+
+    @to.setter
+    def to(self, val):
+        buf = create_string_buffer(to_bytes(val))
+        error_code = osip_parser.FuncMessageSetTo.c_func(self._ptr, buf)
+        raise_if_osip_error(error_code)
+
+    @property
     def contacts(self):
         """Get Contact header list.
 

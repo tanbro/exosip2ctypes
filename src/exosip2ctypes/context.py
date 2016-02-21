@@ -356,6 +356,14 @@ class Context(BaseContext, LoggerMixin):
         self.logger.info('<0x%x>run: <<<', id(self))
 
     def build_message(self, message_class, *args, **kwargs):
+        """Build a default message for a eXosip transaction/dialog/call
+
+        :param type(ExosipMessage) message_class: Message Class
+        :param args: Sequent arguments passed to the class constructor
+        :param kwargs: Named arguments passed to the class constructor
+        :return: New built message object
+        :rtype: ExosipMessage
+        """
         return message_class(self, *args, **kwargs)
 
     # def send_message(self, message):
