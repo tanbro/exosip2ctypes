@@ -51,7 +51,7 @@ After that, active the virtual environment:
 
     * Widows::
 
-        /your/virtual/env/bin/activate
+        \your\virtual\env\Scripts\activate
 
 3. Install dependencies
 ```````````````````````
