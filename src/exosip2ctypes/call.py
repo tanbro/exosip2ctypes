@@ -24,45 +24,45 @@ __all__ = ['InitInvite', 'Ack', 'Answer']
 
 
 class InitInvite(ExosipMessage):
-    def __init__(self, context, to, from_, route=None, subject=None):
+    def __init__(self, context, to_url, from_url, route=None, subject=None):
         """Build a default INVITE message for a new call.
 
         :param Context context: :class:`Context` object contains the `eXosip_t` instance.
-        :param str to: SIP url for callee.
-        :param str from_: SIP url for caller.
+        :param str to_url: SIP url for callee.
+        :param str from_url: SIP url for caller.
         :param str route: Route header for INVITE. (optional)
         :param str subject: Subject for the call.
         """
         ptr = c_void_p()  # osip_message_t* invite = NULL;
-        pc_to = create_string_buffer(to_bytes(to))
-        pc_from = create_string_buffer(to_bytes(from_))
+        pc_to_url = create_string_buffer(to_bytes(to_url))
+        pc_from_url = create_string_buffer(to_bytes(from_url))
         pc_route = create_string_buffer(to_bytes(route)) if route else None
         pc_subject = create_string_buffer(to_bytes(subject)) if subject else None
         error_code = call.FuncCallBuildInitialInvite.c_func(
-            context.ptr, byref(ptr), pc_to, pc_from, pc_route, pc_subject
+            context.ptr, byref(ptr), pc_to_url, pc_from_url, pc_route, pc_subject
         )
         raise_if_osip_error(error_code)
-        self._to = to
-        self._from = from_
+        self._to_url = to_url
+        self._from_url = from_url
         self._route = route
         self._subject = subject
         super(InitInvite, self).__init__(ptr, context)
 
     @property
-    def to(self):
+    def to_url(self):
         """SIP url for callee.
 
         :rtype: str
         """
-        return self.to
+        return self._to_url
 
     @property
-    def from_(self):
+    def from_url(self):
         """SIP url for caller.
 
         :rtype: str
         """
-        return self._from
+        return self.from_url
 
     @property
     def route(self):

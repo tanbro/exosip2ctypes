@@ -54,8 +54,8 @@ class SingleCallTest(unittest.TestCase):
         with self.ctx.lock:
             msg = call.InitInvite(
                 self.ctx,
-                to='sip:{0[0]}:{0[1]}'.format(self.listen_address),
-                from_='sip:{0[0]}:{0[1]}'.format(self.listen_address),
+                to_url='sip:{0[0]}:{0[1]}'.format(self.listen_address),
+                from_url='sip:{0[0]}:{0[1]}'.format(self.listen_address),
             )
             send_call_id = msg.call_id
             self.ctx.call_send_init_invite(msg)

@@ -82,7 +82,7 @@ while True:
         with ctx.lock:
             invite = call.InitInvite(ctx, 'sip:192.168.56.1', 'sip:example@192.168.56.101')
             invite.add_allow(
-                ''.join(['INVITE', 'ACK', 'CANCEL', 'OPTIONS', 'BYE', 'REFER', 'NOTIFY', 'MESSAGE', 'SUBSCRIBE',
+                ','.join(['INVITE', 'ACK', 'CANCEL', 'OPTIONS', 'BYE', 'REFER', 'NOTIFY', 'MESSAGE', 'SUBSCRIBE',
                          'INFO', 'UPDATE']))
             invite.add_header('Supported', 'outbound')
             invite.content_type = "application/sdp"
