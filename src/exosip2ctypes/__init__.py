@@ -17,15 +17,15 @@ If you need to implement proxy or complex SIP applications, you should consider 
 
 Here are the eXosip capabilities:
 
-* REGISTER                 to handle registration.
+* REGISTER                 to rpc_handler registration.
 * INVITE/BYE               to start/stop VoIP sessions.
 * INFO                     to send DTMF within a VoIP sessions.
 * OPTIONS                  to simulate VoIP sessions.
 * re-INVITE                to modify VoIP sessions
 * REFER/NOTIFY             to transfer calls.
 * MESSAGE                  to send Instant Message.
-* SUBSCRIBE/NOTIFY         to handle presence capabilities.
-* any other request        to handle what you want!
+* SUBSCRIBE/NOTIFY         to rpc_handler presence capabilities.
+* any other request        to rpc_handler what you want!
 
 Constants
 ==========
