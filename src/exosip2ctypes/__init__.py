@@ -56,3 +56,4 @@ from .version import *
 
 #: version of the package, equal :data:`version.version`
 __version__ = version
+__date__ = '2016-03-03'

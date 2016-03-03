@@ -295,11 +295,13 @@ class Context(BaseContext, LoggerMixin):
         """
         auth.FuncAutomaticAction.c_func(self._ptr)
 
-    def start(self, s=0, ms=50):
+    def start(self, s=0, ms=50, event_pool=None):
         """Start the main loop for the context in a new thread, and then return.
 
         :param int s: timeout value (seconds). Passed to :meth:`event_wait` in the main loop.
         :param int ms: timeout value (seconds). Passed to :meth:`event_wait` in the main loop.
+        :param multiprocessing.pool.Pool event_pool: Event pool instance. Events will be fired in the pool.
+            Default is a :class:`ThreadPool` instance
         :return: New created event loop thread.
         :rtype: threading.Thread
 
@@ -310,7 +312,7 @@ class Context(BaseContext, LoggerMixin):
         self.logger.info('<0x%x>start: >>> s=%s, ms=%s', id(self), s, ms)
         if self._is_running:
             raise RuntimeError("Context loop already started.")
-        self._event_pool = ThreadPool()
+        self._event_pool = event_pool or ThreadPool()
         self._event_loop_thread = threading.Thread(target=self._event_loop, args=(s, ms))
         self._start_cond.acquire()
         self._event_loop_thread.start()
@@ -333,7 +335,7 @@ class Context(BaseContext, LoggerMixin):
         self._stop_cond.wait()
         self._stop_cond.release()
         self.logger.info('<0x%x>stop: terminate event pool', id(self))
-        self._event_pool.terminate()
+        self._event_pool.close()
         self._event_pool.join()
         self.logger.info('<0x%x>stop: <<<', id(self))
 
