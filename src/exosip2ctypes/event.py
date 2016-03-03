@@ -20,6 +20,7 @@ class Event:
         """Class for event description
 
         :param ctypes.c_void_p ptr: `struct eXosip_event_t *ptr`
+        :param Context context: eXosip context
         """
         if not ptr:
             raise RuntimeError('Null pointer.')
