@@ -107,8 +107,12 @@ class Context(BaseContext, LoggerMixin):
                     if callable(self._event_callback):
                         self.logger.debug('<0x%x>_event_loop: event<0x%x> callback >>>', id(self), id(evt))
 
-                        def callback(_evt, _):
-                            self.logger.debug('<0x%x>_event_loop: event<0x%x> callback <<<', id(self), id(_evt))
+                        def callback(_evt, _res):
+                            if isinstance(_res, Exception):
+                                self.logger.exception('<0x%x>_event_loop: event<0x%x> error: %s',
+                                                      id(self), id(_evt), _res)
+                            else:
+                                self.logger.debug('<0x%x>_event_loop: event<0x%x> callback <<<', id(self), id(_evt))
 
                         def error_callback(_evt, error):
                             self.logger.exception('<0x%x>_event_loop: event<0x%x> error: %s', id(self), id(_evt), error)
