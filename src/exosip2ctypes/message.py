@@ -13,6 +13,8 @@ class OsipMessage:
 
         :param ctypes.c_void_p ptr: Pointer to the `osip_message_t` structure in C library
         """
+        if not ptr:
+            raise RuntimeError('Null pointer.')
         self._ptr = ptr
 
     def __str__(self):
@@ -295,6 +297,8 @@ class ExosipMessage(OsipMessage):
             In eXosip2, messages are managed inside the library,
             so we should **NOT** free :class:`OsipMessage` object manually.
         """
+        if not context:
+            raise RuntimeError('No context.')
         self._context = context
         super(ExosipMessage, self).__init__(ptr)
 

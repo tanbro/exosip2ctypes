@@ -10,23 +10,28 @@ from enum import IntEnum
 
 from ._c import event
 from .utils import to_str
-from .message import OsipMessage
+from .message import ExosipMessage
 
 __all__ = ['Event', 'EventType']
 
 
 class Event:
-    def __init__(self, ptr):
+    def __init__(self, ptr, context):
         """Class for event description
 
         :param ctypes.c_void_p ptr: `struct eXosip_event_t *ptr`
         """
+        if not ptr:
+            raise RuntimeError('Null pointer.')
+        if not context:
+            raise RuntimeError('No context.')
         self._ptr = ptr
+        self._context = context
         self._type = EventType(ptr.contents.type)
         self._textinfo = to_str(ptr.contents.textinfo)
-        self._request = OsipMessage(ptr.contents.request)
-        self._response = OsipMessage(ptr.contents.response)
-        self._ack = OsipMessage(ptr.contents.ack)
+        self._request = ExosipMessage(ptr.contents.request, context) if ptr.contents.request else None
+        self._response = ExosipMessage(ptr.contents.response, context) if ptr.contents.response else None
+        self._ack = ExosipMessage(ptr.contents.ack, context) if ptr.contents.ack else None
         self._tid = ptr.contents.tid
         self._did = ptr.contents.did
         self._rid = ptr.contents.rid
@@ -100,6 +105,8 @@ class Event:
 
         :rtype: OsipMessage
         """
+        if not self._ptr:
+            raise RuntimeError('OsipMessage structure has been disposed.')
         return self._request
 
     @property
@@ -108,6 +115,8 @@ class Event:
 
         :rtype: OsipMessage
         """
+        if not self._ptr:
+            raise RuntimeError('OsipMessage structure has been disposed.')
         return self._response
 
     @property
