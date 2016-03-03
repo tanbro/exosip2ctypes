@@ -126,6 +126,8 @@ class Event:
 
         :rtype: OsipMessage
         """
+        if not self._ptr:
+            raise RuntimeError('OsipMessage structure has been disposed.')
         return self._ack
 
     @property
