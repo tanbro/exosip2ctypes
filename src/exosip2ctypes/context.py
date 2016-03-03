@@ -280,7 +280,7 @@ class Context(BaseContext, LoggerMixin):
         """
         evt_ptr = event.FuncEventWait.c_func(self._ptr, c_int(s), c_int(ms))
         if evt_ptr:
-            return Event(evt_ptr)
+            return Event(evt_ptr, self)
         else:
             return None
 
