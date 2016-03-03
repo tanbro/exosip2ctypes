@@ -25,7 +25,7 @@ __all__ = ['InitInvite', 'Ack', 'Answer']
 
 class InitInvite(ExosipMessage):
     def __init__(self, context, to_url, from_url, route=None, subject=None):
-        """Build a default INVITE message for a new call.
+        """Build a default INVITE message for a create call.
 
         :param Context context: :class:`Context` object contains the `eXosip_t` instance.
         :param str to_url: SIP url for callee.

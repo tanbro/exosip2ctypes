@@ -191,9 +191,9 @@ class EventType(IntEnum):
     registration_success = event.EXOSIP_REGISTRATION_SUCCESS
     #: user is not registred.
     registration_failure = event.EXOSIP_REGISTRATION_FAILURE
-    #: announce a new call
+    #: announce a create call
     call_invite = event.EXOSIP_CALL_INVITE
-    #: announce a new INVITE within call
+    #: announce a create INVITE within call
     call_reinvite = event.EXOSIP_CALL_REINVITE
     #: announce no answer within the timeout
     call_noanswer = event.EXOSIP_CALL_NOANSWER
@@ -215,7 +215,7 @@ class EventType(IntEnum):
     call_ack = event.EXOSIP_CALL_ACK
     #: announce that call has been cancelled
     call_cancelled = event.EXOSIP_CALL_CANCELLED
-    #: announce new incoming request.
+    #: announce create incoming request.
     call_message_new = event.EXOSIP_CALL_MESSAGE_NEW
     #: announce a 1xx for request.
     call_message_proceeding = event.EXOSIP_CALL_MESSAGE_PROCEEDING
@@ -233,7 +233,7 @@ class EventType(IntEnum):
     call_closed = event.EXOSIP_CALL_CLOSED
     #: call context is cleared.
     call_released = event.EXOSIP_CALL_RELEASED
-    #: announce new incoming request.
+    #: announce create incoming request.
     message_new = event.EXOSIP_MESSAGE_NEW
     #: announce a 1xx for request.
     message_proceeding = event.EXOSIP_MESSAGE_PROCEEDING
@@ -261,9 +261,9 @@ class EventType(IntEnum):
     subscription_serverfailure = event.EXOSIP_SUBSCRIPTION_SERVERFAILURE
     #: announce a global failure
     subscription_globalfailure = event.EXOSIP_SUBSCRIPTION_GLOBALFAILURE
-    #: announce new NOTIFY request
+    #: announce create NOTIFY request
     subscription_notify = event.EXOSIP_SUBSCRIPTION_NOTIFY
-    #: announce new incoming SUBSCRIBE.
+    #: announce create incoming SUBSCRIBE.
     in_subscription_new = event.EXOSIP_IN_SUBSCRIPTION_NEW
     #: announce no answer
     notification_noanswer = event.EXOSIP_NOTIFICATION_NOANSWER

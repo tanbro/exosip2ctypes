@@ -296,7 +296,7 @@ class Context(BaseContext, LoggerMixin):
         auth.FuncAutomaticAction.c_func(self._ptr)
 
     def start(self, s=0, ms=50, event_pool=None):
-        """Start the main loop for the context in a new thread, and then return.
+        """Start the main loop for the context in a create thread, and then return.
 
         :param int s: timeout value (seconds). Passed to :meth:`event_wait` in the main loop.
         :param int ms: timeout value (seconds). Passed to :meth:`event_wait` in the main loop.
@@ -340,7 +340,7 @@ class Context(BaseContext, LoggerMixin):
         self.logger.info('<0x%x>stop: <<<', id(self))
 
     def run(self, s=0, ms=50, timeout=None):
-        """Start the main loop for the context in a new thread, and then wait until the thread terminates.
+        """Start the main loop for the context in a create thread, and then wait until the thread terminates.
 
         :param int s: timeout value (seconds). Passed to :meth:`event_wait` in the main loop.
         :param int ms: timeout value (seconds). Passed to :meth:`event_wait` in the main loop.
@@ -457,7 +457,7 @@ class ContextLock:
                 do_something()
                 # ...
 
-        .. danger:: Do **NOT** create new instance, using :attr:`Context.lock`.
+        .. danger:: Do **NOT** create create instance, using :attr:`Context.lock`.
         """
         self._context = context
 

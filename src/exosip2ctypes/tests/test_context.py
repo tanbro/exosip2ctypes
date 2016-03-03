@@ -79,7 +79,7 @@ class ContextTestCase(unittest.TestCase):
     def test_ua(self):
         ua = self.ctx.user_agent
         self.assertTrue(ua)
-        new_val = 'this is a new user_agent'
+        new_val = 'this is a create user_agent'
         self.ctx.user_agent = new_val
         self.assertEqual(self.ctx.user_agent, new_val)
 

@@ -25,10 +25,11 @@ class OsipMessage:
         error_code = osip_parser.FuncMessageToStr.c_func(self._ptr, byref(dest), byref(length))
         raise_if_osip_error(error_code)
         if not dest:
-            return None
+            return str(None)
         result = string_at(dest, length.value)
+        result = to_str(result)
         lib.free(dest)
-        return result.strip()
+        return result
 
     @property
     def ptr(self):
@@ -169,7 +170,7 @@ class OsipMessage:
 
         :param str val: The string describing the element.
 
-        .. attention:: This method will **ADD** a new `Contact` header
+        .. attention:: This method will **ADD** a create `Contact` header
         """
         buf = create_string_buffer(to_bytes(val))
         error_code = osip_parser.FuncMessageSetContact.c_func(self._ptr, buf)
@@ -197,7 +198,7 @@ class OsipMessage:
 
         :param str val: The string describing the element.
 
-        .. attention:: This method will **ADD** a new `ALLOW` header
+        .. attention:: This method will **ADD** a create `ALLOW` header
         """
         buf = create_string_buffer(to_bytes(val))
         error_code = osip_parser.FuncMessageSetAllow.c_func(self._ptr, buf)
@@ -234,7 +235,7 @@ class OsipMessage:
         :param str name: The token name.
         :param str value: The token value.
 
-        .. attention:: This method will **ADD** a new header
+        .. attention:: This method will **ADD** a create header
         """
         pc_name = create_string_buffer(to_bytes(name))
         pc_value = create_string_buffer(to_bytes(value))
@@ -264,8 +265,9 @@ class OsipMessage:
             ret = osip_body.FuncBodyToStr.c_func(p_body, byref(dest), byref(length))
             raise_if_osip_error(ret)
             val = string_at(dest, length.value)
+            val = to_str(val)
             lib.free(dest)
-            result.append(to_str(val))
+            result.append(val)
         return result
 
     def add_body(self, val):
@@ -273,7 +275,7 @@ class OsipMessage:
 
         :param str val: Body string.
 
-        .. attention:: This method will **ADD** a new body
+        .. attention:: This method will **ADD** a create body
         """
         buf = create_string_buffer(to_bytes(val))
         err_code = osip_parser.FuncMessageSetBody.c_func(self._ptr, buf, len(buf))
