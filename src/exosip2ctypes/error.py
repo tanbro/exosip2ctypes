@@ -142,4 +142,4 @@ def raise_if_osip_error(error_code, message=None):
         if message:
             raise exce_cls(message)
         else:
-            raise exce_cls()
+            raise exce_cls('{0}({1})'.format(exce_cls.__name__, error_code))
