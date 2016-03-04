@@ -9,8 +9,7 @@ import platform
 import socket
 import threading
 from ctypes import c_char_p, c_int, create_string_buffer
-from multiprocessing.pool import ThreadPool
-from functools import partial
+from concurrent.futures import ThreadPoolExecutor
 
 from ._c import conf, event, auth, call
 from ._c.lib import DLL_NAME
@@ -62,8 +61,9 @@ class Context(BaseContext, LoggerMixin):
             raise MallocError()
         error_code = conf.FuncInit.c_func(self._ptr)
         raise_if_osip_error(error_code)
-        self._event_callback = event_callback
-        self._event_pool = None
+        self._event_callback = None
+        self.set_event_callback(event_callback)
+        self._event_executor = None
         self._locked = False
         self._lock = ContextLock(self)
         if contact_address[0]:
@@ -105,31 +105,21 @@ class Context(BaseContext, LoggerMixin):
                 if evt:
                     self.logger.debug('<0x%x>_event_loop: event_wait() -> %s', id(self), evt)
                     if callable(self._event_callback):
-                        self.logger.debug('<0x%x>_event_loop: event<0x%x> callback >>>', id(self), id(evt))
-
-                        def callback(_evt, _res):
-                            if isinstance(_res, Exception):
-                                self.logger.exception('<0x%x>_event_loop: event<0x%x> error: %s',
-                                                      id(self), id(_evt), _res)
-                            else:
+                        def execute_event(_evt):
+                            def done(f):
                                 self.logger.debug('<0x%x>_event_loop: event<0x%x> callback <<<', id(self), id(_evt))
+                                exc = f.exception()
+                                if exc:
+                                    try:
+                                        raise exc
+                                    except:
+                                        self.logger.exception('')
+                                        raise
 
-                        def error_callback(_evt, error):
-                            self.logger.exception('<0x%x>_event_loop: event<0x%x> error: %s', id(self), id(_evt), error)
+                            self._event_executor.submit(self._event_callback, self, evt).add_done_callback(done)
 
-                        if _IS_PY2:
-                            self._event_pool.apply_async(
-                                func=self._event_callback,
-                                args=(self, evt),
-                                callback=partial(callback, evt)
-                            )
-                        else:
-                            self._event_pool.apply_async(
-                                func=self._event_callback,
-                                args=(self, evt),
-                                callback=partial(callback, evt),
-                                error_callback=partial(error_callback, evt)
-                            )
+                        self.logger.debug('<0x%x>_event_loop: event<0x%x> callback >>>', id(self), id(evt))
+                        execute_event(evt)
         finally:
             self._stop_cond.acquire()
             self._is_running = False
@@ -150,19 +140,27 @@ class Context(BaseContext, LoggerMixin):
         """
         return self._ptr
 
-    @property
-    def event_callback(self):
-        """Event callback
+    def get_event_callback(self):
+        """Set event callback
 
         :rtype: callable
 
-        .. attention:: Event callback is invoked in a :class:`multiprocessing.pool.ThreadPool`
+        .. attention:: Event callback is invoked in a :class:`concurrent.futures.Executor`
         """
         return self._event_callback
 
-    @event_callback.setter
-    def event_callback(self, val):
+    def set_event_callback(self, val):
+        """Set event callback
+
+        :param callable val: callback function
+
+        .. attention:: Event callback is invoked in a :class:`concurrent.futures.Executor`
+        """
+        if not callable(val):
+            raise TypeError('"event_callback" is not callable')
         self._event_callback = val
+
+    event_callback = property(get_event_callback, set_event_callback)
 
     @property
     def lock(self):
@@ -299,13 +297,13 @@ class Context(BaseContext, LoggerMixin):
         """
         auth.FuncAutomaticAction.c_func(self._ptr)
 
-    def start(self, s=0, ms=50, event_pool=None):
+    def start(self, s=0, ms=50, event_executor=None):
         """Start the main loop for the context in a create thread, and then return.
 
         :param int s: timeout value (seconds). Passed to :meth:`event_wait` in the main loop.
         :param int ms: timeout value (seconds). Passed to :meth:`event_wait` in the main loop.
-        :param multiprocessing.pool.Pool event_pool: Event pool instance. Events will be fired in the pool.
-            Default is a :class:`ThreadPool` instance
+        :param concurrent.futures.Executor event_executor: Event executor instance. Events will be fired in it.
+            Default is a :class:`concurrent.futures.Executor` instance
         :return: New created event loop thread.
         :rtype: threading.Thread
 
@@ -316,7 +314,7 @@ class Context(BaseContext, LoggerMixin):
         self.logger.info('<0x%x>start: >>> s=%s, ms=%s', id(self), s, ms)
         if self._is_running:
             raise RuntimeError("Context loop already started.")
-        self._event_pool = event_pool or ThreadPool()
+        self._event_executor = event_executor or ThreadPoolExecutor()
         self._event_loop_thread = threading.Thread(target=self._event_loop, args=(s, ms))
         self._start_cond.acquire()
         self._event_loop_thread.start()
@@ -338,9 +336,8 @@ class Context(BaseContext, LoggerMixin):
         self._stop_sentinel = True
         self._stop_cond.wait()
         self._stop_cond.release()
-        self.logger.info('<0x%x>stop: terminate event pool', id(self))
-        self._event_pool.close()
-        self._event_pool.join()
+        self.logger.info('<0x%x>stop: shutdown event executor', id(self))
+        self._event_executor.shutdown()
         self.logger.info('<0x%x>stop: <<<', id(self))
 
     def run(self, s=0, ms=50, timeout=None):
