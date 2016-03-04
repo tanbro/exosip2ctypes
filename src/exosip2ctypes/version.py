@@ -1,10 +1,7 @@
 from ._c import conf
 from .utils import to_str
 
-__all__ = ['version', 'get_library_version']
-
-#: version of the package
-version = '0.1'
+__all__ = ['get_library_version']
 
 
 def get_library_version():

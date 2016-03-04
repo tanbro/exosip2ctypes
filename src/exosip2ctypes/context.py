@@ -391,7 +391,7 @@ class Context(BaseContext, LoggerMixin):
         """Initiate a call.
 
         :param call.InitInvite invite: SIP INVITE message to send.
-        :return: unique id for SIP calls (but multiple dialogs!)
+        :return: CID - unique id for SIP calls (but multiple dialogs!)
         :rtype: int
 
         .. attention:: returned `call id` is an integer, which different from SIP message's `Call-Id` header
