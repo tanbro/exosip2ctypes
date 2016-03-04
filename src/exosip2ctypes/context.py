@@ -378,7 +378,7 @@ class Context(BaseContext, LoggerMixin):
     #     else:
     #         raise TypeError('Unsupported libeXosip2 message type %s' % type(message))
 
-    def call_terminate(self, cid, did):
+    def call_terminate(self, cid, did=0):
         """Terminate a call. send CANCEL, BYE or 603 Decline.
 
         :param int cid: call id of call.
