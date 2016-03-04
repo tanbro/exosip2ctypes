@@ -107,7 +107,7 @@ class OsipNoCommonCodec(OsipError):
 osip_error_map = {
     OSIP_UNDEFINED_ERROR: OsipUndefinedError,
     OSIP_BADPARAMETER: OsipBadParameter,
-    OSIP_WRONG_STATE: OsipWrongFormat,
+    OSIP_WRONG_STATE: OsipWrongState,
     OSIP_NOMEM: OsipNoMem,
     OSIP_SYNTAXERROR: OsipSyntaxError,
     OSIP_NOTFOUND: OsipNotFound,
