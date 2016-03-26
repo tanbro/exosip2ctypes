@@ -290,7 +290,7 @@ class Context(BaseContext, LoggerMixin):
         """Initiate some automatic actions:
 
         * Retry with credentials upon reception of 401/407.
-        * Retry with higher Session-Expires upon reception of 422.
+        * Retry with higher Sessions-Expires upon reception of 422.
         * Refresh REGISTER and SUBSCRIBE before the expiration delay.
         * Retry with Contact header upon reception of 3xx request.
         * Send automatic UPDATE for session-timer feature.

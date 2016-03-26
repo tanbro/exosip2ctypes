@@ -1,8 +1,9 @@
 setuptools
 wheel
 twine
-enum34
 Sphinx
 recommonmark
 sphinx-autobuild
 coverage
+enum34
+futures
