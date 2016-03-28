@@ -24,6 +24,9 @@ __all__ = ['InitInvite', 'Ack', 'Answer']
 
 
 class InitInvite(ExosipMessage):
+    """default INVITE message for a create call.
+    """
+
     def __init__(self, context, to_url, from_url, route=None, subject=None):
         """Build a default INVITE message for a create call.
 
@@ -82,6 +85,9 @@ class InitInvite(ExosipMessage):
 
 
 class Ack(ExosipMessage):
+    """default ACK for a 200ok received.
+    """
+
     def __init__(self, context, did):
         """Build a default ACK for a 200ok received.
 
@@ -110,6 +116,9 @@ class Ack(ExosipMessage):
 
 
 class Answer(ExosipMessage):
+    """default Answer for request.
+    """
+
     def __init__(self, context, tid, status):
         """Build default Answer for request.
 
