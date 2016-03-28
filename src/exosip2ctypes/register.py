@@ -10,6 +10,8 @@ from .error import raise_if_osip_error
 from .message import ExosipMessage
 from .utils import to_bytes
 
+__all__ = ['InitialRegister', 'Register']
+
 
 class InitialRegister(ExosipMessage):
     """initial REGISTER request.
@@ -31,10 +33,10 @@ class InitialRegister(ExosipMessage):
         """Build initial REGISTER request.
 
         :param context: eXosip_t instance.
-        :param from_: 	SIP url for caller.
-        :param proxy: 	Proxy used for registration.
-        :param contact:	Contact address. (optional)
-        :param expires: The expires value for registration.
+        :param str from_: 	SIP url for caller.
+        :param str proxy: 	Proxy used for registration.
+        :param str contact:	Contact address. (optional)
+        :param int expires: The expires value for registration.
         """
         ptr = c_void_p()  # osip_message_t* init_register_request = NULL;
         self._from = str(from_)
@@ -116,9 +118,9 @@ class Register(ExosipMessage):
     def __init__(self, context, rid, expires=1800):
         """Build a new REGISTER request for an existing registration.
 
-        :param context:	eXosip_t instance.
-        :param rid:     A unique identifier for the registration context
-        :param expires: The expires value for registration.
+        :param Context context:	eXosip_t instance.
+        :param int rid:         A unique identifier for the registration context
+        :param int expires:     The expires value for registration.
         """
         ptr = c_void_p()  # osip_message_t* register_request = NULL;
         self._rid = abs(int(rid))

@@ -30,7 +30,7 @@ class InitInvite(ExosipMessage):
     def __init__(self, context, to_url, from_url, route=None, subject=None):
         """Build a default INVITE message for a create call.
 
-        :param Context context: :class:`Context` object contains the `eXosip_t` instance.
+        :param Context Context context: :class:`Context` object contains the `eXosip_t` instance.
         :param str to_url: SIP url for callee.
         :param str from_url: SIP url for caller.
         :param str route: Route header for INVITE. (optional)

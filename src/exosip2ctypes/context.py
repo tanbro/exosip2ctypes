@@ -430,35 +430,70 @@ class Context(BaseContext, LoggerMixin):
         )
         raise_if_osip_error(error_code)
 
+    def add_authentication_info(self, user_name, user_id, password, realm):
+        """Add authentication credentials.
+
+        :param str user_name: username
+        :param str user_id: login (usually equals the username)
+        :param str password: password
+        :param str realm: realm within which credentials apply, or `None` to apply credentials to unrecognized realms
+
+        These are used when an outgoing request comes back with an authorization required response.
+        """
+        error_code = authentication.FuncAddAuthenticationInfo.c_func(
+            self._ptr,
+            create_string_buffer(to_bytes(user_name)) if user_name else None,
+            create_string_buffer(to_bytes(user_id)) if user_id else None,
+            create_string_buffer(to_bytes(password)) if password else None,
+            None,
+            create_string_buffer(to_bytes(realm)) if realm else None
+        )
+        raise_if_osip_error(error_code)
+
+    def remove_authentication_info(self, user_name, realm):
+        """Remove authentication credentials.
+
+        :param str user_name: user name
+        :param str realm: realm must be exact same arg as for :meth:`add_authentication_info`
+        """
+        error_code = authentication.FuncRemoveAuthenticationInfo.c_func(
+            self._ptr,
+            create_string_buffer(to_bytes(user_name)) if user_name else None,
+            create_string_buffer(to_bytes(realm)) if realm else None
+        )
+        raise_if_osip_error(error_code)
+
 
 class ContextLock:
+    """A helper class for eXosip Context lock
+
+    This class wraps eXosip's native context lock function,
+    which is invoked in :meth:`Context.lock_acquire` and :meth:`Context.lock_release`.
+    You can call theses methods directly, or use :attr:`Context.lock`.
+
+    ``with`` statement is supported.
+
+    eg::
+
+        context.lock.acquire()
+        try:
+            do_something()
+            # ...
+        finally:
+            context.lock.release()
+
+    or::
+
+        with context.lock:
+            do_something()
+            # ...
+
+    .. danger:: Do **NOT** construct the class yourself, use :attr:`Context.lock`.
+    """
+
     def __init__(self, context):
-        """A helper class for eXosip Context lock
-
+        """
         :param Context context: Context which the lock is for
-
-        This class wraps eXosip's native context lock function,
-        which is invoked in :meth:`Context.lock_acquire` and :meth:`Context.lock_release`.
-        You can call theses methods directly, or use :attr:`Context.lock`.
-
-        ``with`` statement is supported.
-
-        eg::
-
-            context.lock.acquire()
-            try:
-                do_something()
-                # ...
-            finally:
-                context.lock.release()
-
-        or::
-
-            with context.lock:
-                do_something()
-                # ...
-
-        .. danger:: Do **NOT** create create instance, using :attr:`Context.lock`.
         """
         self._context = context
 
