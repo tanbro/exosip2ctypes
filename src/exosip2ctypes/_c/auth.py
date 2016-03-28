@@ -15,6 +15,27 @@ class FuncAutomaticAction(ExosipFunc):
     argtypes = [c_void_p]
 
 
+class FuncAddAuthenticationInfo(ExosipFunc):
+    func_name = 'add_authentication_info'
+    argtypes = [c_void_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p]
+    restype = c_int
+
+
+class FuncRemoveAuthenticationInfo(ExosipFunc):
+    func_name = 'remove_authentication_info'
+    argtypes = [c_void_p, c_char_p, c_char_p]
+    restype = c_int
+
+
+class FuncClearAuthenticationInfo(ExosipFunc):
+    func_name = 'clear_authentication_info'
+    argtypes = [c_void_p]
+    restype = c_int
+
+
 globs.func_classes.extend([
     FuncAutomaticAction,
+    FuncAddAuthenticationInfo,
+    FuncRemoveAuthenticationInfo,
+    FuncClearAuthenticationInfo,
 ])
