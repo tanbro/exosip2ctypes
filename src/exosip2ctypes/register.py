@@ -51,7 +51,7 @@ class InitialRegister(ExosipMessage):
             c_int(self._expires),
             byref(ptr)
         )
-        raise_if_osip_error(self.rid)
+        raise_if_osip_error(rid)
         self._rid = int(rid)
         super(InitialRegister, self).__init__(ptr, context)
 
