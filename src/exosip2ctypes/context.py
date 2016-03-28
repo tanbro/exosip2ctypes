@@ -11,7 +11,7 @@ import threading
 from ctypes import c_char_p, c_int, create_string_buffer
 from concurrent.futures import ThreadPoolExecutor
 
-from ._c import conf, event, auth, call
+from ._c import conf, event, authentication, call
 from ._c.lib import DLL_NAME
 from .error import MallocError, raise_if_osip_error
 from .event import Event
@@ -295,7 +295,7 @@ class Context(BaseContext, LoggerMixin):
         * Retry with Contact header upon reception of 3xx request.
         * Send automatic UPDATE for session-timer feature.
         """
-        auth.FuncAutomaticAction.c_func(self._ptr)
+        authentication.FuncAutomaticAction.c_func(self._ptr)
 
     def start(self, s=0, ms=50, event_executor=None):
         """Start the main loop for the context in a create thread, and then return.
