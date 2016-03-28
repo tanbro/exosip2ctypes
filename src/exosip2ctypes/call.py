@@ -102,6 +102,12 @@ class Ack(ExosipMessage):
         """
         return self._did
 
+    def send(self):
+        """Send the ACK for the 200ok received.
+        """
+        error_code = call.FuncCallSendAck.c_func(self.context.ptr, c_int(self._did), self.ptr)
+        raise_if_osip_error(error_code)
+
 
 class Answer(ExosipMessage):
     def __init__(self, context, tid, status):
@@ -133,3 +139,9 @@ class Answer(ExosipMessage):
         :rtype: int
         """
         return self._status
+
+    def send(self):
+        """Send Answer for invite.
+        """
+        error_code = call.FuncCallSendAnswer.c_func(self.context.ptr, c_int(self._tid), c_int(self._status), self.ptr)
+        raise_if_osip_error(error_code)

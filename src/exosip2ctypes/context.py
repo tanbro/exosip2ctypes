@@ -401,7 +401,7 @@ class Context(BaseContext, LoggerMixin):
         """Send the ACK for the 200ok received.
 
         :param int did: dialog id of call.
-        :param call.Ack ack: SIP ACK message to send.
+        :param call.Ack ack: SIP ACK message to send. `did` won't be used if specified.
         """
         if ack is not None:
             did = ack.did
@@ -417,7 +417,7 @@ class Context(BaseContext, LoggerMixin):
 
         :param int tid: id of transaction to answer.
         :param int status: response status if `answer` is NULL. (not allowed for 2XX)
-        :param call.Answer answer: The sip answer to send.
+        :param call.Answer answer: The sip answer to send. `tid` and `status` won't be used if specified.
         """
         if answer is not None:
             tid = answer.tid
