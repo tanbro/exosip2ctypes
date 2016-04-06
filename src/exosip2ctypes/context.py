@@ -28,7 +28,7 @@ class BaseContext:
 
 
 class Context(BaseContext, LoggerMixin):
-    def __init__(self, event_callback=None, contact_address=(None, 0)):
+    def __init__(self, event_callback=None):
         """Allocate and Initiate an eXosip context.
 
         :param callable event_callback: Event callback.
@@ -45,14 +45,6 @@ class Context(BaseContext, LoggerMixin):
             It has two parameters:
                 * :class:`Context` : eXosip context on which the event happened.
                 * :class:`Event` : The event happened.
-
-        :param tuple contact_address: Address used in `Contact` header.
-
-            This `tuple` parameter has two items:
-              0. `str` - the ip address.
-              1. `int` - the port for masquerading.
-
-            You can leave this parameter as default value, and call :meth:`masquerade_contact` later.
         """
         self.logger.info('<0x%x>__init__: contact_address=%s', id(self), contact_address)
         self._ptr = conf.FuncMalloc.c_func()
@@ -66,8 +58,6 @@ class Context(BaseContext, LoggerMixin):
         self._event_executor = None
         self._locked = False
         self._lock = ContextLock(self)
-        if contact_address[0]:
-            self.masquerade_contact(*contact_address)
         self._user_agent = '{} ({} ({}/{}))'.format(DLL_NAME, get_library_version(), platform.machine(),
                                                     platform.system())
         self._set_user_agent(self._user_agent)
@@ -226,7 +216,7 @@ class Context(BaseContext, LoggerMixin):
             self._ptr = None
         self.logger.info('<0x%x>quit: <<<', id(self))
 
-    def masquerade_contact(self, public_address, port):
+    def masquerade_contact(self, public_address=None, port=0):
         """This method is used to replace contact address with the public address of your NAT.
         The ip address should be retrieved manually (fixed IP address) or with STUN.
         This address will only be used when the remote correspondent appears to be on an DIFFERENT LAN.
@@ -235,6 +225,8 @@ class Context(BaseContext, LoggerMixin):
 
         :param str public_address: the ip address.
         :param int port: the port for masquerading.
+
+        .. note:: It's advised to call the method after :meth:`listen_on_address`
         """
         self.logger.info('<0x%x>masquerade_contact: public_address=%s, port=%s', id(self), public_address, port)
         conf.FuncMasqueradeContact.c_func(

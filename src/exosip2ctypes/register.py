@@ -29,7 +29,7 @@ class InitialRegister(ExosipMessage):
         See the "NAT and Contact header" section in setup documentation.
     """
 
-    def __init__(self, context, from_, proxy, contact=None, expires=1800):
+    def __init__(self, context, from_, proxy, contact=None, expires=3600):
         """Build initial REGISTER request.
 
         :param context: eXosip_t instance.
@@ -39,14 +39,14 @@ class InitialRegister(ExosipMessage):
         :param int expires: The expires value for registration.
         """
         ptr = c_void_p()  # osip_message_t* init_register_request = NULL;
-        self._from = str(from_)
-        self._proxy = str(proxy)
+        self._from = str(from_) if from_ else None
+        self._proxy = str(proxy) if proxy else None
         self._contact = str(contact) if contact else None
         self._expires = abs(int(expires))
         rid = register.FuncRegisterBuildInitialRegister.c_func(
             context.ptr,
-            create_string_buffer(to_bytes(self._from)),
-            create_string_buffer(to_bytes(self._proxy)),
+            create_string_buffer(to_bytes(self._from)) if self._from else None,
+            create_string_buffer(to_bytes(self._proxy)) if self._proxy else None,
             create_string_buffer(to_bytes(self._contact)) if self._contact else None,
             c_int(self._expires),
             byref(ptr)
@@ -115,7 +115,7 @@ class Register(ExosipMessage):
         To do so, you have to send a REGISTER request with the expires header set to value "0".
     """
 
-    def __init__(self, context, rid, expires=1800):
+    def __init__(self, context, rid, expires=3600):
         """Build a new REGISTER request for an existing registration.
 
         :param Context context:	eXosip_t instance.

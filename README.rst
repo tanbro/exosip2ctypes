@@ -7,17 +7,26 @@ it wraps `eXosip2`_.
 The library is based on `ctypes`_,
 so it can be used with `libeXosip2` without compiling.
 
+Supported Python version
+=========================
+* Python2.x: 2.6 +
+* Python3.x: 3.0 +
+
 Dependencies
 ============
-In Python2.x serials, Python2.7 is supported.
-The 3rd-part library `enum34`_ is required,
-you can simply install the library using `pip`_::
+Below Python3.4:
 
-    pip install enum34
+	The 3rd-part library `enum34`_ is required,
+	you can simply install the library using `pip`_::
 
-For Python3.4 and above, no 3rd-part dependencies are required.
+    	pip install enum34
 
-For Python3.x blows 3.4, `enum34`_ is still required.
+Below Python3.2:
+
+	The 3rd-part library `futures`_ is required,
+	you can simply install the library using `pip`_::
+
+    	pip install futures
 
 Contributing
 ============
@@ -55,10 +64,15 @@ After that, active the virtual environment:
 
 3. Install dependencies
 ```````````````````````
-For Python version less than 3.4 (including 2.x),
+For Python version less than 3.2 (including 2.x),
+install dependencies from requirements file `requirements-lt_3.3-dev.txt`::
+
+    pip install -r requirements-dev-lt_3.2.txt
+
+For Python version greater than or qual to 3.2 (including 2.x), and smaller than 3.4,
 install dependencies from requirements file `requirements-lt_3.4-dev.txt`::
 
-    pip install -r requirements-lt_3.4-dev.txt
+    pip install -r requirements-dev-lt_3.4.txt
 
 else install the dependencies from requirements file `requirement-dev.txt`::
 
@@ -84,10 +98,12 @@ you shall build the documentation from source, using `sphinx-doc`_ .
 
 .. _enum34: http://pypi.python.org/pypi/enum34
 
+.. _futures: http://pypi.python.org/pypi/futures
+
 .. _Docstring: http://www.python.org/dev/peps/pep-0257/
 
 .. _sphinx-doc: http://sphinx-doc.org/
 
-.. _pip: https://pypi.python.org/pypi/pip
+.. _pip: http://pypi.python.org/pypi/pip
 
 .. _virtualenv: https://pypi.python.org/pypi/virtualenv

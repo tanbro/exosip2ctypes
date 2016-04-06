@@ -94,17 +94,17 @@ class Event:
 
     @property
     def textinfo(self):
-        """text description of event
-
+        """
+        :return: text description of event
         :rtype: str
         """
         return self._textinfo
 
     @property
     def request(self):
-        """request within current transaction
-
-        :rtype: OsipMessage
+        """
+        :return: request within current transaction
+        :rtype: ExosipMessage
         """
         if not self._ptr:
             raise RuntimeError('OsipMessage structure has been disposed.')
@@ -112,9 +112,9 @@ class Event:
 
     @property
     def response(self):
-        """last response within current transaction
-
-        :rtype: OsipMessage
+        """
+        :return: last response within current transaction
+        :rtype: ExosipMessage
         """
         if not self._ptr:
             raise RuntimeError('OsipMessage structure has been disposed.')
@@ -122,8 +122,8 @@ class Event:
 
     @property
     def ack(self):
-        """ack within current transaction
-
+        """
+        :return: ack within current transaction
         :rtype: OsipMessage
         """
         if not self._ptr:
@@ -132,32 +132,32 @@ class Event:
 
     @property
     def tid(self):
-        """unique id for transactions (to be used for answers)
-
+        """
+        :return: unique id for transactions (to be used for answers)
         :rtype: int
         """
         return self._tid
 
     @property
     def did(self):
-        """unique id for SIP dialogs
-
+        """
+        :return: unique id for SIP dialogs
         :rtype: int
         """
         return self._did
 
     @property
     def rid(self):
-        """unique id for registration
-
+        """
+        :return: unique id for registration
         :rtype: int
         """
         return self._rid
 
     @property
     def cid(self):
-        """unique id for SIP calls (but multiple dialogs!)
-
+        """
+        :return: unique id for SIP calls (but multiple dialogs!)
         :rtype: int
         """
         return self._cid
@@ -172,24 +172,24 @@ class Event:
 
     @property
     def nid(self):
-        """unique id for incoming subscriptions
-
+        """
+        :return: unique id for incoming subscriptions
         :rtype: int
         """
         return self._nid
 
     @property
     def ss_status(self):
-        """current Subscription-State for subscription
-
+        """
+        :return: current Subscription-State for subscription
         :rtype: int
         """
         return self._ss_status
 
     @property
     def ss_reason(self):
-        """current Reason status for subscription
-
+        """
+        :return: current Reason status for subscription
         :rtype: int
         """
         return self._ss_reason
