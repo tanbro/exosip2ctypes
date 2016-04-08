@@ -3,7 +3,7 @@ from sys import version_info
 
 pyver = '%s.%s' % (version_info[0], version_info[1])
 
-if pyver < '3':
+if pyver < '3.2':
     INSTALL_REQUIRES = ['enum34', 'futures']
 if pyver < '3.4':
     INSTALL_REQUIRES = ['enum34']
