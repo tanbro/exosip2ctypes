@@ -89,6 +89,8 @@ Good luck!
 
 Documentation
 =============
+Visit http://exosip2ctypes.readthedocs.org/ for the docs.
+
 The project's API documentation is written inside the source code as `Docstring`_ ,
 you shall build the documentation from source, using `sphinx-doc`_ .
 

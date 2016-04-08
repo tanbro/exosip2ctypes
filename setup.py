@@ -18,9 +18,10 @@ setup(
     package_dir={'': 'src'},  # tell distutils packages are under src
     test_suite='exosip2ctypes.tests',
     description='libeXosip2 Python wrapper, using ctypes.',
+    long_description=open('README.rst').read(),
     author='Liu Xue Yan',
     author_email='realtanbro@gmai.com',
-    url='',
+    url='https://github.com/tanbro/exosip2ctypes',
     license='GPL',
     classifiers=[
         # How mature is this project? Common values are
