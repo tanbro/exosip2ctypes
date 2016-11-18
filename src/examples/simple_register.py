@@ -22,7 +22,7 @@ def on_sip_event(context, evt):
 
 
 initialize()
-ctx = Context(event_callback=on_sip_event, contact_address=('192.168.56.101', 5060))
+ctx = Context(event_callback=on_sip_event)
 
 logging.debug('listening...')
 ctx.listen_on_address(port=55160)
@@ -32,7 +32,7 @@ ctx.start()
 logging.debug('started!')
 
 with ctx.lock:
-    ctx.add_authentication_info('user2', 'user2', '123', 'sip.linkrtc.com')
+    ctx.add_authentication_info('user', 'auth-user', 'password', None)
 
 while True:
     s = sys.stdin.readline().strip().lower()
@@ -43,8 +43,8 @@ while True:
         with ctx.lock:
             register_req = register.InitialRegister(
                 ctx,
-                'sip:user2@sip.linkrtc.com',
-                'sip:sip.linkrtc.com'
+                'sip:user@host:port',
+                'sip:proxy:port'
             )
             logging.debug('rid=%s', register_req.rid)
             logging.debug('InitialRegister=%s', register_req)

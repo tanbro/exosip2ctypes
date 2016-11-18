@@ -46,7 +46,7 @@ class Context(BaseContext, LoggerMixin):
                 * :class:`Context` : eXosip context on which the event happened.
                 * :class:`Event` : The event happened.
         """
-        self.logger.info('<0x%x>__init__: contact_address=%s', id(self), contact_address)
+        self.logger.info('<0x%x>__init__', id(self))
         self._ptr = conf.FuncMalloc.c_func()
         self.logger.debug('<0x%x>__init__: eXosip_malloc() -> %s', id(self), self._ptr)
         if self._ptr is None:
