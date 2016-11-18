@@ -332,11 +332,13 @@ class Context(BaseContext, LoggerMixin):
         self._event_executor.shutdown()
         self.logger.info('<0x%x>stop: <<<', id(self))
 
-    def run(self, s=0, ms=50, timeout=None):
+    def run(self, s=0, ms=50, event_executor=None, timeout=None):
         """Start the main loop for the context in a create thread, and then wait until the thread terminates.
 
         :param int s: timeout value (seconds). Passed to :meth:`event_wait` in the main loop.
         :param int ms: timeout value (seconds). Passed to :meth:`event_wait` in the main loop.
+        :param concurrent.futures.Executor event_executor: Event executor instance. Events will be fired in it.
+            Default is a :class:`concurrent.futures.Executor` instance
         :param float timeout: When the timeout argument is present and not None, it should be a floating point number
                               specifying a timeout for the operation in seconds (or fractions thereof)
 
@@ -346,7 +348,7 @@ class Context(BaseContext, LoggerMixin):
             trd.join(timeout)
         """
         self.logger.info('<0x%x>run: >>> s=%s, ms=%s, timeout=%s', id(self), s, ms, timeout)
-        self.start(s, ms)
+        self.start(s, ms, event_executor)
         self._event_loop_thread.join(timeout)
         self.logger.info('<0x%x>run: <<<', id(self))
 
