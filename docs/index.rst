@@ -14,6 +14,7 @@ Contents:
     :maxdepth: 2
 
        README <readme>
+       CONTRIBUTING <contributing>
        API Doc <apidoc/modules>
 
 Indices and tables
