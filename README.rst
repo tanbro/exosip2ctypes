@@ -1,9 +1,9 @@
 eXosip2CTypes
 #############
 
-exosip2ctypes is a `python`_ package, it wraps `eXosip2`_.
+eXosip2CTypes is a `python`_ package, it wraps `eXosip2`_.
 
-The library is based on `ctypes`_, so it can be used with `eXosip2`_ without compiling a C extension.
+The library is based on `ctypes`_, it loads `eXosip2`_ shared object on runtime.
 
 Environment
 ===========
@@ -50,10 +50,13 @@ Install
 
 Develop
 =======
+Now, your can use it in your APP, Good luck!
+
 Visit http://exosip2ctypes.readthedocs.org/ for the api docs.
 
 The project's API documentation is written inside the source code as `Docstring`_ ,
 you shall build the documentation from source, using `sphinx-doc`_ .
+
 
 .. _osip2: http://www.gnu.org/software/osip/
 

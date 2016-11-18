@@ -19,10 +19,15 @@ Install libeXosip2 by::
 
 If using other OS, you may need to build libeXosip2 from source.
 
-Install python3, virtualenv, pip, wheel, setuptools::
+Install python, virtualenv, pip, wheel, setuptools
+
+Python 2::
+
+    sudo apt install python python-virtualenv python-pip python-setuptools
+
+Python 3::
 
     sudo apt install python3 python3-virtualenv python3-pip python3-setuptools
-
 
 2. Virtual Environment
 ``````````````````````
@@ -33,11 +38,25 @@ It's strongly recommended to do development in a python virtual environment::
     cd path/to/eXosip2CTypes
     python setup.py develop
 
+Install other developing dependent libraries(optional)
+
+Python version greater then 3.4::
+
+    pip install -r requirements.txt
+
+
+
+Python version 3.2 and 3.3::
+
+    pip install -r requirements-lt_3.4.txt
+
+Python version less then 3.2::
+
+    pip install -r requirements-lt_3.2.txt
+
 Developing
 ----------
-Now, you can start developing, look at:
+Now, everything is ready, see C API here:
 
 * http://www.antisip.com/doc/exosip2/index.html
 * http://www.gnu.org/software/osip/doc/html/index.html
-
-Good luck!

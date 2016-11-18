@@ -1,9 +1,0 @@
-setuptools
-wheel
-twine
-Sphinx
-recommonmark
-sphinx-autobuild
-coverage
-enum34
-futures
