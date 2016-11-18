@@ -1,8 +1,6 @@
 CONTRIBUTING
 ============
 
-Contributing
-============
 Contributions are welcome!
 
 Environment
