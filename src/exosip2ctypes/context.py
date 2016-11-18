@@ -295,7 +295,7 @@ class Context(BaseContext, LoggerMixin):
         :param int s: timeout value (seconds). Passed to :meth:`event_wait` in the main loop.
         :param int ms: timeout value (seconds). Passed to :meth:`event_wait` in the main loop.
         :param concurrent.futures.Executor event_executor: Event executor instance. Events will be fired in it.
-            Default is a :class:`concurrent.futures.Executor` instance
+            Default is a :class:`concurrent.futures.ThreadPoolExecutor` instance
         :return: New created event loop thread.
         :rtype: threading.Thread
 
@@ -337,8 +337,7 @@ class Context(BaseContext, LoggerMixin):
 
         :param int s: timeout value (seconds). Passed to :meth:`event_wait` in the main loop.
         :param int ms: timeout value (seconds). Passed to :meth:`event_wait` in the main loop.
-        :param concurrent.futures.Executor event_executor: Event executor instance. Events will be fired in it.
-            Default is a :class:`concurrent.futures.Executor` instance
+        :param concurrent.futures.Executor event_executor: see the same parameter in :meth:`start`.
         :param float timeout: When the timeout argument is present and not None, it should be a floating point number
                               specifying a timeout for the operation in seconds (or fractions thereof)
 
