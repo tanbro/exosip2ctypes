@@ -1,100 +1,67 @@
 eXosip2CTypes
 #############
 
-exosip2ctypes is a Python package,
-it wraps `eXosip2`_.
+exosip2ctypes is a `python`_ package, it wraps `eXosip2`_.
 
-The library is based on `ctypes`_,
-so it can be used with `libeXosip2` without compiling.
+The library is based on `ctypes`_, so it can be used with `eXosip2`_ without compiling a C extension.
 
-Supported Python version
-=========================
+Environment
+===========
+
+OS:
+
+* Linux
+* MacOS
+
+Python:
+
 * Python2.x: 2.6 +
 * Python3.x: 3.0 +
 
-Dependencies
-============
-Below Python3.4:
+Install
+=======
 
-	The 3rd-part library `enum34`_ is required,
-	you can simply install the library using `pip`_::
+1. Install `eXosip2`_.
 
-    	pip install enum34
+    `eXosip2`_ is based on `eXosip2`_.
+    You can compile those two libraries from code, or install by a package manager if possible.
+    For example, ubuntu 16.04 users can install the library by::
 
-Below Python3.2:
+        sudo apt install libexosip2-11
 
-	The 3rd-part library `futures`_ is required,
-	you can simply install the library using `pip`_::
+    "develop" packages are not needed.
 
-    	pip install futures
+2. Install `python`_
 
-Contributing
-============
-Contributions are welcome!
+    `python`_ 2.7 and `python`_ 3.5+ are expect.
 
-Development Environment
------------------------
-You can prepare your development environment as blow:
+    `python`_ 2.7 is usually installed by default in many POSIX OS.
 
-1. Install `pip`_
-`````````````````
-See https://pip.pypa.io/en/stable/installing/
+3. Install the package
 
-2. Create a virtual environment
-```````````````````````````````
-It's advised to develop in a `Python Virtual Environment<https://docs.python.org/3/library/venv.html>`
+    It's advised to install the package by `pip`_::
 
-If you're using Python3.3+, create a new virtual environment by following command::
+        path/to/your/python -m pip install exosip2ctypes
 
-    python -m venv /your/virtual/env
+    Or get the source files from http://github.com/tanbro/exosip2ctypes , then install::
 
-else, install `virtualenv`_, and then create a virtual environment by following command::
+        cd path/to/exosip2ctypes
+        path/to/your/python setup.py install
 
-    python -m virtualenv /your/virtual/env
-
-After that, active the virtual environment:
-
-    * POSIX::
-
-        source /your/virtual/env/bin/activate
-
-    * Widows::
-
-        \your\virtual\env\Scripts\activate
-
-3. Install dependencies
-```````````````````````
-For Python version less than 3.2 (including 2.x),
-install dependencies from requirements file `requirements-lt_3.3-dev.txt`::
-
-    pip install -r requirements-dev-lt_3.2.txt
-
-For Python version greater than or qual to 3.2 (including 2.x), and smaller than 3.4,
-install dependencies from requirements file `requirements-lt_3.4-dev.txt`::
-
-    pip install -r requirements-dev-lt_3.4.txt
-
-else install the dependencies from requirements file `requirement-dev.txt`::
-
-    pip install -r requirements-dev.txt
-
-4. Developing
-`````````````
-Now, you can start developing, look at:
-
-* http://www.antisip.com/doc/exosip2/index.html
-* http://www.gnu.org/software/osip/doc/html/index.html
-
-Good luck!
-
-Documentation
-=============
-Visit http://exosip2ctypes.readthedocs.org/ for the docs.
+Develop
+=======
+Visit http://exosip2ctypes.readthedocs.org/ for the api docs.
 
 The project's API documentation is written inside the source code as `Docstring`_ ,
 you shall build the documentation from source, using `sphinx-doc`_ .
 
-.. _eXosip2: http://www.antisip.com/exosip2-toolkit
+.. _osip2: http://www.gnu.org/software/osip/
+
+.. _eXosip2: http://www.gnu.org/software/osip/
+
+.. _python: http://python.org/
+
+.. _pip: http://pypi.python.org/pypi/pip
 
 .. _ctypes: http://docs.python.org/3/library/ctypes.html
 
@@ -105,7 +72,5 @@ you shall build the documentation from source, using `sphinx-doc`_ .
 .. _Docstring: http://www.python.org/dev/peps/pep-0257/
 
 .. _sphinx-doc: http://sphinx-doc.org/
-
-.. _pip: http://pypi.python.org/pypi/pip
 
 .. _virtualenv: https://pypi.python.org/pypi/virtualenv
