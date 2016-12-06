@@ -1,7 +1,7 @@
 setuptools
 wheel
 twine
-Sphinx
+Sphinx==1.5
 recommonmark
 sphinx-autobuild
 coverage
