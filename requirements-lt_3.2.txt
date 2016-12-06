@@ -3,7 +3,7 @@ wheel==0.29.0
 twine
 Sphinx==1.5
 recommonmark
-sphinx-autobuild
+sphinx-autobuild==0.6.0
 coverage==4.2
 enum34
 futures==3.0.5
