@@ -1,4 +1,4 @@
-setuptools
+setuptools==30.2.0
 wheel==0.29.0
 twine
 Sphinx==1.5
