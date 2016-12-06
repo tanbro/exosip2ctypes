@@ -4,5 +4,5 @@ twine
 Sphinx==1.5
 recommonmark
 sphinx-autobuild
-coverage
+coverage==4.2
 enum34
