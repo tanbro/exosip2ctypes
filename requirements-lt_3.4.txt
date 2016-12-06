@@ -1,5 +1,5 @@
 setuptools
-wheel
+wheel==0.29.0
 twine
 Sphinx==1.5
 recommonmark
