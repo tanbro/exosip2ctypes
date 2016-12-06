@@ -5,5 +5,5 @@ Sphinx==1.5
 recommonmark
 sphinx-autobuild==0.6.0
 coverage==4.2
-enum34
+enum34==1.1.6
 futures==3.0.5
