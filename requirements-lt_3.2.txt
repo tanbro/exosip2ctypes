@@ -6,4 +6,4 @@ recommonmark
 sphinx-autobuild
 coverage
 enum34
-futures
+futures==3.0.5
