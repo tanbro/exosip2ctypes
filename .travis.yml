@@ -1,5 +1,5 @@
 before_install:
-  - apt-get install libexosip2
+  - sudo apt-get install libexosip2 -qq
 
 language: python
 python:
