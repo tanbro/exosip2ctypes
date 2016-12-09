@@ -1,3 +1,6 @@
+before_install:
+  - apt-get install libexosip2
+
 language: python
 python:
   - "3.4"
