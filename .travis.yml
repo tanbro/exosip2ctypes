@@ -8,7 +8,9 @@ python:
   - "3.5"
 # command to install dependencies
 install:
-  - if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then pip install --user -r requirements-lt_3.2; fi
-  - pip install --user -r requirements.txt
+  - if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then pip install --user -r requirements-lt_3.2.txt; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.5 ]]; then pip install --user -r requirements.txt; fi
 # command to run tests
-script: cd src && python -m unittest
+script:
+  - cd src
+  - python -m unittest
