@@ -1,6 +1,29 @@
 eXosip2CTypes
 #############
 
+------
+
+**Codacy**:
+
+.. image:: https://api.codacy.com/project/badge/Grade/842a184f326741ca8ed208bd33238b6c
+    :target: https://www.codacy.com/app/tanbro/exosip2ctypes?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tanbro/exosip2ctypes&amp;utm_campaign=Badge_Grade
+
+------
+
+**travis-ci master**:
+
+.. image:: https://travis-ci.org/tanbro/exosip2ctypes.svg?branch=master
+    :target: https://travis-ci.org/tanbro/exosip2ctypes
+
+------
+
+**travis-ci develop**:
+
+.. image:: https://travis-ci.org/tanbro/exosip2ctypes.svg?branch=develop
+    :target: https://travis-ci.org/tanbro/exosip2ctypes
+
+------
+
 eXosip2CTypes is a `python`_ package, it wraps `eXosip2`_.
 
 The library is based on `ctypes`_, it loads `eXosip2`_ shared object on runtime.
