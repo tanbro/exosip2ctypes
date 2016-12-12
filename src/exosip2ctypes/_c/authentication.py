@@ -4,7 +4,7 @@
 eXosip2 authentication API
 """
 
-from ctypes import POINTER, c_byte, c_int, c_void_p, CFUNCTYPE, c_char_p, c_ushort, c_long
+from ctypes import c_int, c_void_p, c_char_p
 
 from . import globs
 from .utils import ExosipFunc

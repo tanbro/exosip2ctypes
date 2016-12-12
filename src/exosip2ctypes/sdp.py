@@ -4,11 +4,7 @@
 eXosip2 SDP helper API.
 """
 
-from ctypes import byref, create_string_buffer, string_at, c_char_p
-
-from ._c import sdp
-from .error import raise_if_osip_error
-from .utils import to_str, to_bytes
+__all__ = ['SdpMessage']
 
 
 class SdpMessage:

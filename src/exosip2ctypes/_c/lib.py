@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from ctypes import CDLL, c_void_p
+from ctypes import CDLL
 from ctypes.util import find_library
 
 from . import globs
@@ -39,7 +39,7 @@ def initialize(path=None):
 def free(ptr):
     """ ANSI C ``free()`` function
 
-    :param c_void_p ptr: Pointer to the resource to free
+    :param ptr: CTypes Pointer(``ctypes.c_void_p``) to the resource to free
     """
     if not globs.libexosip2:
         raise RuntimeError('library eXosip2 not loaded')
