@@ -4,7 +4,7 @@
 eXosip2 SDP helper API.
 """
 
-from ctypes import c_int, c_void_p, c_char_p
+from ctypes import c_int, c_void_p
 
 from . import globs
 from .utils import ExosipFunc

@@ -6,6 +6,8 @@ from ._c import lib, osip_parser, osip_content_type, osip_from, osip_header, osi
 from .error import raise_if_osip_error
 from .utils import to_str, to_bytes
 
+__all__ = ['OsipMessage', 'ExosipMessage']
+
 
 class OsipMessage:
     def __init__(self, ptr):
