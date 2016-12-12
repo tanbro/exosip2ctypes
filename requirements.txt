@@ -1,7 +1,7 @@
-setuptools
-wheel
-twine
-Sphinx
-recommonmark
-sphinx-autobuild
-coverage
+setuptools==31.0.0
+wheel==0.29.0
+twine==1.8.1
+Sphinx==1.5
+recommonmark==0.4.0
+sphinx-autobuild==0.6.0
+coverage==4.2
