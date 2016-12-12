@@ -58,8 +58,8 @@ def on_exosip_event(context, evt):
 
 
 initialize()
-ctx = Context(event_callback=on_exosip_event, contact_address=('192.168.56.101', 5060))
-
+ctx = Context(event_callback=on_exosip_event)
+ctx.masquerade_contact('192.168.56.101', 5060)
 logging.debug('listening...')
 ctx.listen_on_address()
 logging.debug('starting...')
