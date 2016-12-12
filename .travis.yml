@@ -4,9 +4,11 @@ before_install:
 
 language: python
 python:
-  - "3.4"
+  - "2.7"
   - "3.5"
 # command to install dependencies
-install: "pip install -r requirements.txt"
+install:
+  - if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then pip install -r requirements-lt_3.2; fi
+  - pip install -r requirements.txt
 # command to run tests
 script: cd src && python -m unittest
