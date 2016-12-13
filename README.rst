@@ -89,11 +89,11 @@ you shall build the documentation from source, using `sphinx-doc`_ .
 
 .. _virtualenv: https://pypi.python.org/pypi/virtualenv
 
-.. |codacy| image::https://img.shields.io/codacy/grade/842a184f326741ca8ed208bd33238b6c.svg
-    :target: https://www.codacy.com/app/tanbro/exosip2ctypes?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tanbro/exosip2ctypes&amp;utm_campaign=Badge_Grade
-
-.. |circleci| image:: https://img.shields.io/circleci/project/github/tanbro/node-csgo-exosip2ctypes.svg
+.. |circleci| image:: https://img.shields.io/circleci/project/github/tanbro/exosip2ctypes.svg
     :target: https://circleci.com/gh/tanbro/exosip2ctypes
+
+.. |codacy| image:: https://img.shields.io/codacy/grade/842a184f326741ca8ed208bd33238b6c.svg
+    :target: https://www.codacy.com/app/tanbro/exosip2ctypes?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tanbro/exosip2ctypes&amp;utm_campaign=Badge_Grade
 
 .. |readthedocs| image:: https://readthedocs.org/projects/exosip2ctypes/badge/?version=latest
     :target: http://exosip2ctypes.readthedocs.io/en/latest/?badge=latest
