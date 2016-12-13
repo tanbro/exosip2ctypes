@@ -5,9 +5,8 @@ machine:
     Asia/Shanghai # Set the timezone
 
   # Version of ruby to use
-  python:
-    version:
-      3.5.2
+  post:
+    - pyenv global 2.7.11 3.5.2
 
 ## Customize dependencies
 dependencies:
