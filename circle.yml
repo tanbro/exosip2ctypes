@@ -5,8 +5,10 @@ machine:
     Asia/Shanghai # Set the timezone
 
   # Version of python to use
-  post:
-    - pyenv global 2.7.11 3.5.2
+  # post:
+  #   - pyenv global 2.7.11 3.5.2
+  python:
+    version: 3.5.2
 
 ## Customize dependencies
 dependencies:
@@ -16,5 +18,5 @@ dependencies:
 ## Customize testing
 test:
   override:
-    - cd src
-    - python -m unittest
+  - cd src
+  - python -m unittest
