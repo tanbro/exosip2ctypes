@@ -17,5 +17,6 @@ dependencies:
 
 test:
   override:
-    - cd src/exosip2ctypes
+    - cd src
+    - pwd
     - python -m unittest
