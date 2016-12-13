@@ -10,10 +10,13 @@ if pyver < '3.4':
 else:
     INSTALL_REQUIRES = []
 
+TESTS_REQUIRE = INSTALL_REQUIRES
+
 setup(
     name='exosip2ctypes',
     version='0.1.1.post161213',
     install_requires=INSTALL_REQUIRES,
+    tests_require = TESTS_REQUIRE,
     packages=find_packages('src'),  # include all packages under src, or special packages in a list.
     package_dir={'': 'src'},  # tell distutils packages are under src
     test_suite='exosip2ctypes.tests',
