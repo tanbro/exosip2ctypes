@@ -17,5 +17,5 @@ dependencies:
 
 test:
   override:
-    - cp -a src/exosip2ctypes/tests ./
+    - mv src/exosip2ctypes/tests ./
     - python -m unittest
