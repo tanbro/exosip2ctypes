@@ -11,11 +11,8 @@ Welcome to exosip2ctypes's documentation!
 Contents:
 
 .. toctree::
-    :maxdepth: 2
 
-       README <readme>
-       CONTRIBUTING <contributing>
-       API Doc <apidoc/modules>
+       API Doc <modules>
 
 Indices and tables
 ==================
@@ -23,4 +20,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
