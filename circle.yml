@@ -1,4 +1,4 @@
 ## Customize dependencies
 dependencies:
   pre:
-    - sudo apt-get install -y libexosip2-11
+    - sudo apt-get install -y libexosip2-10
