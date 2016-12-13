@@ -1,28 +1,7 @@
 eXosip2CTypes
 #############
 
-**Codacy**:
-
-.. image:: https://api.codacy.com/project/badge/Grade/842a184f326741ca8ed208bd33238b6c
-    :target: https://www.codacy.com/app/tanbro/exosip2ctypes?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tanbro/exosip2ctypes&amp;utm_campaign=Badge_Grade
-
-**travis-ci master**:
-
-.. image:: https://travis-ci.org/tanbro/exosip2ctypes.svg?branch=master
-    :target: https://travis-ci.org/tanbro/exosip2ctypes
-
-**travis-ci develop**:
-
-.. image:: https://travis-ci.org/tanbro/exosip2ctypes.svg?branch=develop
-    :target: https://travis-ci.org/tanbro/exosip2ctypes
-
-**readthedocs**:
-
-.. image:: https://readthedocs.org/projects/exosip2ctypes/badge/?version=latest
-    :target: http://exosip2ctypes.readthedocs.io/en/latest/?badge=latest
-    :alt: Documentation Status
-
-------
+|travis-ci| |codacy-grade| |license| |wheel| |pyversion| |pyimp|
 
 eXosip2CTypes is a `python`_ package, it wraps `eXosip2`_.
 
@@ -100,3 +79,28 @@ you shall build the documentation from source, using `sphinx-doc`_ .
 .. _sphinx-doc: http://sphinx-doc.org/
 
 .. _virtualenv: https://pypi.python.org/pypi/virtualenv
+
+.. |license| image:: https://img.shields.io/pypi/l/exosip2ctypes.svg
+    :alt: GNU GENERAL PUBLIC LICENSE
+    :target: http://www.antisip.com/doc/exosip2/eXosip2_license.html
+
+.. |wheel| image:: https://img.shields.io/pypi/wheel/exosip2ctypes.svg
+    :target: http://pypi.python.org/pypi/exosip2ctypes/
+
+.. |pyversion| image:: https://img.shields.io/pypi/pyversions/kombu.svg
+    :alt: Supported Python versions.
+    :target: http://pypi.python.org/pypi/exosip2ctypes/
+
+.. |pyimp| image:: https://img.shields.io/pypi/implementation/kombu.svg
+    :alt: Support Python implementations.
+    :target: http://pypi.python.org/pypi/kombu/
+
+.. |codacy-grade| image:: https://api.codacy.com/project/badge/Grade/842a184f326741ca8ed208bd33238b6c
+    :target: https://www.codacy.com/app/tanbro/exosip2ctypes?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tanbro/exosip2ctypes&amp;utm_campaign=Badge_Grade
+
+.. |travis-ci| image:: https://travis-ci.org/tanbro/exosip2ctypes.svg
+    :target: https://travis-ci.org/tanbro/exosip2ctypes
+
+.. |readthedocs| image:: https://readthedocs.org/projects/exosip2ctypes/badge/?version=latest
+    :target: http://exosip2ctypes.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
