@@ -1,3 +1,14 @@
+## Customize the test machine
+machine:
+
+  timezone:
+    Asia/Shanghai # Set the timezone
+
+  # Version of ruby to use
+  python:
+    version:
+      3.5.2
+
 ## Customize dependencies
 dependencies:
   pre:
