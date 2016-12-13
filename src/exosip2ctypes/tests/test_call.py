@@ -66,5 +66,9 @@ class SingleCallTest(unittest.TestCase):
         self.assertEqual(self._recv_call_id, send_call_id)
 
 
+def additional_tests():
+    return SingleCallTest
+
+
 if __name__ == '__main__':
     unittest.main()
