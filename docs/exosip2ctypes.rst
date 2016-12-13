@@ -1,10 +1,12 @@
 exosip2ctypes package
 =====================
 
-.. automodule:: exosip2ctypes
-    :members:
-    :undoc-members:
-    :show-inheritance:
+Subpackages
+-----------
+
+.. toctree::
+
+    exosip2ctypes.tests
 
 Submodules
 ----------
@@ -21,3 +23,10 @@ Submodules
    exosip2ctypes.utils
    exosip2ctypes.version
 
+Module contents
+---------------
+
+.. automodule:: exosip2ctypes
+    :members:
+    :undoc-members:
+    :show-inheritance:
