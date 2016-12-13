@@ -1,6 +1,11 @@
-|travis-ci| |codacy| |pylicense| |pywheel| |pyversion| |pyimp| |pyformat| |pystatus|
+|travis-ci| |codacy| |readthedocs| |pylicense| |pywheel| |pyversion| |pyimp| |pyformat| |pystatus|
 
---
+:Version: 0.1.1
+:Source: https://github.com/tanbro/exosip2ctypes/
+:Download: http://pypi.python.org/pypi/exosip2ctypes/
+:Keywords: sip, osip, osip2, libosip, lilbosip2, eXosip, eXosip2, libeXosip2, exosip2ctypes
+
+---
 
 eXosip2CTypes
 #############
@@ -39,18 +44,19 @@ Install
 
     `python`_ 2.7 and `python`_ 3.5+ are expect.
 
-    `python`_ 2.7 is usually installed by default in many POSIX OS.
+    `python`_ 2.7 is installed by default in many POSIX OS.
 
-3. Install the package
+3. Install eXosip2CTypes
 
-    It's advised to install the package by `pip`_::
+    It's advised to install eXosip2CTypes by `pip`_::
 
-        path/to/your/python -m pip install exosip2ctypes
+        path/of/your/python -m pip install exosip2ctypes
 
-    Or get the source files from http://github.com/tanbro/exosip2ctypes , then install::
+    Or clone from http://github.com/tanbro/exosip2ctypes, then install by ``setup.py``::
 
-        cd path/to/exosip2ctypes
-        path/to/your/python setup.py install
+        https://github.com/tanbro/exosip2ctypes.git
+        cd exosip2ctypes
+        path/of/your/python setup.py install
 
 Develop
 =======
