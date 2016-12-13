@@ -42,8 +42,6 @@ Python version greater then 3.4::
 
     pip install -r requirements.txt
 
-
-
 Python version 3.2 and 3.3::
 
     pip install -r requirements-lt_3.4.txt
