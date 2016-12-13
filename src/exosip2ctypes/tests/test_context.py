@@ -96,9 +96,5 @@ class ContextTestCase(unittest.TestCase):
         self.assertFalse(self.ctx.is_running)
 
 
-def additional_tests():
-    return ContextTestCase
-
-
 if __name__ == '__main__':
     unittest.main()
