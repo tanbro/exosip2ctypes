@@ -1,7 +1,7 @@
-|travis-ci| |codacy| |readthedocs| |pylicense| |pywheel| |pyversion| |pyimp| |pyformat| |pystatus|
+|travis-ci| |codacy| |readthedocs| |pylicense| |pyversion| |pyimp| |pyformat| |pywheel| |pystatus|
 
 :Version: 0.1.1
-:Source: https://github.com/tanbro/exosip2ctypes/
+:Source: http://github.com/tanbro/exosip2ctypes/
 :Download: http://pypi.python.org/pypi/exosip2ctypes/
 :Keywords: sip, osip, osip2, libosip, lilbosip2, eXosip, eXosip2, libeXosip2, exosip2ctypes
 
