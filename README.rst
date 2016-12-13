@@ -8,14 +8,14 @@
 ---
 
 eXosip2CTypes
-#############
+==============
 
 eXosip2CTypes is a `python`_ package, it wraps `eXosip2`_.
 
 The library is based on `ctypes`_, it loads `eXosip2`_ shared object on runtime.
 
 Environment
-===========
+-----------
 
 OS:
 
@@ -28,7 +28,7 @@ Python:
 * Python3.x: 3.0 +
 
 Install
-=======
+-------
 
 1. Install `eXosip2`_.
 
@@ -50,7 +50,7 @@ Install
 
     It's advised to install eXosip2CTypes by `pip`_::
 
-        path/of/your/python -m pip install exosip2ctypes
+        pip install exosip2ctypes
 
     Or clone from http://github.com/tanbro/exosip2ctypes, then install by ``setup.py``::
 
@@ -59,7 +59,8 @@ Install
         path/of/your/python setup.py install
 
 Develop
-=======
+-------
+
 Now, your can use it in your APP, Good luck!
 
 Visit http://exosip2ctypes.readthedocs.org/ for the api docs.
