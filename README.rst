@@ -5,7 +5,7 @@
 :Download: http://pypi.python.org/pypi/exosip2ctypes/
 :Keywords: sip, osip, osip2, libosip, lilbosip2, eXosip, eXosip2, libeXosip2, exosip2ctypes
 
----
+------
 
 eXosip2CTypes
 ==============
