@@ -1,6 +1,6 @@
 wheel
 twine
-coverage
+coverage==4.2
 recommonmark
 Sphinx
 sphinx-autobuild
