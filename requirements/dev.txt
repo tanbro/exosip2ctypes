@@ -1,0 +1,6 @@
+wheel
+twine
+coverage
+recommonmark
+Sphinx
+sphinx-autobuild
