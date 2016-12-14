@@ -13,11 +13,6 @@ if PYVER < '3.2':
 
 TESTS_REQUIRE.extend(INSTALL_REQUIRES)
 
-try:
-    LONG_DESC = open('README.rst').read()
-except:
-    LONG_DESC = ''
-
 setup(
     name='exosip2ctypes',
     version='0.1.1.post1612140944',
@@ -27,7 +22,7 @@ setup(
     package_dir={'': 'src'},  # tell distutils packages are under src
     test_suite='exosip2ctypes.tests',
     description='libeXosip2 Python wrapper',
-    long_description=LONG_DESC,
+    long_description=LONG_DESC = open('README.rst').read(),
     author='Liu Xue Yan',
     author_email='realtanbro@gmail.com',
     url='https://github.com/tanbro/exosip2ctypes',
