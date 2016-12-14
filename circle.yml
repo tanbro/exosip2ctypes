@@ -1,10 +1,19 @@
 ## Customize the test machine
 machine:
+
+  timezone:
+    Asia/Shanghai # Set the timezone
+
+  # Version of python to use
   python:
-    version: 3.5
+    version: 3.5.2
 
 ## Customize dependencies
 dependencies:
   pre:
-    - sudo apt-get install -y libexosip2-11
-    
+    - sudo apt-get install -y libexosip2-10
+
+test:
+  override:
+    - mv src/exosip2ctypes/tests ./
+    - python -m unittest

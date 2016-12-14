@@ -35,13 +35,12 @@ class SingleCallTest(unittest.TestCase):
     def test_call_self(self):
         m = Mock()
         cond = Condition()
-        recv_call_id = None
+        self._recv_call_id = None
 
         def event_cb(_, evt):
             if evt.type == EventType.call_invite:
                 m()
-                nonlocal recv_call_id
-                recv_call_id = evt.request.call_id
+                self._recv_call_id = evt.request.call_id
             # condition of event callback returning
             cond.acquire()
             cond.notify()
@@ -64,7 +63,7 @@ class SingleCallTest(unittest.TestCase):
         cond.release()
         # assertion
         self.assertEqual(m.call_count, 1)
-        self.assertEqual(recv_call_id, send_call_id)
+        self.assertEqual(self._recv_call_id, send_call_id)
 
 
 if __name__ == '__main__':

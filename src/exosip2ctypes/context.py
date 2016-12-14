@@ -146,8 +146,9 @@ class Context(BaseContext, LoggerMixin):
 
         .. attention:: Event callback is invoked in a :class:`concurrent.futures.Executor`
         """
-        if not callable(val):
-            raise TypeError('"event_callback" is not callable')
+        if val is not None:
+            if not callable(val):
+                raise TypeError('"event_callback" is not callable')
         self._event_callback = val
 
     event_callback = property(get_event_callback, set_event_callback)
