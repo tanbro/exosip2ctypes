@@ -12,8 +12,12 @@ machine:
 dependencies:
   pre:
     - sudo apt-get install -y libexosip2-10
+    - pip install coverage codacy-coverage
 
 test:
   override:
     - mv src/exosip2ctypes/tests ./
-    - python -m unittest
+    - coverage run -m unittest
+    - coverage xml
+  post:
+    - python-codacy-coverage -r coverage.xml

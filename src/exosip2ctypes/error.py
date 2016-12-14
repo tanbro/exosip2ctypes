@@ -8,20 +8,24 @@ see `osip/include/osipparser2/osip_port.h`
 
 from ._c.osip_error import *
 
-__all__ = ['MallocError', 'OsipError', 'OsipUnknownError', 'OsipUndefinedError', 'OsipBadParameter', 'OsipWrongState',
-           'OsipNoMem', 'OsipSyntaxError', 'OsipNotFound', 'OsipApiNotInitialized', 'OsipNoNetwork', 'OsipPortBusy',
-           'OsipUnknownHost', 'OsipDiskFull', 'OsipNoRights', 'OsipFileNotExists', 'OsipTimeout', 'OsipTooMuchCall',
-           'OsipWrongFormat', 'OsipNoCommonCodec']
+__all__ = [
+    'raise_if_osip_error', 'MallocError', 'OsipError', 'OsipUnknownError',
+    'OsipUndefinedError', 'OsipBadParameter', 'OsipWrongState',
+    'OsipNoMem', 'OsipSyntaxError', 'OsipNotFound', 'OsipApiNotInitialized',
+    'OsipNoNetwork', 'OsipPortBusy', 'OsipUnknownHost', 'OsipDiskFull',
+    'OsipNoRights', 'OsipFileNotExists', 'OsipTimeout', 'OsipTooMuchCall',
+    'OsipWrongFormat', 'OsipNoCommonCodec'
+]
 
 
-class MallocError(Exception):
+class MallocError(RuntimeError):
     """
     Failed to allocate an `eXosip` context.
     """
     pass
 
 
-class OsipError(Exception):
+class OsipError(RuntimeError):
     """
     Base `Osip` error :class:`Exception` Class
     """
