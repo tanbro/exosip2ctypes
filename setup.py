@@ -22,7 +22,7 @@ setup(
     package_dir={'': 'src'},  # tell distutils packages are under src
     test_suite='exosip2ctypes.tests',
     description='libeXosip2 Python wrapper',
-    long_description=LONG_DESC = open('README.rst').read(),
+    long_description=open('README.rst').read(),
     author='Liu Xue Yan',
     author_email='realtanbro@gmail.com',
     url='https://github.com/tanbro/exosip2ctypes',
