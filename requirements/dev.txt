@@ -3,4 +3,4 @@ twine==1.8.1
 coverage==4.2
 Sphinx==1.5.1
 sphinx-autobuild==0.6.0
-recommonmark
+recommonmark==0.4.0
