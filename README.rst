@@ -37,9 +37,9 @@ Install
 
 1. Install `eXosip2`_.
 
-    `eXosip2`_ is based on `eXosip2`_.
-    You can compile those two libraries from code, or install by a package manager if possible.
-    For example, ubuntu 16.04 users can install the library by::
+    `eXosip2`_ depends on `osip2`_, they are native ``C`` libraries.
+    You can compile these two libraries from source code, or install them with a package manager if possible.
+    For example, ubuntu 16.04 users can install the libraries by::
 
         sudo apt install libexosip2-11
 
