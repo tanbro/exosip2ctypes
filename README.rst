@@ -1,4 +1,8 @@
-|codacy-grade| |codacy-coverage| |readthedocs| |pylicense| |pyversion| |pyimp| |pyformat| |pywheel| |pystatus|
+------
+
+|circleci| |codacy-grade| |codacy-coverage| |readthedocs| |pylicense| |pyversion| |pyimp| |pyformat| |pywheel| |pystatus|
+
+------
 
 :Version: 0.1.1
 :Source: http://github.com/tanbro/exosip2ctypes/
