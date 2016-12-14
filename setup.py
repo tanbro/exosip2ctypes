@@ -1,23 +1,27 @@
 from setuptools import setup, find_packages
 from sys import version_info
 
-pyver = '%s.%s' % (version_info[0], version_info[1])
+PYVER = '%s.%s' % (version_info[0], version_info[1])
 
-if pyver >= '3.4':  # >=3.4
-    INSTALL_REQUIRES = []
-elif pyver >= '3.2':  # >=3.2, <3.4
-    INSTALL_REQUIRES = ['enum34']
-else: # <3.2
-    INSTALL_REQUIRES = ['enum34', 'futures']
+INSTALL_REQUIRES = []
+TESTS_REQUIRE = []
+
+if PYVER < '3.4':
+    INSTALL_REQUIRES.append('enum34')
+if PYVER < '3.2':
+    INSTALL_REQUIRES.append('futures')
+
+TESTS_REQUIRE.extend(INSTALL_REQUIRES)
 
 setup(
     name='exosip2ctypes',
     version='0.1.1.post1612140944',
+    tests_require=TESTS_REQUIRE,
     install_requires=INSTALL_REQUIRES,
     packages=find_packages('src'),  # include all packages under src, or special packages in a list.
     package_dir={'': 'src'},  # tell distutils packages are under src
     test_suite='exosip2ctypes.tests',
-    description='libeXosip2 Python wrapper, using ctypes.',
+    description='libeXosip2 Python wrapper',
     long_description=open('README.rst').read(),
     author='Liu Xue Yan',
     author_email='realtanbro@gmail.com',
