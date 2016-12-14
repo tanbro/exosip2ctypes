@@ -37,7 +37,7 @@ Install
 
 1. Install `eXosip2`_.
 
-    `eXosip2`_ is based on `eXosip2`_.
+    `eXosip2`_ is a native ``C`` library.
     You can compile those two libraries from code, or install by a package manager if possible.
     For example, ubuntu 16.04 users can install the library by::
 
