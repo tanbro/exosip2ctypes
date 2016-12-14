@@ -1,6 +1,6 @@
 wheel==0.29.0
 twine==1.8.1
 coverage==4.2
-recommonmark
 Sphinx==1.5.1
-sphinx-autobuild
+sphinx-autobuild==0.6.0
+recommonmark
