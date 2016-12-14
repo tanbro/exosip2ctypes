@@ -17,6 +17,6 @@ dependencies:
 test:
   override:
     - mv src/exosip2ctypes/tests ./
-    - coverage rum -m unittest
+    - coverage run -m unittest
   post:
     - python-codacy-coverage -r coverage.xml
