@@ -12,7 +12,7 @@ else: # <3.2
 
 setup(
     name='exosip2ctypes',
-    version='0.1.1.post161213',
+    version='0.1.1.post1612140944',
     install_requires=INSTALL_REQUIRES,
     packages=find_packages('src'),  # include all packages under src, or special packages in a list.
     package_dir={'': 'src'},  # tell distutils packages are under src
