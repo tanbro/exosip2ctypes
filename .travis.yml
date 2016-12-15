@@ -2,14 +2,14 @@ install:
   - wget http://ftp.gnu.org/gnu/osip/libosip2-5.0.0.tar.gz
   - tar -xzvf libosip2-5.0.0.tar.gz
   - cd libosip2-5.0.0
-  - ./configure
+  - "./configure"
   - make
   - sudo make install
   - cd ../
   - wget http://download.savannah.gnu.org/releases/exosip/libexosip2-5.0.0.tar.gz
   - tar -xzvf libexosip2-5.0.0.tar.gz
   - cd libexosip2-5.0.0
-  - ./configure
+  - "./configure"
   - make
   - sudo make install
   - cd ../
@@ -19,23 +19,25 @@ install:
   - python setup.py install
 
 language: python
-python:
-  - "2.7"
-  - "3.5"
+  python:
+    - '2.7'
+    - '3.5'
 
-# command to run tests
 script:
   - mv src/exosip2ctypes/tests ./
   - coverage run -m unittest discover
+  - coverage xml
   - mv tests src/exosip2ctypes
 
 after_success:
-  - coverage xml
   - python-codacy-coverage -r coverage.xml
 
 deploy:
   provider: pypi
-  user: PYPI_USER
-  password: PYPI_PASSWORD
+  user: tanbro
+  password:
+    secure: P4bm4TCZjm4cpgw1X4hw432MWg579qMn+NwLftGH4ulROF8KFcigbEhpJS2Qb7hmlk6HO/5+4pDGbC2x0PXOF0RE6a8u1z1b6kNMcUIlKnd/nAjb2qCuhXntXHG7K3ZRXrYM4hiP2Konj2gna10pk2uWBMYlhzo6xDy/kNHConggxkmH20NNcNuIQoq0OVXTD1JRQgrcQWz9rPetDxihwpKHkNba7/qV6jitIoyE6Wtmwrde+O0+sStNyQG4Rsa3+ukxgj4LU6eZzraKDVIE4Ita17jtRy8ZyXC5uosA6cqpw7ofUPR13/qxAnks3dfoBHb52IA2jo5HLLC8ZRx0G9OkXdDkQ2HAJb/giL3lpcRzTBWxHXaT8LvrXesIWInArzro1DspK52hAP8gsNW+7wIPdmcVorC8DTaREWRj2A3X5AhIwTpV28KCzbZLrMR81YVzqLugbNwDf95+ZV+A0qOE6rdegX2VIUp78z1wG4h6yaxg2Ou0ASZl1SEyy9kdPBylC5gTHTPo7H5JmXG6+atslgiH2cFB5RgUqi209SdTDnGNqvabNhXtD8NLs06glw65KS9OIcgqAPX2FrZfxTFjdEbeRaPAcGSfZ+bUtLwS9kqMT3k99q85Ik7AviuJS4+au8kXUMVkNbh93Gyo0wkWMG7wGp4FRc+bgamUWSw=
   on:
     tags: true
+    distributions: sdist bdist_wheel
+    repo: tanbro/exosip2ctypes
