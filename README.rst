@@ -4,7 +4,7 @@
 
 ------
 
-:Version: 0.1.1
+:Version: 0.1.2
 :Source: http://github.com/tanbro/exosip2ctypes/
 :Download: http://pypi.python.org/pypi/exosip2ctypes/
 :Document: http://exosip2ctypes.readthedocs.org/
@@ -29,8 +29,8 @@ OS:
 
 Python:
 
-* Python2.x: 2.6 +
-* Python3.x: 3.0 +
+* Python2.x: 2.7
+* Python3.x: 3.4+
 
 Install
 -------
@@ -47,7 +47,7 @@ Install
 
 2. Install `python`_
 
-    `python`_ 2.7 and `python`_ 3.5+ are expect.
+    `python`_ 2.7 and `python`_ 3.4+ are expect.
 
     `python`_ 2.7 is installed by default in many POSIX OS.
 
