@@ -1,6 +1,6 @@
 ------
 
-|circleci| |codacy-grade| |codacy-coverage| |readthedocs| |pylicense| |pyversion| |pyimp| |pyformat| |pywheel| |pystatus|
+|travis| |codacy-grade| |codacy-coverage| |readthedocs| |pylicense| |pyversion| |pyimp| |pyformat| |pywheel| |pystatus|
 
 ------
 
@@ -93,8 +93,8 @@ you shall build the documentation from source, using `sphinx-doc`_ .
 
 .. _virtualenv: https://pypi.python.org/pypi/virtualenv
 
-.. |circleci| image:: https://img.shields.io/circleci/project/github/tanbro/exosip2ctypes.svg
-    :target: https://circleci.com/gh/tanbro/exosip2ctypes
+.. |travis| image:: https://img.shields.io/travis/tanbro/exosip2ctypes.svg
+   :target: https://github.com/tanbro/exosip2ctypes
 
 .. |codacy-grade| image:: https://img.shields.io/codacy/grade/842a184f326741ca8ed208bd33238b6c.svg
     :target: https://www.codacy.com/app/tanbro/exosip2ctypes?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tanbro/exosip2ctypes&amp;utm_campaign=Badge_Grade

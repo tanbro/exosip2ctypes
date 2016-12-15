@@ -9,7 +9,8 @@ from .utils import to_str, to_bytes
 __all__ = ['OsipMessage', 'ExosipMessage']
 
 
-class OsipMessage:
+class OsipMessage(object):
+
     def __init__(self, ptr):
         """class for osip2 message API
 
@@ -26,7 +27,8 @@ class OsipMessage:
         """
         dest = c_char_p()
         length = c_size_t()
-        error_code = osip_parser.FuncMessageToStr.c_func(self._ptr, byref(dest), byref(length))
+        error_code = osip_parser.FuncMessageToStr.c_func(
+            self._ptr, byref(dest), byref(length))
         raise_if_osip_error(error_code)
         if not dest:
             return str(None)
@@ -69,7 +71,8 @@ class OsipMessage:
         if not head_ptr:
             return None
         dest = c_char_p()
-        err_code = osip_content_type.FuncContentTypeToStr.c_func(head_ptr, byref(dest))
+        err_code = osip_content_type.FuncContentTypeToStr.c_func(
+            head_ptr, byref(dest))
         raise_if_osip_error(err_code)
         if not dest:
             return None
@@ -98,9 +101,11 @@ class OsipMessage:
     def content_length(self, val):
         val = int(val)
         if val < 0:
-            raise ValueError('Content-Length header value must be greater than or equal 0.')
+            raise ValueError(
+                'Content-Length header value must be greater than or equal 0.')
         buf = create_string_buffer(to_bytes(str(val)))
-        error_code = osip_parser.FuncMessageSetContentLength.c_func(self._ptr, buf)
+        error_code = osip_parser.FuncMessageSetContentLength.c_func(
+            self._ptr, buf)
         raise_if_osip_error(error_code)
 
     @property
@@ -157,12 +162,14 @@ class OsipMessage:
         pos = 0
         while True:
             dest = c_void_p()
-            found_pos = osip_parser.FuncMessageGetContact.c_func(self._ptr, c_int(pos), byref(dest))
+            found_pos = osip_parser.FuncMessageGetContact.c_func(
+                self._ptr, c_int(pos), byref(dest))
             if int(found_pos) < 0:
                 break
             pos = int(found_pos) + 1
             pch_contact = c_char_p()
-            error_code = osip_from.FuncFromToStr.c_func(dest, byref(pch_contact))
+            error_code = osip_from.FuncFromToStr.c_func(
+                dest, byref(pch_contact))
             raise_if_osip_error(error_code)
             contact = to_str(pch_contact.value)
             lib.free(pch_contact)
@@ -190,7 +197,8 @@ class OsipMessage:
         pos = 0
         while True:
             dest = POINTER(osip_content_length.Allow)()
-            found_pos = osip_parser.FuncMessageGetAllow.c_func(self._ptr, c_int(pos), byref(dest))
+            found_pos = osip_parser.FuncMessageGetAllow.c_func(
+                self._ptr, c_int(pos), byref(dest))
             if int(found_pos) < 0:
                 break
             pos = int(found_pos) + 1
@@ -260,13 +268,15 @@ class OsipMessage:
         pos = 0
         while True:
             p_body = c_void_p()
-            found_pos = osip_parser.FuncMessageGetBody.c_func(self._ptr, c_int(pos), byref(p_body))
+            found_pos = osip_parser.FuncMessageGetBody.c_func(
+                self._ptr, c_int(pos), byref(p_body))
             if int(found_pos) < 0:
                 break
             pos = int(found_pos) + 1
             dest = c_char_p()
             length = c_size_t()
-            ret = osip_body.FuncBodyToStr.c_func(p_body, byref(dest), byref(length))
+            ret = osip_body.FuncBodyToStr.c_func(
+                p_body, byref(dest), byref(length))
             raise_if_osip_error(ret)
             val = string_at(dest, length.value)
             val = to_str(val)
@@ -282,11 +292,13 @@ class OsipMessage:
         .. attention:: This method will **ADD** a create body
         """
         buf = create_string_buffer(to_bytes(val))
-        err_code = osip_parser.FuncMessageSetBody.c_func(self._ptr, buf, len(buf))
+        err_code = osip_parser.FuncMessageSetBody.c_func(
+            self._ptr, buf, len(buf))
         raise_if_osip_error(err_code)
 
 
 class ExosipMessage(OsipMessage):
+
     def __init__(self, ptr, context):
         """class for eXosip2 message API
 

@@ -7,8 +7,13 @@ INSTALL_REQUIRES = []
 TESTS_REQUIRE = []
 
 if PYVER < '3.4':
+    # Backport of the enum package from Python 3.4
     INSTALL_REQUIRES.append('enum34')
+if PYVER < '3.3':
+    # Backport of the unittest.mock package from Python 3.3
+    TESTS_REQUIRE.append('mock')
 if PYVER < '3.2':
+    # Backport of the concurrent.futures package from Python 3.2
     INSTALL_REQUIRES.append('futures')
 
 TESTS_REQUIRE.extend(INSTALL_REQUIRES)
@@ -18,7 +23,8 @@ setup(
     version='0.1.1.post1612140944',
     tests_require=TESTS_REQUIRE,
     install_requires=INSTALL_REQUIRES,
-    packages=find_packages('src'),  # include all packages under src, or special packages in a list.
+    # include all packages under src, or special packages in a list.
+    packages=find_packages('src'),
     package_dir={'': 'src'},  # tell distutils packages are under src
     test_suite='exosip2ctypes.tests',
     description='libeXosip2 Python wrapper',

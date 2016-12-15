@@ -40,9 +40,11 @@ class InitInvite(ExosipMessage):
         pc_to_url = create_string_buffer(to_bytes(to_url))
         pc_from_url = create_string_buffer(to_bytes(from_url))
         pc_route = create_string_buffer(to_bytes(route)) if route else None
-        pc_subject = create_string_buffer(to_bytes(subject)) if subject else None
+        pc_subject = create_string_buffer(
+            to_bytes(subject)) if subject else None
         error_code = call.FuncCallBuildInitialInvite.c_func(
-            context.ptr, byref(ptr), pc_to_url, pc_from_url, pc_route, pc_subject
+            context.ptr, byref(
+                ptr), pc_to_url, pc_from_url, pc_route, pc_subject
         )
         raise_if_osip_error(error_code)
         self._to_url = to_url
@@ -95,7 +97,8 @@ class Ack(ExosipMessage):
         :param int did: dialog id of call.
         """
         ptr = c_void_p()  # struct osip_message_t *p = NULL;
-        err_code = call.FuncCallBuildAck.c_func(context.ptr, c_int(did), byref(ptr))
+        err_code = call.FuncCallBuildAck.c_func(
+            context.ptr, c_int(did), byref(ptr))
         raise_if_osip_error(err_code)
         super(Ack, self).__init__(ptr, context)
         self._did = did
@@ -111,7 +114,8 @@ class Ack(ExosipMessage):
     def send(self):
         """Send the ACK for the 200ok received.
         """
-        error_code = call.FuncCallSendAck.c_func(self.context.ptr, c_int(self._did), self.ptr)
+        error_code = call.FuncCallSendAck.c_func(
+            self.context.ptr, c_int(self._did), self.ptr)
         raise_if_osip_error(error_code)
 
 
@@ -127,7 +131,8 @@ class Answer(ExosipMessage):
         :param int status: Status code to use.
         """
         ptr = c_void_p()  # struct osip_message_t *p = NULL;
-        err_code = call.FuncCallBuildAnswer.c_func(context.ptr, c_int(tid), c_int(status), byref(ptr))
+        err_code = call.FuncCallBuildAnswer.c_func(
+            context.ptr, c_int(tid), c_int(status), byref(ptr))
         raise_if_osip_error(err_code)
         super(Answer, self).__init__(ptr, context)
         self._tid = tid
@@ -152,5 +157,6 @@ class Answer(ExosipMessage):
     def send(self):
         """Send Answer for invite.
         """
-        error_code = call.FuncCallSendAnswer.c_func(self.context.ptr, c_int(self._tid), c_int(self._status), self.ptr)
+        error_code = call.FuncCallSendAnswer.c_func(
+            self.context.ptr, c_int(self._tid), c_int(self._status), self.ptr)
         raise_if_osip_error(error_code)

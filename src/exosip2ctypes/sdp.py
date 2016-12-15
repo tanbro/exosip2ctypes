@@ -7,7 +7,8 @@ eXosip2 SDP helper API.
 __all__ = ['SdpMessage']
 
 
-class SdpMessage:
+class SdpMessage(object):
+
     def __init__(self, ptr):
         """SDP body
 
