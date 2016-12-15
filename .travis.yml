@@ -35,7 +35,7 @@ after_success:
 
 deploy:
   provider: pypi
-  user: "Your username"
-  password: "Your password"
+  user: PYPI_USER
+  password: PYPI_PASSWORD
   on:
     tags: true
