@@ -23,5 +23,6 @@ python:
 
 # command to run tests
 script:
+  - python setup.py install
   - mv src/exosip2ctypes/tests ./
   - python -m unittest
