@@ -1,12 +1,21 @@
-before_install:
-  - sudo apt-get -qq update
-  - sudo apt-get install -y libexosip2-10
+sudo: false
+
+install:
+  - wget http://ftp.gnu.org/gnu/osip/libosip2-5.0.0.tar.gz
+  - tar -xzvf libosip2-5.0.0.tar.gz
+  - cd libosip2-5.0.0 && ./configure && make && make install && cd ../
+  - wget http://download.savannah.gnu.org/releases/exosip/libexosip2-5.0.0.tar.gz
+  - tar -xzvf libexosip2-5.0.0.tar.gz
+  - cd libexosip2-5.0.0 && ./configure && make && make install && cd ../
+#  - if [[ $TRAVIS_PYTHON_VERSION < '3.4' ]]; then pip install enum34; fi
+#  - if [[ $TRAVIS_PYTHON_VERSION < '3.2' ]]; then pip install futures; fi
 
 language: python
 python:
+  - "2.7"
   - "3.5"
 
 # command to run tests
 script:
-  - cd src
+  - mv src/exosip2ctypes/tests ./
   - python -m unittest
