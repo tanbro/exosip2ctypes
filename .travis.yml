@@ -15,7 +15,7 @@ install:
   - cd ../
   - sudo ldconfig
   - if [[ $TRAVIS_PYTHON_VERSION < '3.2' ]]; then pip install mock; fi
-  - pip install codacy-coverage
+  - pip install coverage codacy-coverage
 
 language: python
 python:
