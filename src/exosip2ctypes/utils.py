@@ -74,7 +74,7 @@ def to_unicode(s, encoding='utf-8'):
         return s
 
 
-class LoggerMixin:
+class LoggerMixin(object):
     """Mixin Class provide a :attr:`logger` property
     """
 

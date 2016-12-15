@@ -24,7 +24,7 @@ __all__ = ['Context', 'ContextLock']
 _IS_PY2 = sys.version_info[0] < 3
 
 
-class BaseContext:
+class BaseContext(object):
     pass
 
 

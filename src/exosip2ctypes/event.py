@@ -15,7 +15,8 @@ from .message import ExosipMessage
 __all__ = ['Event', 'EventType']
 
 
-class Event:
+class Event(object):
+
     def __init__(self, ptr, context):
         """Class for event description
 
@@ -30,9 +31,12 @@ class Event:
         self._context = context
         self._type = EventType(ptr.contents.type)
         self._textinfo = to_str(ptr.contents.textinfo)
-        self._request = ExosipMessage(ptr.contents.request, context) if ptr.contents.request else None
-        self._response = ExosipMessage(ptr.contents.response, context) if ptr.contents.response else None
-        self._ack = ExosipMessage(ptr.contents.ack, context) if ptr.contents.ack else None
+        self._request = ExosipMessage(
+            ptr.contents.request, context) if ptr.contents.request else None
+        self._response = ExosipMessage(
+            ptr.contents.response, context) if ptr.contents.response else None
+        self._ack = ExosipMessage(
+            ptr.contents.ack, context) if ptr.contents.ack else None
         self._tid = ptr.contents.tid
         self._did = ptr.contents.did
         self._rid = ptr.contents.rid
@@ -47,7 +51,8 @@ class Event:
 
     def __str__(self):
         try:
-            cls_name = '{0.__module__:s}.{0.__qualname__:s}'.format(self.__class__)
+            cls_name = '{0.__module__:s}.{0.__qualname__:s}'.format(
+                self.__class__)
         except AttributeError:
             cls_name = '{0.__module__:s}.{0.__name__:s}'.format(self.__class__)
         return '<{} instance at 0x{:x}, type:{} textinfo:{!r} tid:{} did:{} rid:{} cid:{} sid:{} nid:{}>'.format(
