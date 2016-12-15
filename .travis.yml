@@ -1,12 +1,18 @@
-sudo: false
-
 install:
   - wget http://ftp.gnu.org/gnu/osip/libosip2-5.0.0.tar.gz
   - tar -xzvf libosip2-5.0.0.tar.gz
-  - cd libosip2-5.0.0 && ./configure && make && make install && cd ../
+  - cd libosip2-5.0.0
+  - ./configure
+  - make
+  - sudo make install
+  - cd ../
   - wget http://download.savannah.gnu.org/releases/exosip/libexosip2-5.0.0.tar.gz
   - tar -xzvf libexosip2-5.0.0.tar.gz
-  - cd libexosip2-5.0.0 && ./configure && make && make install && cd ../
+  - cd libexosip2-5.0.0
+  - ./configure
+  - make
+  - sudo make install
+  - cd ../
 #  - if [[ $TRAVIS_PYTHON_VERSION < '3.4' ]]; then pip install enum34; fi
 #  - if [[ $TRAVIS_PYTHON_VERSION < '3.2' ]]; then pip install futures; fi
 
