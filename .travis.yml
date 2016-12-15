@@ -27,7 +27,15 @@ python:
 script:
   - mv src/exosip2ctypes/tests ./
   - coverage run -m unittest discover
+  - mv tests src/exosip2ctypes
 
 after_success:
   - coverage xml
   - python-codacy-coverage -r coverage.xml
+
+deploy:
+  provider: pypi
+  user: PYPI_USER
+  password: PYPI_PASSWORD
+  on:
+    tags: true
