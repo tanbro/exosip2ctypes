@@ -10,6 +10,7 @@ if PYVER < '3.4':
     INSTALL_REQUIRES.append('enum34')
 if PYVER < '3.2':
     INSTALL_REQUIRES.append('futures')
+    TESTS_REQUIRE.append('mock')
 
 TESTS_REQUIRE.extend(INSTALL_REQUIRES)
 
