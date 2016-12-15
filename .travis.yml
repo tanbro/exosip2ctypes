@@ -26,4 +26,4 @@ python:
 script:
   - python setup.py install
   - mv src/exosip2ctypes/tests ./
-  python -m unittest discover
+  - python -m unittest discover
