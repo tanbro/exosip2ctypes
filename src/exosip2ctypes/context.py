@@ -9,6 +9,7 @@ import platform
 import socket
 import threading
 from ctypes import c_char_p, c_int, create_string_buffer
+from multiprocessing import cpu_count
 from concurrent.futures import ThreadPoolExecutor
 
 from ._c import conf, event, authentication, call
@@ -28,6 +29,7 @@ class BaseContext:
 
 
 class Context(BaseContext, LoggerMixin):
+
     def __init__(self, event_callback=None):
         """Allocate and Initiate an eXosip context.
 
@@ -48,7 +50,8 @@ class Context(BaseContext, LoggerMixin):
         """
         self.logger.info('<0x%x>__init__', id(self))
         self._ptr = conf.FuncMalloc.c_func()
-        self.logger.debug('<0x%x>__init__: eXosip_malloc() -> %s', id(self), self._ptr)
+        self.logger.debug(
+            '<0x%x>__init__: eXosip_malloc() -> %s', id(self), self._ptr)
         if self._ptr is None:
             raise MallocError()
         error_code = conf.FuncInit.c_func(self._ptr)
@@ -93,11 +96,13 @@ class Context(BaseContext, LoggerMixin):
                     self.lock_release()
                 evt = self.event_wait(s, ms)
                 if evt:
-                    self.logger.debug('<0x%x>_event_loop: event_wait() -> %s', id(self), evt)
+                    self.logger.debug(
+                        '<0x%x>_event_loop: event_wait() -> %s', id(self), evt)
                     if callable(self._event_callback):
                         def execute_event(_evt):
                             def done(f):
-                                self.logger.debug('<0x%x>_event_loop: event<0x%x> callback <<<', id(self), id(_evt))
+                                self.logger.debug(
+                                    '<0x%x>_event_loop: event<0x%x> callback <<<', id(self), id(_evt))
                                 exc = f.exception()
                                 if exc:
                                     try:
@@ -106,9 +111,11 @@ class Context(BaseContext, LoggerMixin):
                                         self.logger.exception('')
                                         raise
 
-                            self._event_executor.submit(self._event_callback, self, evt).add_done_callback(done)
+                            self._event_executor.submit(
+                                self._event_callback, self, evt).add_done_callback(done)
 
-                        self.logger.debug('<0x%x>_event_loop: event<0x%x> callback >>>', id(self), id(evt))
+                        self.logger.debug(
+                            '<0x%x>_event_loop: event<0x%x> callback >>>', id(self), id(evt))
                         execute_event(evt)
         finally:
             self._stop_cond.acquire()
@@ -212,7 +219,8 @@ class Context(BaseContext, LoggerMixin):
         if self._is_running:
             self.stop()
         if self._ptr:
-            self.logger.debug('<0x%x>quit: eXosip_quit(%s)', id(self), self._ptr)
+            self.logger.debug('<0x%x>quit: eXosip_quit(%s)',
+                              id(self), self._ptr)
             conf.FuncQuit.c_func(self._ptr)
             self._ptr = None
         self.logger.info('<0x%x>quit: <<<', id(self))
@@ -229,10 +237,12 @@ class Context(BaseContext, LoggerMixin):
 
         .. note:: It's advised to call the method after :meth:`listen_on_address`
         """
-        self.logger.info('<0x%x>masquerade_contact: public_address=%s, port=%s', id(self), public_address, port)
+        self.logger.info('<0x%x>masquerade_contact: public_address=%s, port=%s', id(
+            self), public_address, port)
         conf.FuncMasqueradeContact.c_func(
             self._ptr,
-            create_string_buffer(to_bytes(public_address)) if public_address else None,
+            create_string_buffer(to_bytes(public_address)
+                                 ) if public_address else None,
             c_int(port) if public_address else 0
         )
 
@@ -252,9 +262,11 @@ class Context(BaseContext, LoggerMixin):
             id(self), address, transport, port, family, secure
         )
         if transport not in [socket.IPPROTO_TCP, socket.IPPROTO_UDP]:
-            raise RuntimeError('Unsupported socket transport type {}'.format(transport))
+            raise RuntimeError(
+                'Unsupported socket transport type {}'.format(transport))
         if family not in [socket.AF_INET, socket.AF_INET6]:
-            raise RuntimeError('Unsupported socket family type {}'.format(family))
+            raise RuntimeError(
+                'Unsupported socket family type {}'.format(family))
         error_code = conf.FuncListenAddr.c_func(
             self._ptr,
             c_int(transport),
@@ -310,13 +322,18 @@ class Context(BaseContext, LoggerMixin):
         if event_executor:
             self._event_executor = event_executor
         else:
-            self._event_executor = ThreadPoolExecutor()
-        self._event_loop_thread = threading.Thread(target=self._event_loop, args=(s, ms))
+            try:
+                self._event_executor = ThreadPoolExecutor()
+            except TypeError:  # Changed in version 3.5: If max_workers is None or not given, it will default to the number of processors on the machine, multiplied by 5
+                self._event_executor = ThreadPoolExecutor(cpu_count() * 5)
+        self._event_loop_thread = threading.Thread(
+            target=self._event_loop, args=(s, ms))
         self._start_cond.acquire()
         self._event_loop_thread.start()
         self._start_cond.wait()
         self._start_cond.release()
-        self.logger.info('<0x%x>start: <<< -> %s', id(self), self._event_loop_thread)
+        self.logger.info('<0x%x>start: <<< -> %s',
+                         id(self), self._event_loop_thread)
         return self._event_loop_thread
 
     def stop(self):
@@ -350,7 +367,8 @@ class Context(BaseContext, LoggerMixin):
             trd = context.start(s, ms)
             trd.join(timeout)
         """
-        self.logger.info('<0x%x>run: >>> s=%s, ms=%s, timeout=%s', id(self), s, ms, timeout)
+        self.logger.info('<0x%x>run: >>> s=%s, ms=%s, timeout=%s',
+                         id(self), s, ms, timeout)
         self.start(s, ms, event_executor)
         self._event_loop_thread.join(timeout)
         self.logger.info('<0x%x>run: <<<', id(self))
@@ -378,7 +396,8 @@ class Context(BaseContext, LoggerMixin):
         :param int cid: call id of call.
         :param int did: dialog id of call.
         """
-        error_code = call.FuncCallTerminate.c_func(self._ptr, c_int(cid), c_int(did))
+        error_code = call.FuncCallTerminate.c_func(
+            self._ptr, c_int(cid), c_int(did))
         raise_if_osip_error(error_code)
 
     def call_send_init_invite(self, invite):
