@@ -14,8 +14,9 @@ install:
   - sudo make install
   - cd ../
   - sudo ldconfig
-  - if [[ $TRAVIS_PYTHON_VERSION < '3.2' ]]; then pip install mock; fi
-  - pip install coverage codacy-coverage
+  - if [[ $TRAVIS_PYTHON_VERSION < '3.3' ]]; then pip install --upgrade mock; fi
+  - pip install --upgrade coverage codacy-coverage
+  - python setup.py install
 
 language: python
 python:
@@ -24,7 +25,6 @@ python:
 
 # command to run tests
 script:
-  - python setup.py install
   - mv src/exosip2ctypes/tests ./
   - coverage run -m unittest discover
 

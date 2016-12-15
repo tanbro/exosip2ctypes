@@ -307,7 +307,10 @@ class Context(BaseContext, LoggerMixin):
         self.logger.info('<0x%x>start: >>> s=%s, ms=%s', id(self), s, ms)
         if self._is_running:
             raise RuntimeError("Context loop already started.")
-        self._event_executor = event_executor or ThreadPoolExecutor()
+        if event_executor:
+            self._event_executor = event_executor
+        else:
+            self._event_executor = ThreadPoolExecutor()
         self._event_loop_thread = threading.Thread(target=self._event_loop, args=(s, ms))
         self._start_cond.acquire()
         self._event_loop_thread.start()
