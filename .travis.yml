@@ -1,3 +1,11 @@
+language: python
+python:
+  - '2.7'
+  - '3.3'
+  - '3.4'
+  - '3.5'
+  - '3.6-dev' # 3.6 development branch
+
 install:
   - wget http://ftp.gnu.org/gnu/osip/libosip2-5.0.0.tar.gz
   - tar -xzvf libosip2-5.0.0.tar.gz
@@ -18,14 +26,6 @@ install:
   - pip install --upgrade -r requirements/dev.txt
   - pip install --upgrade codacy-coverage
   - python setup.py install
-
-language: python
-python:
-  - '2.7'
-  - '3.3'
-  - '3.4'
-  - '3.5'
-  - '3.6-dev' # 3.6 development branch
 
 before_script:
   - mv src/exosip2ctypes/tests ./
