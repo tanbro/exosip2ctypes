@@ -9,14 +9,14 @@ TESTS_REQUIRE = []
 if PYVER < '3.4':
     # Backport of the enum package from Python 3.4
     INSTALL_REQUIRES.append('enum34')
+    TESTS_REQUIRE.append('enum34')
 if PYVER < '3.3':
     # Backport of the unittest.mock package from Python 3.3
     TESTS_REQUIRE.append('mock')
 if PYVER < '3.2':
     # Backport of the concurrent.futures package from Python 3.2
     INSTALL_REQUIRES.append('futures')
-
-TESTS_REQUIRE.extend(INSTALL_REQUIRES)
+    TESTS_REQUIRE.append('futures')
 
 setup(
     name='exosip2ctypes',
@@ -31,7 +31,7 @@ setup(
     long_description=open('README.rst').read(),
     author='Liu Xue Yan',
     author_email='realtanbro@gmail.com',
-    url='https://github.com/tanbro/exosip2ctypes',
+    url='http://github.com/tanbro/exosip2ctypes',
     license='GPL',
     classifiers=[
         # How mature is this project? Common values are

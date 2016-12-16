@@ -22,15 +22,20 @@ install:
 language: python
 python:
   - '2.7'
+  - '3.3'
+  - '3.4'
   - '3.5'
+  - '3.6-dev' # 3.6 development branch
+
+before_script:
+  - mv src/exosip2ctypes/tests ./
 
 script:
-  - mv src/exosip2ctypes/tests ./
   - coverage run -m unittest discover
-  - coverage xml
-  - mv tests src/exosip2ctypes
 
 after_success:
+  - coverage xml
+  - mv tests src/exosip2ctypes
   - python-codacy-coverage -r coverage.xml
 
 deploy:
