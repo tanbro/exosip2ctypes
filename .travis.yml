@@ -33,13 +33,6 @@ script:
 after_success:
   - python-codacy-coverage -r coverage.xml
 
-before_deploy:
-  - cd docs
-  - make dirhtml
-  - cd ..
-  - mkdir -p build/docs
-  - mv docs/_build/dirhtml/* build/docs
-
 deploy:
   provider: pypi
   user: tanbro
