@@ -20,7 +20,7 @@ TESTS_REQUIRE.extend(INSTALL_REQUIRES)
 
 setup(
     name='exosip2ctypes',
-    version='0.1.2.post2',
+    version='0.1.2.post3',
     tests_require=TESTS_REQUIRE,
     install_requires=INSTALL_REQUIRES,
     # include all packages under src, or special packages in a list.
