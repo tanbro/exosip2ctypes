@@ -52,7 +52,7 @@ setup(
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: PyPy :: 2.7',
-        'Programming Language :: PyPy :: 3.3',
+        'Programming Language :: PyPy :: 3',
     ],
     keywords='sip osip osip2 libosip lilbosip2 eXosip eXosip2 libeXosip2 exosip2ctypes',
 )
