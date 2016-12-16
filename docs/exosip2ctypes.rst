@@ -1,13 +1,6 @@
 exosip2ctypes package
 =====================
 
-Subpackages
------------
-
-.. toctree::
-
-    exosip2ctypes.tests
-
 Submodules
 ----------
 
