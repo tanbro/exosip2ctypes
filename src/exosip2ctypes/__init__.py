@@ -55,5 +55,5 @@ from .event import *
 from .version import *
 
 #: version of the package, equal :data:`version.version`
-__version__ = '0.1'
-__date__ = '2016-03-03'
+__version__ = '1.1.2'
+__date__ = '2016-12-16'

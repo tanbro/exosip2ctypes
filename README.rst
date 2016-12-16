@@ -5,7 +5,7 @@
 
 ------
 
-|travis| |codacy-grade| |codacy-coverage| |readthedocs| |pylicense| |pyversion| |pyimp| |pyformat| |pywheel| |pystatus|
+|travis| |codacy-grade| |codacy-coverage| |readthedocs| |pylicense| |pyversion| |pyimp| |pyformat| |pystatus|
 
 ------
 
@@ -107,10 +107,7 @@ you shall build the documentation from source, using `sphinx-doc`_ .
     :alt: GNU GENERAL PUBLIC LICENSE
     :target: http://www.antisip.com/doc/exosip2/eXosip2_license.html
 
-.. |pywheel| image:: https://img.shields.io/pypi/wheel/exosip2ctypes.svg
-    :target: http://pypi.python.org/pypi/exosip2ctypes/
-
-.. |pyversion| image:: https://img.shields.io/pypi/pyversions/kombu.svg
+.. |pyversion| image:: https://img.shields.io/pypi/pyversions/exosip2ctypes.svg
     :alt: Supported Python versions.
     :target: http://pypi.python.org/pypi/exosip2ctypes/
 

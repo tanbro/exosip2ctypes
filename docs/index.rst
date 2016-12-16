@@ -4,15 +4,11 @@
    contain the root `toctree` directive.
 
 Welcome to exosip2ctypes's documentation!
-=========================================
-| version:     |version|
-| compiled at: |today|
+#########################################
+:Version:     |version|
+:Date:        |today|
 
-Contents:
-
-.. toctree::
-
-       API Doc <modules>
+.. include:: modules.rst
 
 Indices and tables
 ==================
