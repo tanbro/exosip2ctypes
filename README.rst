@@ -41,9 +41,7 @@ Install
 
 2. Install `python`_
 
-    `python`_ 2.7 and `python`_ 3.4+ are expect.
-
-    `python`_ 2.7 is installed by default in many POSIX OS.
+    install `python`_ 2.7 or `python`_ 3.4+.
 
 3. Install eXosip2CTypes
 
