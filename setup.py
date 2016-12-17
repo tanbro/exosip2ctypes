@@ -20,7 +20,7 @@ if PYVER < '3.2':
 
 setup(
     name='exosip2ctypes',
-    version='0.1.2.post4',
+    version='0.1.2.post5',
     tests_require=TESTS_REQUIRE,
     install_requires=INSTALL_REQUIRES,
     # include all packages under src, or special packages in a list.
@@ -51,6 +51,8 @@ setup(
         # that you indicate whether you support Python 2, Python 3 or both.
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
+        'Programming Language :: PyPy :: 2.7',
+        'Programming Language :: PyPy :: 3',
     ],
     keywords='sip osip osip2 libosip lilbosip2 eXosip eXosip2 libeXosip2 exosip2ctypes',
 )
