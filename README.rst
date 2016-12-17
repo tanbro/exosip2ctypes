@@ -41,7 +41,7 @@ Install
 
 2. Install `python`_
 
-    install `python`_ 2.7 or `python`_ 3.4+.
+    install `python`_ 2.7 or `python`_ 3.3+.
 
 3. Install eXosip2CTypes
 
