@@ -24,7 +24,7 @@ OS:
 Python:
 
 * Python2.x: 2.7
-* Python3.x: 3.4+
+* Python3.x: 3.3 and later
 
 Install
 -------
