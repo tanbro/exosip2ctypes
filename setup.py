@@ -20,7 +20,7 @@ if PYVER < '3.2':
 
 setup(
     name='exosip2ctypes',
-    version='0.1.2.post7',
+    version='1.1.3',
     tests_require=TESTS_REQUIRE,
     install_requires=INSTALL_REQUIRES,
     # include all packages under src, or special packages in a list.
