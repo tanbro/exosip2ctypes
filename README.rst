@@ -11,7 +11,7 @@ eXosip2CTypes
 
 eXosip2CTypes is a `python`_ package, it wraps `eXosip2`_.
 
-The library is based on `ctypes`_, it loads `eXosip2`_ shared object on runtime.
+It is based on `ctypes`_, and loads `eXosip2`_ shared object on runtime.
 
 Environment
 -----------
@@ -21,19 +21,19 @@ OS:
 * Linux
 * MacOS
 
-Python:
+`Python`_ Version:
 
 * Python2.x: 2.7
 * Python3.x: 3.3 and later
 
-Install
--------
+Installation
+------------
 
 1. Install `eXosip2`_.
 
-    `eXosip2`_ depends on `osip2`_, they are native ``C`` libraries.
-    You can compile these two libraries from source code, or install them with a package manager if possible.
-    For example, ubuntu 16.04 users can install the libraries by::
+    The library `eXosip2`_ depends on `osip2`_, they are native ``C`` libraries.
+    You can compile these two libraries from source code, or install them by package managers if possible.
+    For example, ubuntu 16.04 users can install the libraries::
 
         sudo apt install libexosip2-11
 
@@ -41,22 +41,23 @@ Install
 
 2. Install `python`_
 
-    install `python`_ 2.7 or `python`_ 3.3+.
+    Install `python`_ 2.7 or `python`_ 3.3+.
+    Avoid this if it's already in your OS.
 
 3. Install eXosip2CTypes
 
-    It's advised to install eXosip2CTypes by `pip`_::
+    It's advised to install eXosip2CTypes using `pip`_::
 
         pip install exosip2ctypes
 
-    Or clone from http://github.com/tanbro/exosip2ctypes, then install by ``setup.py``::
+    Or clone from http://github.com/tanbro/exosip2ctypes, then execute ``setup.py``::
 
         https://github.com/tanbro/exosip2ctypes.git
         cd exosip2ctypes
         path/of/your/python setup.py install
 
-Develop
--------
+Development
+-----------
 
 Now, your can use it in your APP, Good luck!
 
@@ -64,6 +65,11 @@ Visit http://exosip2ctypes.readthedocs.org/ for the api docs.
 
 The project's API documentation is written inside the source code as `Docstring`_ ,
 you shall build the documentation from source, using `sphinx-doc`_ .
+
+Check blow documentations for more infomations:
+
+* http://www.antisip.com/doc/exosip2/index.html
+* http://www.gnu.org/software/osip/doc/html/index.html
 
 .. _osip2: http://www.gnu.org/software/osip/
 
@@ -86,7 +92,7 @@ you shall build the documentation from source, using `sphinx-doc`_ .
 .. _virtualenv: https://pypi.python.org/pypi/virtualenv
 
 .. |travis| image:: https://img.shields.io/travis/tanbro/exosip2ctypes.svg
-   :target: https://github.com/tanbro/exosip2ctypes
+   :target: https://travis-ci.org/tanbro/exosip2ctypes
 
 .. |codacy-grade| image:: https://img.shields.io/codacy/grade/842a184f326741ca8ed208bd33238b6c.svg
     :target: https://www.codacy.com/app/tanbro/exosip2ctypes?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tanbro/exosip2ctypes&amp;utm_campaign=Badge_Grade
