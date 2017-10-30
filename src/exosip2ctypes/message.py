@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import, unicode_literals
+
 from ctypes import POINTER, byref, string_at, create_string_buffer, c_void_p, c_char_p, c_int, c_size_t
 
 from ._c import lib, osip_parser, osip_content_type, osip_from, osip_header, osip_content_length, osip_body

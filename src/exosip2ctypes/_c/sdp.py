@@ -4,6 +4,8 @@
 eXosip2 SDP helper API.
 """
 
+from __future__ import absolute_import, unicode_literals
+
 from ctypes import c_int, c_void_p
 
 from . import globs

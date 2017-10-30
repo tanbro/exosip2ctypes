@@ -3,6 +3,8 @@
 """eXosip2 REGISTER and Registration Management
 """
 
+from __future__ import absolute_import, unicode_literals
+
 from ctypes import byref, create_string_buffer, c_void_p, c_int
 
 from ._c import register

@@ -6,6 +6,8 @@ Error definitions
 see `osip/include/osipparser2/osip_port.h`
 """
 
+from __future__ import absolute_import, unicode_literals
+
 from ._c.osip_error import *
 
 __all__ = [
