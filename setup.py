@@ -1,26 +1,45 @@
-from setuptools import setup, find_packages
-from sys import version_info
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-PYVER = '%s.%s' % (version_info[0], version_info[1])
+import sys
+import os.path
+
+# Always prefer setuptools over distutils
+from setuptools import setup, find_packages
+
+
+PY_MAJOR_MINOR = '{0[0]}.{0[1]}'.format(sys.version_info)
+
+
+def read(file_name):
+    with open(os.path.join(os.path.dirname(__file__), file_name)) as f:
+        return f.read()
+
+
+# Read version from source file
+version_module_dict = {}
+exec(read('src/exosip2ctypes/version.py'), version_module_dict)
+__version__ = version_module_dict['__version__']
+
 
 INSTALL_REQUIRES = []
 TESTS_REQUIRE = []
 
-if PYVER < '3.4':
+if PY_MAJOR_MINOR < '3.4':
     # Backport of the enum package from Python 3.4
     INSTALL_REQUIRES.append('enum34')
     TESTS_REQUIRE.append('enum34')
-if PYVER < '3.3':
+if PY_MAJOR_MINOR < '3.3':
     # Backport of the unittest.mock package from Python 3.3
     TESTS_REQUIRE.append('mock')
-if PYVER < '3.2':
+if PY_MAJOR_MINOR < '3.2':
     # Backport of the concurrent.futures package from Python 3.2
     INSTALL_REQUIRES.append('futures')
     TESTS_REQUIRE.append('futures')
 
 setup(
     name='exosip2ctypes',
-    version='1.1.3',
+    version=__version__,
     tests_require=TESTS_REQUIRE,
     install_requires=INSTALL_REQUIRES,
     # include all packages under src, or special packages in a list.
@@ -28,7 +47,7 @@ setup(
     package_dir={'': 'src'},  # tell distutils packages are under src
     test_suite='exosip2ctypes.tests',
     description='libeXosip2 Python wrapper',
-    long_description=open('README.rst').read(),
+    long_description=read('README.rst'),
     author='Liu Xue Yan',
     author_email='realtanbro@gmail.com',
     url='http://github.com/tanbro/exosip2ctypes',

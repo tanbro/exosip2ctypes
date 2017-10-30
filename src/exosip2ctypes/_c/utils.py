@@ -1,3 +1,11 @@
+# -*- coding: utf-8 -*-
+
+"""
+Some helpful codes
+"""
+
+from __future__ import absolute_import, unicode_literals
+
 from . import globs
 
 

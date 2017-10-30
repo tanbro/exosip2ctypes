@@ -6,6 +6,8 @@ eXosip2 event API
 see: http://www.antisip.com/doc/exosip2/group__eXosip2__event.html
 """
 
+from __future__ import absolute_import, unicode_literals
+
 from enum import IntEnum
 
 from ._c import event

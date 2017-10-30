@@ -4,6 +4,8 @@
 eXosip2 configuration API
 """
 
+from __future__ import absolute_import, unicode_literals
+
 from ctypes import POINTER, c_int, c_void_p, c_char_p
 
 from . import globs

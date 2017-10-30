@@ -294,3 +294,9 @@ local.properties
 
 # Code Recommenders
 .recommenders/
+
+
+###########################
+# Mine
+
+.vscode/

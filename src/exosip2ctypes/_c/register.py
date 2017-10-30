@@ -4,6 +4,8 @@
 eXosip2 REGISTER and Registration Management
 """
 
+from __future__ import absolute_import, unicode_literals
+
 from ctypes import c_void_p, c_int, c_char_p
 
 from . import globs

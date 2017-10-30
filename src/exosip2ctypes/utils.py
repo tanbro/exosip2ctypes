@@ -4,6 +4,8 @@
 Some helper functions
 """
 
+from __future__ import absolute_import, unicode_literals
+
 import logging
 
 __all__ = ['to_bytes', 'to_str', 'to_unicode', 'LoggerMixin']
