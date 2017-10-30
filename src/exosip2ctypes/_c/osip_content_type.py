@@ -4,6 +4,8 @@
 oSIP content-type header definition.
 """
 
+from __future__ import absolute_import, unicode_literals
+
 from ctypes import POINTER, c_void_p, c_int, c_char_p
 
 from . import globs

@@ -4,6 +4,8 @@
 eXosip2 SDP helper API.
 """
 
+from __future__ import absolute_import, unicode_literals
+
 __all__ = ['SdpMessage']
 
 

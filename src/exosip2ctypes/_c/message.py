@@ -11,6 +11,8 @@ This file provide the API needed to control requests. You can use it to:
     * send any answers.
 """
 
+from __future__ import absolute_import, unicode_literals
+
 from ctypes import c_int, c_void_p, c_char_p
 
 from . import globs
