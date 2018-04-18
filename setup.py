@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import sys
-import os.path
 
 # Always prefer setuptools over distutils
 from setuptools import setup, find_packages
