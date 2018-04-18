@@ -16,42 +16,40 @@ def read(file_name):
         return f.read()
 
 
-# Read version from source file
-version_module_dict = {}
-exec(read('src/exosip2ctypes/version.py'), version_module_dict)
-__version__ = version_module_dict['__version__']
-
-
 INSTALL_REQUIRES = []
 TESTS_REQUIRE = []
 
-if PY_MAJOR_MINOR < '3.4':
-    # Backport of the enum package from Python 3.4
-    INSTALL_REQUIRES.append('enum34')
-    TESTS_REQUIRE.append('enum34')
 if PY_MAJOR_MINOR < '3.3':
     # Backport of the unittest.mock package from Python 3.3
     TESTS_REQUIRE.append('mock')
-if PY_MAJOR_MINOR < '3.2':
-    # Backport of the concurrent.futures package from Python 3.2
-    INSTALL_REQUIRES.append('futures')
-    TESTS_REQUIRE.append('futures')
 
 setup(
     name='exosip2ctypes',
-    version=__version__,
-    tests_require=TESTS_REQUIRE,
-    install_requires=INSTALL_REQUIRES,
-    # include all packages under src, or special packages in a list.
+
     packages=find_packages('src'),
     package_dir={'': 'src'},  # tell distutils packages are under src
     test_suite='exosip2ctypes.tests',
     description='libeXosip2 Python wrapper',
-    long_description=read('README.rst'),
     author='Liu Xue Yan',
     author_email='realtanbro@gmail.com',
     url='http://github.com/tanbro/exosip2ctypes',
     license='GPL',
+
+    use_scm_version={
+        # guess-next-dev:	automatically guesses the next development version (default)
+        # post-release:	generates post release versions (adds postN)
+        'version_scheme': 'guess-next-dev',
+    },
+    setup_requires=['setuptools_scm', 'setuptools_scm_git_archive'],
+
+    python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*',
+
+    install_requires=[
+        'enum34;python_version<"3.4"',
+        'futures;python_version<"3.0"',
+    ],
+    tests_require=TESTS_REQUIRE,
+
     classifiers=[
         # How mature is this project? Common values are
         #   3 - Alpha
@@ -73,10 +71,10 @@ setup(
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
     ],
