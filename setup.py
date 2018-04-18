@@ -9,16 +9,7 @@ from setuptools import setup, find_packages
 
 
 PY_MAJOR_MINOR = '{0[0]}.{0[1]}'.format(sys.version_info)
-
-
-def read(file_name):
-    with open(os.path.join(os.path.dirname(__file__), file_name)) as f:
-        return f.read()
-
-
-INSTALL_REQUIRES = []
 TESTS_REQUIRE = []
-
 if PY_MAJOR_MINOR < '3.3':
     # Backport of the unittest.mock package from Python 3.3
     TESTS_REQUIRE.append('mock')
@@ -60,7 +51,6 @@ setup(
         # Indicate who your project is intended for
         'Intended Audience :: Developers',
         'Topic :: Communications :: Telephony',
-        'Topic :: Documentation :: Sphinx',
 
         # Pick your license as you wish (should match "license" above)
         'License :: OSI Approved :: GNU General Public License (GPL)',
