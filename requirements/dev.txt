@@ -3,5 +3,5 @@ twine
 coverage
 Sphinx
 sphinx-autobuild
-recommonmark
+recommonmark==0.4.0
 
