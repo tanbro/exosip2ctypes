@@ -5,11 +5,13 @@ version infomation
 """
 
 from __future__ import absolute_import, unicode_literals
+from pkg_resources import get_distribution
 
 __all__ = ['__version__', 'get_library_version']
 
 
-__version__ = '1.2'
+# pylint: disable=C0103
+__version__ = get_distribution('exosip2ctypes').version  # type: str
 
 
 def get_library_version():
