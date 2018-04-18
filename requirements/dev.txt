@@ -1,4 +1,4 @@
-wheel
+wheel==0.31.0
 twine
 coverage
 Sphinx
