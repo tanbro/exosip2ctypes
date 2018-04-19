@@ -16,7 +16,7 @@ if PY_MAJOR_MINOR < '3.3':
 setup(
     name='exosip2ctypes',
 
-    packages=find_packages('src'),
+    packages=find_packages('src', exclude=['examples', '*/tests']),
     package_dir={'': 'src'},  # tell distutils packages are under src
     test_suite='exosip2ctypes.tests',
     description='libeXosip2 Python wrapper',

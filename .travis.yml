@@ -25,8 +25,7 @@ install:
   - cd ../
   - sudo ldconfig
   - if [[ $TRAVIS_PYTHON_VERSION < '3.3' ]]; then pip install --upgrade mock; fi
-  - pip install -r requirements/dev.txt
-  - pip install codacy-coverage
+  - pip install wheel coverage codacy-coverage
   - python setup.py install
 
 before_script:

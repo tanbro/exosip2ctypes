@@ -5,10 +5,13 @@
 
 Welcome to exosip2ctypes's documentation!
 #########################################
+:Build Time:  |today|
 :Version:     |version|
-:Date:        |today|
+:Release:     |release|
 
-.. include:: modules.rst
+.. toctree::
+
+    modules
 
 Indices and tables
 ==================
