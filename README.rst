@@ -52,7 +52,7 @@ Installation
 
     Or clone from http://github.com/tanbro/exosip2ctypes, then execute ``setup.py``::
 
-        https://github.com/tanbro/exosip2ctypes.git
+        git clone https://github.com/tanbro/exosip2ctypes.git
         cd exosip2ctypes
         path/of/your/python setup.py install
 
