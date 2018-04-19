@@ -1,7 +1,0 @@
-wheel
-twine
-coverage
-Sphinx
-sphinx-autobuild
-recommonmark
-

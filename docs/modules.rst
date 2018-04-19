@@ -1,5 +1,5 @@
-API Docs
-========
+exosip2ctypes
+=============
 
 .. toctree::
    :maxdepth: 4

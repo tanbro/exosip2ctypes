@@ -4,7 +4,8 @@ exosip2ctypes package
 Submodules
 ----------
 
-.. toctree::
+.. autosummary::
+   :toctree: modules
 
    exosip2ctypes.call
    exosip2ctypes.context

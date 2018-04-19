@@ -23,8 +23,8 @@ OS:
 
 `Python`_ Version:
 
-* Python2.x: 2.7
-* Python3.x: 3.3 and later
+* `Python`_ `2.x` : `2.7`
+* `Python`_ `3.x` : `3.4` and later
 
 Installation
 ------------
@@ -39,9 +39,9 @@ Installation
 
     "develop" packages are not needed.
 
-2. Install `python`_
+2. Install `Python`_
 
-    Install `python`_ 2.7 or `python`_ 3.3+.
+    Install `Python`_ 2.7 or `Python`_ 3.4+.
     Avoid this if it's already in your OS.
 
 3. Install eXosip2CTypes
@@ -75,7 +75,7 @@ Check blow documentations for more infomations:
 
 .. _eXosip2: http://www.gnu.org/software/osip/
 
-.. _python: http://python.org/
+.. _Python: http://python.org/
 
 .. _pip: http://pypi.python.org/pypi/pip
 

@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import sys
-import os.path
 
 # Always prefer setuptools over distutils
 from setuptools import setup, find_packages
@@ -11,13 +10,13 @@ from setuptools import setup, find_packages
 PY_MAJOR_MINOR = '{0[0]}.{0[1]}'.format(sys.version_info)
 TESTS_REQUIRE = []
 if PY_MAJOR_MINOR < '3.3':
-    # Backport of the unittest.mock package from Python 3.3
+    # Backport of the unittest.mock package from Python 3.3-
     TESTS_REQUIRE.append('mock')
 
 setup(
     name='exosip2ctypes',
 
-    packages=find_packages('src'),
+    packages=find_packages('src', exclude=['examples', "tests"]),
     package_dir={'': 'src'},  # tell distutils packages are under src
     test_suite='exosip2ctypes.tests',
     description='libeXosip2 Python wrapper',
@@ -29,7 +28,7 @@ setup(
     use_scm_version={
         # guess-next-dev:	automatically guesses the next development version (default)
         # post-release:	generates post release versions (adds postN)
-        'version_scheme': 'guess-next-dev',
+        'version_scheme': 'post-release',
     },
     setup_requires=['setuptools_scm', 'setuptools_scm_git_archive'],
 
