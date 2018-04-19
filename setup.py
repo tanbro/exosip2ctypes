@@ -28,7 +28,7 @@ setup(
     use_scm_version={
         # guess-next-dev:	automatically guesses the next development version (default)
         # post-release:	generates post release versions (adds postN)
-        'version_scheme': 'guess-next-dev',
+        'version_scheme': 'post-release',
     },
     setup_requires=['setuptools_scm', 'setuptools_scm_git_archive'],
 
