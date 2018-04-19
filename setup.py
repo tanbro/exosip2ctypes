@@ -10,13 +10,13 @@ from setuptools import setup, find_packages
 PY_MAJOR_MINOR = '{0[0]}.{0[1]}'.format(sys.version_info)
 TESTS_REQUIRE = []
 if PY_MAJOR_MINOR < '3.3':
-    # Backport of the unittest.mock package from Python 3.3
+    # Backport of the unittest.mock package from Python 3.3-
     TESTS_REQUIRE.append('mock')
 
 setup(
     name='exosip2ctypes',
 
-    packages=find_packages('src', exclude=['examples', '*/tests']),
+    packages=find_packages('src', exclude=['examples', "tests"]),
     package_dir={'': 'src'},  # tell distutils packages are under src
     test_suite='exosip2ctypes.tests',
     description='libeXosip2 Python wrapper',
